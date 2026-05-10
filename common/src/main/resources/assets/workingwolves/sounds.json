@@ -1,0 +1,18 @@
+{
+  "whistle_dispatch": {
+    "sounds": [
+      {
+        "name": "workingwolves:whistle_dispatch",
+        "stream": false
+      }
+    ]
+  },
+  "whistle_recall": {
+    "sounds": [
+      {
+        "name": "workingwolves:whistle_recall",
+        "stream": false
+      }
+    ]
+  }
+}

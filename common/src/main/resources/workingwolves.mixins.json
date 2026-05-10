@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "grill24.workingwolves.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "minVersion": "0.8",
+  "client": [],
+  "mixins": ["WolfMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

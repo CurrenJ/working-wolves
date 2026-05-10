@@ -1,0 +1,20 @@
+architectury {
+    common rootProject.enabled_platforms.split(',')
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/workingwolves.accesswidener")
+    mixin {
+        defaultRefmapName = "workingwolves.refmap.json"
+    }
+}
+
+sourceSets.main.resources.srcDir("src/generated/resources")
+
+tasks.named('processResources').configure {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+dependencies {
+    implementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+}

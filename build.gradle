@@ -1,0 +1,140 @@
+plugins {
+    id 'dev.architectury.loom-no-remap' version '1.14-SNAPSHOT' apply false
+    id 'architectury-plugin' version '3.5-SNAPSHOT'
+    id 'com.gradleup.shadow' version '8.3.6' apply false
+    id 'net.darkhax.curseforgegradle' version '1.1.26' apply false
+    id 'idea'
+}
+
+// Load local.properties for CurseForge token
+if (file('local.properties').exists()) {
+    def localProps = new Properties()
+    file('local.properties').withInputStream { localProps.load(it) }
+    localProps.each { key, value -> ext.set(key, value) }
+}
+
+architectury {
+    minecraft = project.minecraft_version
+}
+
+allprojects {
+    group = rootProject.maven_group
+    version = "${rootProject.mod_version}+${rootProject.minecraft_version}"
+}
+
+subprojects {
+    apply plugin: 'dev.architectury.loom-no-remap'
+    apply plugin: 'architectury-plugin'
+    apply plugin: 'maven-publish'
+
+    base {
+        archivesName = "$rootProject.archives_name-$project.name"
+    }
+
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
+    }
+
+    java {
+        withSourcesJar()
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.release = 25
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId = base.archivesName.get()
+                from components.java
+            }
+        }
+        repositories {
+        }
+    }
+}
+
+// CurseForge Publishing
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+    apiToken = System.getenv('CURSEFORGE_TOKEN') ?: findProperty('curseforge_token') ?: ''
+
+    def fabricFile = upload(curseforge_project_id, project(':fabric').tasks.shadowJar)
+    fabricFile.changelog = file('CHANGELOG.md').exists() ? file('CHANGELOG.md').text : 'No changelog provided.'
+    fabricFile.changelogType = 'markdown'
+    fabricFile.releaseType = 'release'
+    fabricFile.addGameVersion(minecraft_version)
+    fabricFile.addModLoader('Fabric')
+
+    def neoforgeFile = upload(curseforge_project_id, project(':neoforge').tasks.shadowJar)
+    neoforgeFile.changelog = file('CHANGELOG.md').exists() ? file('CHANGELOG.md').text : 'No changelog provided.'
+    neoforgeFile.changelogType = 'markdown'
+    neoforgeFile.releaseType = 'release'
+    neoforgeFile.addGameVersion(minecraft_version)
+    neoforgeFile.addModLoader('NeoForge')
+}
+
+tasks.named('publishCurseForge') {
+    dependsOn ':fabric:build', ':neoforge:build'
+}
+
+// Custom task: run Fabric datagen and copy generated assets to common/
+tasks.register('commonDatagen', Copy) {
+    dependsOn ':fabric:runDatagen'
+
+    from fileTree(dir: 'fabric/src/main/generated', include: '**/*')
+    into file('common/src/generated/resources')
+
+    doFirst {
+        // Clean stale output so hand-authored files in main/resources take precedence
+        delete fileTree(dir: 'common/src/generated/resources')
+        logger.lifecycle('Running Fabric datagen and copying output to common/src/generated/resources...')
+    }
+
+    doLast {
+        logger.lifecycle('Datagen complete. Files copied to common/src/generated/resources.')
+    }
+}
+
+// Auto-generate IntelliJ run config for commonDatagen so it survives IDE syncs
+tasks.register('generateIdeaRunConfigs') {
+    doLast {
+        def dir = file('.idea/runConfigurations')
+        dir.mkdirs()
+        file("$dir/Common_Datagen__gradle.xml").text = '''\
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Common Datagen" type="GradleRunConfiguration" factoryName="Gradle">
+    <ExternalSystemSettings>
+      <option name="executionName" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$" />
+      <option name="externalSystemIdString" value="GRADLE" />
+      <option name="scriptParameters" value="" />
+      <option name="taskDescriptions">
+        <list />
+      </option>
+      <option name="taskNames">
+        <list>
+          <option value="commonDatagen" />
+        </list>
+      </option>
+      <option name="vmOptions" />
+    </ExternalSystemSettings>
+    <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+    <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+    <DebugAllEnabled>false</DebugAllEnabled>
+    <RunAsTest>false</RunAsTest>
+    <method v="2" />
+  </configuration>
+</component>'''
+    }
+}
+
+tasks.named('idea').configure { dependsOn 'generateIdeaRunConfigs' }

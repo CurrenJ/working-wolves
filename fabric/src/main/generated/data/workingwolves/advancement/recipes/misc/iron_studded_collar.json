@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_leather_collar": {
+      "conditions": {
+        "items": [
+          {
+            "items": "workingwolves:leather_collar"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "workingwolves:iron_studded_collar"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_leather_collar"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "workingwolves:iron_studded_collar"
+    ]
+  }
+}

@@ -1,0 +1,199 @@
+package grill24.workingwolves.ai;
+
+import grill24.workingwolves.api.IWorkingWolf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.EnumSet;
+import java.util.List;
+
+/**
+ * Always-active self-preservation goal (priority 0).
+ * Handles lava/fire avoidance, fall avoidance, crowding disengagement, and water preference.
+ */
+public class SelfPreservationGoal extends Goal {
+    private final Wolf wolf;
+    private int fleeTicks = 0;
+    private static final int FLEE_DURATION = 40; // 2 seconds of fleeing
+    private static final double FLEE_SPEED = 1.4;
+    private static final double CROWD_SPEED = 1.3;
+    private static final double FALL_AVOID_SPEED = 1.2;
+    private static final int HAZARD_RANGE = 2;
+    private static final int CROWD_RANGE = 3;
+    private static final int CROWD_THRESHOLD = 3;
+    private static final int FALL_THRESHOLD = 4;
+    private static final int FLEE_SEARCH_RADIUS = 5;
+
+    public SelfPreservationGoal(Wolf wolf) {
+        this.wolf = wolf;
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+    }
+
+    @Override
+    public boolean canUse() {
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        return mixin.workingwolves$getCollarTier() > 0 && hasThreat();
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        return fleeTicks > 0;
+    }
+
+    private boolean hasThreat() {
+        Level level = wolf.level();
+        BlockPos wolfPos = wolf.blockPosition();
+        return wolf.isInLava() || wolf.isOnFire()
+            || isNearHazard(level, wolfPos, HAZARD_RANGE)
+            || countNearbyHostiles(level, wolfPos, CROWD_RANGE) >= CROWD_THRESHOLD
+            || isNearDangerousFall(level, wolfPos, FALL_THRESHOLD);
+    }
+
+    @Override
+    public void tick() {
+        if (fleeTicks > 0) {
+            fleeTicks--;
+            return;
+        }
+
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        Level level = wolf.level();
+        BlockPos wolfPos = wolf.blockPosition();
+
+        // 1. Lava/fire within range -> panic flee
+        if (isNearHazard(level, wolfPos, HAZARD_RANGE)) {
+            Vec3 safePos = findSafePosition(level, wolfPos, FLEE_SEARCH_RADIUS);
+            if (safePos != null) {
+                wolf.getNavigation().moveTo(safePos.x, safePos.y, safePos.z, FLEE_SPEED);
+                fleeTicks = FLEE_DURATION;
+            }
+            return;
+        }
+
+        // 2. Wolf itself is in lava or on fire
+        if (wolf.isInLava() || wolf.isOnFire()) {
+            Vec3 safePos = findSafePosition(level, wolfPos, FLEE_SEARCH_RADIUS);
+            if (safePos != null) {
+                wolf.getNavigation().moveTo(safePos.x, safePos.y, safePos.z, FLEE_SPEED);
+                fleeTicks = FLEE_DURATION;
+            }
+            return;
+        }
+
+        // 3. Crowding: 3+ hostile mobs within melee range -> disengage
+        int nearbyHostiles = countNearbyHostiles(level, wolfPos, CROWD_RANGE);
+        if (nearbyHostiles >= CROWD_THRESHOLD) {
+            Vec3 awayPos = findPositionAwayFromHostiles(level, wolfPos, FLEE_SEARCH_RADIUS);
+            if (awayPos != null) {
+                wolf.getNavigation().moveTo(awayPos.x, awayPos.y, awayPos.z, CROWD_SPEED);
+                fleeTicks = FLEE_DURATION;
+            }
+            return;
+        }
+
+        // 4. Dangerous falls: avoid unless returning to base
+        boolean isReturning = "returning".equals(mixin.workingwolves$getExpeditionState());
+        if (!isReturning && isNearDangerousFall(level, wolfPos, FALL_THRESHOLD)) {
+            Vec3 safePos = findSafePosition(level, wolfPos, 3);
+            if (safePos != null) {
+                wolf.getNavigation().moveTo(safePos.x, safePos.y, safePos.z, FALL_AVOID_SPEED);
+            }
+            return;
+        }
+
+    }
+
+    private boolean isNearHazard(Level level, BlockPos center, int range) {
+        BlockPos minPos = center.offset(-range, -range, -range);
+        BlockPos maxPos = center.offset(range, range, range);
+        for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(BlockTags.FIRE) || state.getBlock() instanceof BaseFireBlock) {
+                return true;
+            }
+            if (state.is(Blocks.LAVA)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Vec3 findSafePosition(Level level, BlockPos fromPos, int searchRadius) {
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+        for (int x = -searchRadius; x <= searchRadius; x++) {
+            for (int z = -searchRadius; z <= searchRadius; z++) {
+                for (int y = -1; y <= 1; y++) {
+                    mutable.set(fromPos.getX() + x, fromPos.getY() + y, fromPos.getZ() + z);
+                    if (!mutable.equals(fromPos) && isSafeStandingPosition(level, mutable)) {
+                        return Vec3.atCenterOf(mutable);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isSafeStandingPosition(Level level, BlockPos pos) {
+        BlockState ground = level.getBlockState(pos.below());
+        BlockState at = level.getBlockState(pos);
+        BlockState above = level.getBlockState(pos.above());
+        return ground.isSolid()
+            && at.isAir()
+            && above.isAir()
+            && !level.getBlockState(pos).is(BlockTags.FIRE)
+            && !level.getBlockState(pos).is(Blocks.LAVA);
+    }
+
+    private int countNearbyHostiles(Level level, BlockPos center, int range) {
+        AABB aabb = new AABB(center).inflate(range);
+        return level.getEntitiesOfClass(Monster.class, aabb, monster ->
+            monster.isAlive() && monster.distanceToSqr(wolf) <= range * range
+        ).size();
+    }
+
+    private Vec3 findPositionAwayFromHostiles(Level level, BlockPos fromPos, int searchRadius) {
+        List<Monster> hostiles = level.getEntitiesOfClass(Monster.class,
+            new AABB(fromPos).inflate(8), Monster::isAlive);
+
+        if (hostiles.isEmpty()) {
+            return findSafePosition(level, fromPos, searchRadius);
+        }
+
+        double avgX = hostiles.stream().mapToDouble(LivingEntity::getX).average().orElse(fromPos.getX());
+        double avgZ = hostiles.stream().mapToDouble(LivingEntity::getZ).average().orElse(fromPos.getZ());
+
+        Vec3 awayDir = new Vec3(fromPos.getX() - avgX, 0, fromPos.getZ() - avgZ).normalize();
+
+        BlockPos targetPos = BlockPos.containing(
+            fromPos.getX() + awayDir.x * searchRadius,
+            fromPos.getY(),
+            fromPos.getZ() + awayDir.z * searchRadius
+        );
+
+        Vec3 safePos = findSafePosition(level, targetPos, 2);
+        if (safePos != null) return safePos;
+
+        return findSafePosition(level, fromPos, searchRadius);
+    }
+
+    private boolean isNearDangerousFall(Level level, BlockPos pos, int minDrop) {
+        for (int i = 1; i <= minDrop; i++) {
+            BlockState state = level.getBlockState(pos.below(i));
+            if (!state.isAir()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+}

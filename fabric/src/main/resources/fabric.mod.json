@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": ["${mod_authors}"],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+  "license": "${mod_license}",
+  "icon": "${mod_icon}",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["grill24.workingwolves.fabric.WorkingWolvesFabric"],
+    "client": ["grill24.workingwolves.fabric.WorkingWolvesFabricClient"],
+    "fabric-datagen": ["grill24.workingwolves.fabric.datagen.WorkingWolvesDataGenerator"]
+  },
+  "mixins": ["workingwolves.mixins.json", "workingwolves-fabric.mixins.json"],
+  "accessWidener": "workingwolves.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.19.1",
+    "minecraft": "${mod_fabric_minecraft_version}",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

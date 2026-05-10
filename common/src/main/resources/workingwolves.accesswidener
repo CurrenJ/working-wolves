@@ -1,0 +1,10 @@
+accessWidener v2 official
+
+# CreativeModeTab.Output is protected in vanilla, but needed for cross-platform creative tab registration
+accessible class net/minecraft/world/item/CreativeModeTab$Output
+
+# Wolf class accessibility for mixin and entity modification access
+accessible class net/minecraft/world/entity/animal/wolf/Wolf
+accessible method net/minecraft/world/entity/animal/wolf/Wolf setCollarColor (Lnet/minecraft/world/item/DyeColor;)V
+accessible field net/minecraft/world/entity/ai/navigation/PathNavigation pathFinder Lnet/minecraft/world/level/pathfinder/PathFinder;
+accessible field net/minecraft/world/entity/ai/navigation/PathNavigation requiredPathLength F
