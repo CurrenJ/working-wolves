@@ -2,6 +2,7 @@ package grill24.workingwolves.ai;
 
 import grill24.workingwolves.Config;
 import grill24.workingwolves.api.IWorkingWolf;
+import grill24.workingwolves.inventory.WolfBagHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -76,9 +77,8 @@ public class RetrieverGoal extends Goal {
         unreachableCache.values().removeIf(cachedTime -> gameTime - cachedTime > CACHE_TIMEOUT_TICKS);
 
         // Check bag capacity -> trigger return
-        if (isBagFull(mixin)) {
-            mixin.workingwolves$setExpeditionState("returning");
-            mixin.workingwolves$syncData();
+        if (WolfBagHelper.isBagFull(mixin, BAG_FULL_THRESHOLD)) {
+            mixin.workingwolves$triggerReturn();
             return;
         }
 
@@ -119,8 +119,7 @@ public class RetrieverGoal extends Goal {
             if (hasItemsInBag(mixin)) {
                 idleTicks++;
                 if (idleTicks >= IDLE_DEPOSIT_TICKS) {
-                    mixin.workingwolves$setExpeditionState("returning");
-                    mixin.workingwolves$syncData();
+                    mixin.workingwolves$triggerReturn();
                 }
             }
             return;
@@ -133,8 +132,7 @@ public class RetrieverGoal extends Goal {
             if (hasItemsInBag(mixin)) {
                 idleTicks++;
                 if (idleTicks >= IDLE_DEPOSIT_TICKS) {
-                    mixin.workingwolves$setExpeditionState("returning");
-                    mixin.workingwolves$syncData();
+                    mixin.workingwolves$triggerReturn();
                 }
             }
         }
@@ -202,36 +200,9 @@ public class RetrieverGoal extends Goal {
         return false;
     }
 
-    private boolean isBagFull(IWorkingWolf mixin) {
-        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-        if (bag.isEmpty()) return true;
-        int usedSlots = 0;
-        for (ItemStack stack : bag) {
-            if (!stack.isEmpty()) usedSlots++;
-        }
-        return (float) usedSlots / bag.size() >= BAG_FULL_THRESHOLD;
-    }
-
     private void pickupItem(ItemEntity item, IWorkingWolf mixin) {
-        ItemStack stack = item.getItem();
         NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-        ItemStack remainder = stack.copy();
-
-        // Try to stack with existing items first, then empty slots
-        for (int i = 0; i < bag.size() && !remainder.isEmpty(); i++) {
-            ItemStack slot = bag.get(i);
-            if (slot.isEmpty()) {
-                bag.set(i, remainder);
-                remainder = ItemStack.EMPTY;
-            } else if (ItemStack.isSameItemSameComponents(slot, remainder)) {
-                int transfer = Math.min(remainder.getCount(), slot.getMaxStackSize() - slot.getCount());
-                if (transfer > 0) {
-                    slot.grow(transfer);
-                    remainder.shrink(transfer);
-                }
-            }
-        }
-
+        ItemStack remainder = WolfBagHelper.addToBag(bag, item.getItem().copy());
         if (remainder.isEmpty()) {
             item.discard();
         } else {

@@ -80,12 +80,7 @@ public class CollarItem extends Item {
             }
 
             // Sync collar color for visual
-            DyeColor color = switch (tier) {
-                case 1 -> DyeColor.BROWN;
-                case 2 -> DyeColor.GRAY;
-                case 3 -> DyeColor.YELLOW;
-                default -> DyeColor.RED;
-            };
+            DyeColor color = CollarItem.getCollarColorForTier(tier);
             ((IWorkingWolf) (Object) wolf).workingwolves$setCollarColorFromTier(color);
 
             // Consume the collar item
@@ -140,6 +135,15 @@ public class CollarItem extends Item {
             case 2 -> "hunter";
             case 3 -> "miner";
             default -> "retriever";
+        };
+    }
+
+    public static DyeColor getCollarColorForTier(int tier) {
+        return switch (tier) {
+            case 1 -> DyeColor.BROWN;
+            case 2 -> DyeColor.GRAY;
+            case 3 -> DyeColor.YELLOW;
+            default -> DyeColor.RED;
         };
     }
 }

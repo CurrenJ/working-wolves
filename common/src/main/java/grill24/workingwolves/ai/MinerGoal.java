@@ -3,6 +3,7 @@ package grill24.workingwolves.ai;
 import grill24.workingwolves.Config;
 import grill24.workingwolves.WorkingWolves;
 import grill24.workingwolves.api.IWorkingWolf;
+import grill24.workingwolves.inventory.WolfBagHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -111,25 +112,21 @@ public class MinerGoal extends Goal {
         // Clean expired unreachable cache entries
         unreachableCache.values().removeIf(e -> gameTime - e.gameTime > CACHE_TIMEOUT_TICKS);
 
-        // 1. Check expedition timer (startTime==0 means never dispatched — don't expire)
-        long startTime = mixin.workingwolves$getExpeditionStartTime();
-        if (startTime > 0 && gameTime - startTime >= mixin.workingwolves$getExpeditionDuration()) {
-            mixin.workingwolves$setExpeditionState("returning");
-            mixin.workingwolves$syncData();
+        // 1. Check expedition timer (startTime==0 means never dispatched - don't expire)
+        if (mixin.workingwolves$isExpeditionExpired(gameTime)) {
+            mixin.workingwolves$triggerReturn();
             return;
         }
 
         // 2. Check pickaxe durability
         if (!hasValidPickaxe(mixin)) {
-            mixin.workingwolves$setExpeditionState("returning");
-            mixin.workingwolves$syncData();
+            mixin.workingwolves$triggerReturn();
             return;
         }
 
         // 3. Check bag capacity
-        if (isBagFull(mixin)) {
-            mixin.workingwolves$setExpeditionState("returning");
-            mixin.workingwolves$syncData();
+        if (WolfBagHelper.isBagFull(mixin)) {
+            mixin.workingwolves$triggerReturn();
             return;
         }
 
@@ -344,22 +341,7 @@ public class MinerGoal extends Goal {
     }
 
     private BlockPos findGround(Level level, BlockPos pos) {
-        BlockPos.MutableBlockPos mutable = pos.mutable();
-        // Find solid ground from candidate y down to -64
-        for (int y = pos.getY(); y > -64; y--) {
-            mutable.setY(y);
-            if (level.getBlockState(mutable).isSolid() && level.getBlockState(mutable.above()).isAir()) {
-                return mutable.above().immutable();
-            }
-        }
-        // Search upward from candidate
-        for (int y = pos.getY(); y < 320; y++) {
-            mutable.setY(y);
-            if (level.getBlockState(mutable.below()).isSolid() && level.getBlockState(mutable).isAir()) {
-                return mutable.immutable();
-            }
-        }
-        return null;
+        return WolfAIHelper.findGround(level, pos);
     }
 
     private void tickExploring(Level level, IWorkingWolf mixin) {
@@ -506,20 +488,7 @@ public class MinerGoal extends Goal {
     // ======== Position helpers ========
 
     private BlockPos findAdjacentStandingPos(Level level, BlockPos orePos) {
-        // Search all 26 neighboring positions for a standable spot (air with solid ground below)
-        BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                for (int dy = -1; dy <= 1; dy++) {
-                    if (dx == 0 && dz == 0 && dy == 0) continue; // Skip the ore itself
-                    m.set(orePos.getX() + dx, orePos.getY() + dy, orePos.getZ() + dz);
-                    if (level.getBlockState(m).isAir() && level.getBlockState(m.below()).isSolid()) {
-                        return m.immutable();
-                    }
-                }
-            }
-        }
-        return null;
+        return WolfAIHelper.findAdjacentStandingPos(level, orePos);
     }
 
     // ======== Ore detection ========
@@ -564,45 +533,6 @@ public class MinerGoal extends Goal {
     // ======== Drop collection ========
 
     private void collectDropsAt(Level level, BlockPos pos, IWorkingWolf mixin) {
-        List<ItemEntity> drops = level.getEntitiesOfClass(ItemEntity.class,
-            new AABB(pos).inflate(DROP_COLLECT_RANGE), ItemEntity::isAlive);
-
-        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-        for (ItemEntity drop : drops) {
-            ItemStack stack = drop.getItem().copy();
-            ItemStack remainder = addToBag(bag, stack);
-            if (remainder.isEmpty()) {
-                drop.discard();
-            } else {
-                drop.setItem(remainder);
-            }
-        }
-    }
-
-    private ItemStack addToBag(NonNullList<ItemStack> bag, ItemStack stack) {
-        ItemStack remainder = stack;
-        for (int i = 0; i < bag.size() && !remainder.isEmpty(); i++) {
-            ItemStack slot = bag.get(i);
-            if (slot.isEmpty()) {
-                bag.set(i, remainder);
-                remainder = ItemStack.EMPTY;
-            } else if (ItemStack.isSameItemSameComponents(slot, remainder)) {
-                int transfer = Math.min(remainder.getCount(), slot.getMaxStackSize() - slot.getCount());
-                if (transfer > 0) {
-                    slot.grow(transfer);
-                    remainder.shrink(transfer);
-                }
-            }
-        }
-        return remainder;
-    }
-
-    private boolean isBagFull(IWorkingWolf mixin) {
-        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-        if (bag.isEmpty()) return true;
-        for (ItemStack stack : bag) {
-            if (stack.isEmpty()) return false;
-        }
-        return true;
+        WolfBagHelper.collectDropsAt(level, pos, mixin, DROP_COLLECT_RANGE);
     }
 }

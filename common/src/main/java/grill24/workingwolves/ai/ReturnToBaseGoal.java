@@ -74,7 +74,16 @@ public class ReturnToBaseGoal extends Goal {
 
     private BlockPos getDestination(IWorkingWolf mixin) {
         BlockPos bedPos = mixin.workingwolves$getBedPos();
-        if (bedPos != null) return bedPos;
+        if (bedPos != null) {
+            // Validate that the bed still exists
+            Level level = wolf.level();
+            if (level.isLoaded(bedPos) && !(level.getBlockEntity(bedPos) instanceof DogBedBlockEntity)) {
+                mixin.workingwolves$setBedPos(null);
+                mixin.workingwolves$syncData();
+            } else {
+                return bedPos;
+            }
+        }
         LivingEntity owner = wolf.getOwner();
         return owner != null ? owner.blockPosition() : null;
     }
@@ -85,14 +94,20 @@ public class ReturnToBaseGoal extends Goal {
             BlockEntity be = level.getBlockEntity(bedPos);
             if (be instanceof DogBedBlockEntity dogBed) {
                 depositItems(dogBed, mixin);
-            } else {
-                dropAllItems(level, mixin);
-                mixin.workingwolves$setBedPos(null);
+                finishReturn(mixin);
+                return;
             }
-        } else {
-            // No bed — drop at player's feet
-            dropAllItems(level, mixin);
+            // Bed was destroyed — clear it and continue to player
+            mixin.workingwolves$setBedPos(null);
+            mixin.workingwolves$syncData();
+            return;
         }
+        // No bed — arrived at player, drop items
+        dropAllItems(level, mixin);
+        finishReturn(mixin);
+    }
+
+    private void finishReturn(IWorkingWolf mixin) {
         mixin.workingwolves$setExpeditionState("idle");
         wolf.setOrderedToSit(true);
         mixin.workingwolves$syncData();
@@ -132,36 +147,7 @@ public class ReturnToBaseGoal extends Goal {
     }
 
     private BlockPos findGround(Level level, BlockPos pos) {
-        for (int r = 0; r <= 16; r++) {
-            for (int dx = -r; dx <= r; dx++) {
-                for (int dz = -r; dz <= r; dz++) {
-                    if (Math.abs(dx) != r && Math.abs(dz) != r) continue;
-                    BlockPos candidate = tryGroundAt(level, pos.offset(dx, 0, dz));
-                    if (candidate != null) return candidate;
-                }
-            }
-        }
-        return null;
-    }
-
-    private BlockPos tryGroundAt(Level level, BlockPos column) {
-        BlockPos.MutableBlockPos m = column.mutable();
-        int startY = column.getY();
-        if (startY < -64) startY = -64;
-        if (startY > 320) startY = 320;
-        for (int dy = 0; dy < 384; dy++) {
-            int yUp = startY + dy;
-            int yDown = startY - dy;
-            if (yUp <= 320) {
-                m.setY(yUp);
-                if (level.getBlockState(m).isSolid() && level.getBlockState(m.above()).isAir()) return m.above().immutable();
-            }
-            if (dy > 0 && yDown >= -64) {
-                m.setY(yDown);
-                if (level.getBlockState(m).isSolid() && level.getBlockState(m.above()).isAir()) return m.above().immutable();
-            }
-        }
-        return null;
+        return WolfAIHelper.findGround(level, pos);
     }
 
     private void depositItems(DogBedBlockEntity dogBed, IWorkingWolf mixin) {

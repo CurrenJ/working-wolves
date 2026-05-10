@@ -44,6 +44,17 @@ public interface IWorkingWolf {
         self.getNavigation().requiredPathLength = (float) range;
     }
 
+    default boolean workingwolves$isExpeditionExpired(long gameTime) {
+        long startTime = workingwolves$getExpeditionStartTime();
+        if (startTime <= 0) return false;
+        return gameTime - startTime >= workingwolves$getExpeditionDuration();
+    }
+
+    default void workingwolves$triggerReturn() {
+        workingwolves$setExpeditionState("returning");
+        workingwolves$syncData();
+    }
+
     @Nullable BlockPos workingwolves$getMiningPos();
     void workingwolves$setMiningPos(@Nullable BlockPos pos);
 

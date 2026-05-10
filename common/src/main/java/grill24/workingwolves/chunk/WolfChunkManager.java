@@ -64,7 +64,7 @@ public class WolfChunkManager {
         Map<UUID, Integer> playerWolfCount = new HashMap<>();
         int totalWolvesProcessed = 0;
 
-        AABB allEntitiesBounds = new AABB(-30000000, -64, -30000000, 30000000, 320, 30000000);
+        AABB allEntitiesBounds = WorkingWolves.ALL_ENTITIES;
 
         for (ServerLevel level : server.getAllLevels()) {
             Set<ChunkPos> levelChunks = new HashSet<>();
@@ -175,7 +175,7 @@ public class WolfChunkManager {
         int count = 0;
         UUID playerUuid = player.getUUID();
 
-        AABB allEntitiesBounds = new AABB(-30000000, -64, -30000000, 30000000, 320, 30000000);
+        AABB allEntitiesBounds = WorkingWolves.ALL_ENTITIES;
 
         for (ServerLevel level : server.getAllLevels()) {
             for (Wolf w : level.getEntities(EntityType.WOLF, allEntitiesBounds, wolf -> true)) {

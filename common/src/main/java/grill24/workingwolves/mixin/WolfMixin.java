@@ -28,6 +28,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -126,13 +127,8 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
         // Restore collar color based on tier
         Wolf self = (Wolf) (Object) this;
         if (this.workingwolves$collarTier > 0) {
-            DyeColor expectedColor = switch (this.workingwolves$collarTier) {
-                case 1 -> DyeColor.BROWN;
-                case 2 -> DyeColor.GRAY;
-                case 3 -> DyeColor.YELLOW;
-                default -> DyeColor.RED;
-            };
-            ((Wolf) (Object) this).setCollarColor(expectedColor);
+            DyeColor expectedColor = CollarItem.getCollarColorForTier(this.workingwolves$collarTier);
+            self.setCollarColor(expectedColor);
         }
     }
 
@@ -348,7 +344,16 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
                             ? self.getCustomName().getString() + "'s Bag"
                             : "Wolf Bag";
                         player.openMenu(new SimpleMenuProvider(
-                            (id, inv, p) -> ChestMenu.threeRows(id, inv, container),
+                            (id, inv, p) -> {
+                                ChestMenu menu = ChestMenu.threeRows(id, inv, container);
+                                int usable = container.usable();
+                                for (int i = 0; i < 27; i++) {
+                                    Slot old = menu.slots.get(i);
+                                    menu.slots.set(i, new WolfBagContainer.LockedSlot(
+                                        old.container, old.getContainerSlot(), old.x, old.y, usable));
+                                }
+                                return menu;
+                            },
                             Component.literal(title)
                         ));
                     }

@@ -1,5 +1,6 @@
 package grill24.workingwolves.item;
 
+import grill24.workingwolves.WorkingWolves;
 import grill24.workingwolves.api.IWorkingWolf;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -40,7 +41,7 @@ public class RecallWhistleItem extends Item {
 
         // Find all wolves owned by this player across all dimensions
         ServerLevel serverLevel = (ServerLevel) level;
-        AABB allEntitiesBounds = new AABB(-30000000, -64, -30000000, 30000000, 320, 30000000);
+        AABB allEntitiesBounds = WorkingWolves.ALL_ENTITIES;
         for (ServerLevel dimensionLevel : serverLevel.getServer().getAllLevels()) {
             for (Wolf wolf : dimensionLevel.getEntities(EntityType.WOLF, allEntitiesBounds,
                 w -> w.isTame() && w.getOwner() != null && player.getUUID().equals(w.getOwner().getUUID()))) {

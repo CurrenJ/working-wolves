@@ -65,24 +65,12 @@ public class AntiStuckGoal extends Goal {
         BlockPos center = wolf.blockPosition();
         int radius = Math.min(BASE_TELEPORT_RADIUS * (1 << consecutiveFailures), MAX_TELEPORT_RADIUS);
 
-        for (int attempt = 0; attempt < 256; attempt++) {
-            int dx = wolf.getRandom().nextInt(radius * 2) - radius;
-            int dz = wolf.getRandom().nextInt(radius * 2) - radius;
-            int dy = wolf.getRandom().nextInt(4) - 2;
-
-            BlockPos target = center.offset(dx, dy, dz);
-            BlockState ground = level.getBlockState(target.below());
-            BlockState at = level.getBlockState(target);
-            BlockState above = level.getBlockState(target.above());
-
-            if (ground.isSolid() && at.isAir() && above.isAir()
-                && !level.getBlockState(target).liquid()
-                && !level.getBlockState(target.below()).liquid()) {
-                wolf.teleportTo(target.getX() + 0.5, target.getY(), target.getZ() + 0.5);
-                lastPos = target;
-                consecutiveFailures = 0;
-                return;
-            }
+        BlockPos safePos = WolfAIHelper.findSafeTeleportPosition(level, center, radius, 256);
+        if (safePos != null) {
+            wolf.teleportTo(safePos.getX() + 0.5, safePos.getY(), safePos.getZ() + 0.5);
+            lastPos = safePos;
+            consecutiveFailures = 0;
+            return;
         }
 
         // Fallback: teleport straight up 1 block if possible

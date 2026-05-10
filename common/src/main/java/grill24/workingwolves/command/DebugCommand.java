@@ -2,6 +2,7 @@ package grill24.workingwolves.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import grill24.workingwolves.WorkingWolves;
 import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.blockentity.DogBedBlockEntity;
 import net.minecraft.commands.CommandSourceStack;
@@ -74,7 +75,7 @@ public class DebugCommand {
     }
 
     private static Wolf findWolf(ServerLevel level, UUID uuid) {
-        AABB everywhere = new AABB(-30000000, -64, -30000000, 30000000, 320, 30000000);
+        AABB everywhere = WorkingWolves.ALL_ENTITIES;
         for (Wolf w : level.getEntitiesOfClass(Wolf.class, everywhere, w -> w.getUUID().equals(uuid))) {
             return w;
         }

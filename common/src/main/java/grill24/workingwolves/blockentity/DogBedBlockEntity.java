@@ -1,6 +1,7 @@
 package grill24.workingwolves.blockentity;
 
 import grill24.workingwolves.ModBlockEntityTypes;
+import grill24.workingwolves.inventory.WolfBagHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
@@ -154,21 +155,6 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     }
 
     public ItemStack tryInsert(ItemStack stack) {
-        for (int i = 0; i < getContainerSize() && !stack.isEmpty(); i++) {
-            ItemStack slotStack = getItem(i);
-            if (slotStack.isEmpty()) {
-                setItem(i, stack.copy());
-                setChanged();
-                return ItemStack.EMPTY;
-            } else if (ItemStack.isSameItemSameComponents(slotStack, stack)) {
-                int transfer = Math.min(stack.getCount(), slotStack.getMaxStackSize() - slotStack.getCount());
-                if (transfer > 0) {
-                    slotStack.grow(transfer);
-                    stack.shrink(transfer);
-                    setChanged();
-                }
-            }
-        }
-        return stack;
+        return WolfBagHelper.tryInsert(this, stack);
     }
 }

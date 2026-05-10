@@ -2,6 +2,7 @@ package grill24.workingwolves.ai;
 
 import grill24.workingwolves.Config;
 import grill24.workingwolves.api.IWorkingWolf;
+import grill24.workingwolves.inventory.WolfBagHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
@@ -109,18 +110,15 @@ public class HunterGoal extends Goal {
             return;
         }
 
-        // 2. Check expedition timer (startTime==0 means never dispatched — don't expire)
-        long startTime = mixin.workingwolves$getExpeditionStartTime();
-        if (startTime > 0 && level.getGameTime() - startTime >= mixin.workingwolves$getExpeditionDuration()) {
-            mixin.workingwolves$setExpeditionState("returning");
-            mixin.workingwolves$syncData();
+        // 2. Check expedition timer (startTime==0 means never dispatched - don't expire)
+        if (mixin.workingwolves$isExpeditionExpired(level.getGameTime())) {
+            mixin.workingwolves$triggerReturn();
             return;
         }
 
         // 3. Check bag capacity
-        if (isBagFull(mixin)) {
-            mixin.workingwolves$setExpeditionState("returning");
-            mixin.workingwolves$syncData();
+        if (WolfBagHelper.isBagFull(mixin)) {
+            mixin.workingwolves$triggerReturn();
             return;
         }
 
@@ -326,8 +324,7 @@ public class HunterGoal extends Goal {
     }
 
     private int countHostilesInRange(Level level, BlockPos pos, int range) {
-        AABB aabb = new AABB(pos).inflate(range);
-        return level.getEntitiesOfClass(Monster.class, aabb, Monster::isAlive).size();
+        return WolfAIHelper.countHostilesInRange(level, pos, range);
     }
 
     private void fleeFromNearestHostile(Level level, IWorkingWolf mixin) {
@@ -381,61 +378,10 @@ public class HunterGoal extends Goal {
     }
 
     private void eatFoodFromBag(IWorkingWolf mixin) {
-        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-
-        for (int i = 0; i < bag.size(); i++) {
-            ItemStack stack = bag.get(i);
-            if (!stack.isEmpty() && stack.get(DataComponents.FOOD) != null) {
-                stack.shrink(1);
-                wolf.heal(FOOD_HEAL_AMOUNT);
-                if (stack.isEmpty()) {
-                    bag.set(i, ItemStack.EMPTY);
-                }
-                return;
-            }
-        }
+        WolfBagHelper.eatFoodFromBag(mixin, wolf, FOOD_HEAL_AMOUNT);
     }
 
     private void collectDropsAt(Level level, BlockPos pos, IWorkingWolf mixin) {
-        List<ItemEntity> drops = level.getEntitiesOfClass(ItemEntity.class,
-            new AABB(pos).inflate(DROP_COLLECT_RANGE), ItemEntity::isAlive);
-
-        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-        for (ItemEntity drop : drops) {
-            ItemStack stack = drop.getItem().copy();
-            ItemStack remainder = addToBag(bag, stack);
-            if (remainder.isEmpty()) {
-                drop.discard();
-            } else {
-                drop.setItem(remainder);
-            }
-        }
-    }
-
-    private ItemStack addToBag(NonNullList<ItemStack> bag, ItemStack stack) {
-        ItemStack remainder = stack;
-        for (int i = 0; i < bag.size() && !remainder.isEmpty(); i++) {
-            ItemStack slot = bag.get(i);
-            if (slot.isEmpty()) {
-                bag.set(i, remainder);
-                remainder = ItemStack.EMPTY;
-            } else if (ItemStack.isSameItemSameComponents(slot, remainder)) {
-                int transfer = Math.min(remainder.getCount(), slot.getMaxStackSize() - slot.getCount());
-                if (transfer > 0) {
-                    slot.grow(transfer);
-                    remainder.shrink(transfer);
-                }
-            }
-        }
-        return remainder;
-    }
-
-    private boolean isBagFull(IWorkingWolf mixin) {
-        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-        if (bag.isEmpty()) return true;
-        for (ItemStack stack : bag) {
-            if (stack.isEmpty()) return false;
-        }
-        return true;
+        WolfBagHelper.collectDropsAt(level, pos, mixin, DROP_COLLECT_RANGE);
     }
 }

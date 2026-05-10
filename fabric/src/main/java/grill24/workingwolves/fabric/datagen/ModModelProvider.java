@@ -7,8 +7,12 @@ import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class ModModelProvider extends FabricModelProvider {
     private static final Identifier DOG_BED_MODEL = WorkingWolves.id("block/dog_bed");
@@ -21,7 +25,12 @@ public class ModModelProvider extends FabricModelProvider {
     public void generateBlockStateModels(BlockModelGenerators blockModels) {
         var block = ModBlocks.DOG_BED.value();
         blockModels.blockStateOutput.accept(
-                BlockModelGenerators.createSimpleBlock(block, BlockModelGenerators.plainVariant(DOG_BED_MODEL)));
+                MultiVariantGenerator.dispatch(block, BlockModelGenerators.plainVariant(DOG_BED_MODEL))
+                        .with(PropertyDispatch.modify(BlockStateProperties.HORIZONTAL_FACING)
+                                .select(Direction.EAST, BlockModelGenerators.Y_ROT_90)
+                                .select(Direction.SOUTH, BlockModelGenerators.Y_ROT_180)
+                                .select(Direction.WEST, BlockModelGenerators.Y_ROT_270)
+                                .select(Direction.NORTH, BlockModelGenerators.NOP)));
         blockModels.registerSimpleItemModel(block, DOG_BED_MODEL);
     }
 

@@ -5,6 +5,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -24,7 +25,7 @@ public class WolfBagContainer implements Container {
         return mixin().workingwolves$getBagInventory();
     }
 
-    private int usable() {
+    public int usable() {
         return bag().size();
     }
 
@@ -44,12 +45,6 @@ public class WolfBagContainer implements Container {
     @Override
     public ItemStack getItem(int slot) {
         if (slot < usable()) return bag().get(slot);
-        if (slot < DISPLAY_SIZE) {
-            ItemStack barrier = new ItemStack(Items.BARRIER);
-            barrier.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,
-                net.minecraft.network.chat.Component.translatable("container.workingwolves.locked_slot"));
-            return barrier;
-        }
         return ItemStack.EMPTY;
     }
 
@@ -83,12 +78,6 @@ public class WolfBagContainer implements Container {
             return;
         }
 
-        // Locked slot + barrier (putting it back after failed pickup) — just consume it
-        if (slot >= usable() && stack.is(Items.BARRIER)) {
-            stack.shrink(1);
-            return;
-        }
-
         if (slot >= usable()) return;
         bag().set(slot, stack);
     }
@@ -105,5 +94,44 @@ public class WolfBagContainer implements Container {
     @Override
     public void clearContent() {
         bag().clear();
+    }
+
+    /** Slot subclass that shows a barrier icon for locked slots without them being real items. */
+    public static class LockedSlot extends Slot {
+        private final int usableSlots;
+
+        public LockedSlot(Container container, int slot, int x, int y, int usableSlots) {
+            super(container, slot, x, y);
+            this.usableSlots = usableSlots;
+        }
+
+        @Override
+        public boolean hasItem() {
+            return super.hasItem() || this.getContainerSlot() >= usableSlots;
+        }
+
+        @Override
+        public ItemStack getItem() {
+            if (this.getContainerSlot() >= usableSlots) {
+                ItemStack barrier = new ItemStack(Items.BARRIER);
+                barrier.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,
+                    net.minecraft.network.chat.Component.translatable("container.workingwolves.locked_slot"));
+                return barrier;
+            }
+            return super.getItem();
+        }
+
+        @Override
+        public boolean mayPickup(Player player) {
+            return this.getContainerSlot() < usableSlots;
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            if (this.getContainerSlot() >= usableSlots) {
+                return stack.is(Items.NETHERITE_INGOT);
+            }
+            return super.mayPlace(stack);
+        }
     }
 }

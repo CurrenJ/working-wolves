@@ -2,11 +2,14 @@ package grill24.workingwolves.network;
 
 import grill24.workingwolves.WorkingWolves;
 import grill24.workingwolves.api.IWorkingWolf;
+import grill24.workingwolves.item.CollarItem;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.item.ItemStack;
 
@@ -46,5 +49,24 @@ public record WolfDataSyncPacket(int wolfId, int collarTier, String wolfClass,
             mixin.workingwolves$getExpeditionDuration(),
             mixin.workingwolves$getFilterItem()
         );
+    }
+
+    public static void applyToClient(ClientLevel level, WolfDataSyncPacket packet) {
+        if (level == null) return;
+        Entity entity = level.getEntity(packet.wolfId());
+        if (entity instanceof Wolf wolf) {
+            IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+            mixin.workingwolves$setCollarTier(packet.collarTier());
+            mixin.workingwolves$setWolfClass(packet.wolfClass().isEmpty() ? null : packet.wolfClass());
+            mixin.workingwolves$setBedPos(packet.bedPos().equals(BlockPos.ZERO) ? null : packet.bedPos());
+            mixin.workingwolves$setExpeditionState(packet.expeditionState());
+            mixin.workingwolves$setExpeditionStartTime(packet.expeditionStartTime());
+            mixin.workingwolves$setExpeditionDuration(packet.expeditionDuration());
+            mixin.workingwolves$setFilterItem(packet.filterItem());
+            if (packet.collarTier() > 0) {
+                mixin.workingwolves$setCollarColorFromTier(
+                    CollarItem.getCollarColorForTier(packet.collarTier()));
+            }
+        }
     }
 }

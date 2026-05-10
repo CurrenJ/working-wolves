@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "workingwolves:block/dog_bed",
+      "y": 90
+    },
+    "facing=north": {
       "model": "workingwolves:block/dog_bed"
+    },
+    "facing=south": {
+      "model": "workingwolves:block/dog_bed",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "workingwolves:block/dog_bed",
+      "y": 270
     }
   }
 }

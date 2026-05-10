@@ -1,6 +1,7 @@
 package grill24.workingwolves.ai;
 
 import grill24.workingwolves.api.IWorkingWolf;
+import grill24.workingwolves.inventory.WolfBagHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,12 +19,14 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * Always-active self-preservation goal (priority 0).
- * Handles lava/fire avoidance, fall avoidance, crowding disengagement, and water preference.
+ * Priority 0 goal. Active for any collared wolf.
+ * Handles self-healing from food, lava/fire avoidance, fall avoidance, and crowding disengagement.
  */
 public class SelfPreservationGoal extends Goal {
     private final Wolf wolf;
     private int fleeTicks = 0;
+    private int healCooldown = 0;
+    private boolean noFoodAvailable = false;
     private static final int FLEE_DURATION = 40; // 2 seconds of fleeing
     private static final double FLEE_SPEED = 1.4;
     private static final double CROWD_SPEED = 1.3;
@@ -33,6 +36,9 @@ public class SelfPreservationGoal extends Goal {
     private static final int CROWD_THRESHOLD = 3;
     private static final int FALL_THRESHOLD = 4;
     private static final int FLEE_SEARCH_RADIUS = 5;
+    private static final float HEAL_THRESHOLD = 0.5f;
+    private static final int HEAL_COOLDOWN = 20; // eat at most once per second
+    private static final float FOOD_HEAL_AMOUNT = 6.0f;
 
     public SelfPreservationGoal(Wolf wolf) {
         this.wolf = wolf;
@@ -42,12 +48,25 @@ public class SelfPreservationGoal extends Goal {
     @Override
     public boolean canUse() {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
-        return mixin.workingwolves$getCollarTier() > 0 && hasThreat();
+        return mixin.workingwolves$getCollarTier() > 0 && (hasThreat() || needsHealing());
     }
 
     @Override
     public boolean canContinueToUse() {
-        return fleeTicks > 0;
+        if (fleeTicks > 0) return true;
+        if (noFoodAvailable) return false;
+        return needsHealing();
+    }
+
+    @Override
+    public void stop() {
+        fleeTicks = 0;
+        healCooldown = 0;
+        noFoodAvailable = false;
+    }
+
+    private boolean needsHealing() {
+        return wolf.getHealth() / wolf.getMaxHealth() < HEAL_THRESHOLD;
     }
 
     private boolean hasThreat() {
@@ -61,14 +80,23 @@ public class SelfPreservationGoal extends Goal {
 
     @Override
     public void tick() {
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        Level level = wolf.level();
+        BlockPos wolfPos = wolf.blockPosition();
+
+        // 0. Eat food if low on health (before any movement, so healing takes priority)
+        healCooldown--;
+        if (needsHealing() && healCooldown <= 0) {
+            if (!WolfBagHelper.eatFoodFromBag(mixin, wolf, FOOD_HEAL_AMOUNT)) {
+                noFoodAvailable = true;
+            }
+            healCooldown = HEAL_COOLDOWN;
+        }
+
         if (fleeTicks > 0) {
             fleeTicks--;
             return;
         }
-
-        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
-        Level level = wolf.level();
-        BlockPos wolfPos = wolf.blockPosition();
 
         // 1. Lava/fire within range -> panic flee
         if (isNearHazard(level, wolfPos, HAZARD_RANGE)) {
@@ -155,10 +183,7 @@ public class SelfPreservationGoal extends Goal {
     }
 
     private int countNearbyHostiles(Level level, BlockPos center, int range) {
-        AABB aabb = new AABB(center).inflate(range);
-        return level.getEntitiesOfClass(Monster.class, aabb, monster ->
-            monster.isAlive() && monster.distanceToSqr(wolf) <= range * range
-        ).size();
+        return WolfAIHelper.countHostilesInRange(level, center, range);
     }
 
     private Vec3 findPositionAwayFromHostiles(Level level, BlockPos fromPos, int searchRadius) {
