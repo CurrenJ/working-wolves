@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 public record WolfDataSyncPacket(int wolfId, int collarTier, String wolfClass,
                                  BlockPos bedPos, String expeditionState,
                                  long expeditionStartTime, int expeditionDuration,
-                                 ItemStack filterItem) implements CustomPacketPayload {
+                                 ItemStack filterItem, ItemStack mouthItem) implements CustomPacketPayload {
 
     public static final Type<WolfDataSyncPacket> TYPE = new Type<>(WorkingWolves.id("wolf_data_sync"));
 
@@ -29,6 +29,7 @@ public record WolfDataSyncPacket(int wolfId, int collarTier, String wolfClass,
         ByteBufCodecs.LONG, WolfDataSyncPacket::expeditionStartTime,
         ByteBufCodecs.VAR_INT, WolfDataSyncPacket::expeditionDuration,
         ItemStack.OPTIONAL_STREAM_CODEC, WolfDataSyncPacket::filterItem,
+        ItemStack.OPTIONAL_STREAM_CODEC, WolfDataSyncPacket::mouthItem,
         WolfDataSyncPacket::new
     );
 
@@ -47,7 +48,8 @@ public record WolfDataSyncPacket(int wolfId, int collarTier, String wolfClass,
             mixin.workingwolves$getExpeditionState(),
             mixin.workingwolves$getExpeditionStartTime(),
             mixin.workingwolves$getExpeditionDuration(),
-            mixin.workingwolves$getFilterItem()
+            mixin.workingwolves$getFilterItem(),
+            mixin.workingwolves$getMouthItem()
         );
     }
 
@@ -63,6 +65,10 @@ public record WolfDataSyncPacket(int wolfId, int collarTier, String wolfClass,
             mixin.workingwolves$setExpeditionStartTime(packet.expeditionStartTime());
             mixin.workingwolves$setExpeditionDuration(packet.expeditionDuration());
             mixin.workingwolves$setFilterItem(packet.filterItem());
+            mixin.workingwolves$setMouthItem(packet.mouthItem());
+            if (!packet.mouthItem().isEmpty()) {
+                WorkingWolves.LOGGER.info("WolfDataSync: received mouth item '{}' for wolf {}", packet.mouthItem().getDisplayName().getString(), packet.wolfId());
+            }
             if (packet.collarTier() > 0) {
                 mixin.workingwolves$setCollarColorFromTier(
                     CollarItem.getCollarColorForTier(packet.collarTier()));

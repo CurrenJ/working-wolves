@@ -90,6 +90,11 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     @Unique
     private int workingwolves$miningProgress = 0;
 
+    // ======== Mouth item (visual only, not persisted) ========
+
+    @Unique
+    private ItemStack workingwolves$mouthItem = ItemStack.EMPTY;
+
     // ======== Persistence ========
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
@@ -209,6 +214,16 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     @Unique
     public void workingwolves$setFilterItem(ItemStack stack) {
         this.workingwolves$filterItem = stack;
+    }
+
+    @Unique
+    public ItemStack workingwolves$getMouthItem() {
+        return this.workingwolves$mouthItem;
+    }
+
+    @Unique
+    public void workingwolves$setMouthItem(ItemStack stack) {
+        this.workingwolves$mouthItem = stack;
     }
 
     @Unique

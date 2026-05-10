@@ -15,4 +15,12 @@ public class Config {
 
     /** Expedition duration in minutes. 0 = unlimited. */
     public static int expeditionDurationMinutes = 15;
+
+    // Mouth item render tuning (runtime, not persisted to config files)
+    public static float mouthOffsetX = 0.125F;
+    public static float mouthOffsetY = 0.094F;
+    public static float mouthOffsetZ = -0.375F;
+    public static float mouthRotX = -90.0F;
+    public static float mouthRotY = 0.0F;
+    public static float mouthRotZ = 45.0F;
 }

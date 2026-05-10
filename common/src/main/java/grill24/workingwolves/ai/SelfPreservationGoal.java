@@ -36,6 +36,8 @@ public class SelfPreservationGoal extends Goal {
     private static final int CROWD_THRESHOLD = 3;
     private static final int FALL_THRESHOLD = 4;
     private static final int FLEE_SEARCH_RADIUS = 5;
+    private static final int LAVA_FLEE_RADIUS = 12;
+    private static final int LAVA_FLEE_DURATION = 80; // 4 seconds — enough to clear the hazard zone
     private static final float HEAL_THRESHOLD = 0.5f;
     private static final int HEAL_COOLDOWN = 20; // eat at most once per second
     private static final float FOOD_HEAL_AMOUNT = 6.0f;
@@ -98,22 +100,23 @@ public class SelfPreservationGoal extends Goal {
             return;
         }
 
-        // 1. Lava/fire within range -> panic flee
+        // 1. Lava/fire within range — directional flee away from the hazard
         if (isNearHazard(level, wolfPos, HAZARD_RANGE)) {
-            Vec3 safePos = findSafePosition(level, wolfPos, FLEE_SEARCH_RADIUS);
+            BlockPos hazardPos = findNearestHazard(level, wolfPos, HAZARD_RANGE);
+            Vec3 safePos = findSafePositionAwayFrom(level, wolfPos, hazardPos, LAVA_FLEE_RADIUS);
             if (safePos != null) {
                 wolf.getNavigation().moveTo(safePos.x, safePos.y, safePos.z, FLEE_SPEED);
-                fleeTicks = FLEE_DURATION;
+                fleeTicks = LAVA_FLEE_DURATION;
             }
             return;
         }
 
         // 2. Wolf itself is in lava or on fire
         if (wolf.isInLava() || wolf.isOnFire()) {
-            Vec3 safePos = findSafePosition(level, wolfPos, FLEE_SEARCH_RADIUS);
+            Vec3 safePos = findSafePosition(level, wolfPos, LAVA_FLEE_RADIUS);
             if (safePos != null) {
                 wolf.getNavigation().moveTo(safePos.x, safePos.y, safePos.z, FLEE_SPEED);
-                fleeTicks = FLEE_DURATION;
+                fleeTicks = LAVA_FLEE_DURATION;
             }
             return;
         }
@@ -169,6 +172,64 @@ public class SelfPreservationGoal extends Goal {
             }
         }
         return null;
+    }
+
+    /** Finds the nearest lava or fire block within range of center. */
+    private BlockPos findNearestHazard(Level level, BlockPos center, int range) {
+        BlockPos nearest = null;
+        double nearestDistSq = Double.MAX_VALUE;
+        BlockPos minPos = center.offset(-range, -range, -range);
+        BlockPos maxPos = center.offset(range, range, range);
+        for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(BlockTags.FIRE) || state.getBlock() instanceof BaseFireBlock || state.is(Blocks.LAVA)) {
+                double distSq = center.distSqr(pos);
+                if (distSq < nearestDistSq) {
+                    nearestDistSq = distSq;
+                    nearest = pos.immutable();
+                }
+            }
+        }
+        return nearest;
+    }
+
+    /** Like findSafePosition but biases search away from a specific threat position. */
+    private Vec3 findSafePositionAwayFrom(Level level, BlockPos fromPos, BlockPos awayFrom, int searchRadius) {
+        if (awayFrom == null) {
+            return findSafePosition(level, fromPos, searchRadius);
+        }
+        // Direction away from the threat
+        double dx = fromPos.getX() - awayFrom.getX();
+        double dz = fromPos.getZ() - awayFrom.getZ();
+        double dist = Math.sqrt(dx * dx + dz * dz);
+        int dirX = dist > 0.01 ? (int) Math.round(dx / dist) : 0;
+        int dirZ = dist > 0.01 ? (int) Math.round(dz / dist) : 0;
+
+        // Scan in bands outward from fromPos, biased toward the away direction
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+        for (int r = 2; r <= searchRadius; r++) {
+            // Prefer positions in the away direction first (within this radius band)
+            for (int tryDir = 0; tryDir < 5; tryDir++) {
+                int sx = 0;
+                int sz = 0;
+                if (tryDir == 0) { sx = dirX; sz = dirZ; }           // primary: straight away
+                else if (tryDir == 1) { sx = dirX; sz = 0; }          // sideways
+                else if (tryDir == 2) { sx = 0; sz = dirZ; }           // sideways
+                else if (tryDir == 3) { sx = -dirX; sz = dirZ; }       // diagonal-ish
+                else { sx = dirX; sz = -dirZ; }                         // diagonal-ish
+
+                int x = fromPos.getX() + sx * r;
+                int z = fromPos.getZ() + sz * r;
+                for (int y = -1; y <= 1; y++) {
+                    mutable.set(x, fromPos.getY() + y, z);
+                    if (isSafeStandingPosition(level, mutable)) {
+                        return Vec3.atCenterOf(mutable);
+                    }
+                }
+            }
+        }
+        // Fallback: standard scan
+        return findSafePosition(level, fromPos, searchRadius);
     }
 
     private boolean isSafeStandingPosition(Level level, BlockPos pos) {

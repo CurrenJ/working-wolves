@@ -184,12 +184,25 @@ public class MinerGoal extends Goal {
         int progress = mixin.workingwolves$getMiningProgress() + 1;
         mixin.workingwolves$setMiningProgress(progress);
 
+        // Face the ore and swing head side to side while mining
+        double wobble = Math.sin(progress * 0.4) * 0.4;
+        wolf.getLookControl().setLookAt(
+            miningPos.getX() + 0.5 + wobble,
+            miningPos.getY() + 0.5,
+            miningPos.getZ() + 0.5);
+
         if (level instanceof ServerLevel serverLevel && progress % 5 == 0) {
             BlockState oreState = level.getBlockState(miningPos);
+            double yawRad = wolf.yBodyRot * (Math.PI / 180.0);
+            double forwardX = -Math.sin(yawRad) * 0.6;
+            double forwardZ = Math.cos(yawRad) * 0.6;
+            double mouthX = wolf.getX() + forwardX;
+            double mouthY = wolf.getY() + wolf.getEyeHeight() - 0.15;
+            double mouthZ = wolf.getZ() + forwardZ;
             serverLevel.sendParticles(
                 new BlockParticleOption(ParticleTypes.BLOCK, oreState),
-                wolf.getX(), wolf.getY() + 0.5, wolf.getZ(),
-                3, 0.2, 0.2, 0.2, 0.0);
+                mouthX, mouthY, mouthZ,
+                3, 0.15, 0.15, 0.15, 0.0);
         }
 
         level.destroyBlockProgress(wolf.getId(), miningPos, (int) ((float) progress / mineTimeForCurrentOre * 10.0f));
@@ -263,6 +276,10 @@ public class MinerGoal extends Goal {
         mixin.workingwolves$setMiningPos(orePos);
         mixin.workingwolves$setMiningProgress(0);
         ItemStack pickaxe = getPickaxe(mixin);
+        mixin.workingwolves$setMouthItem(pickaxe.copy());
+        WorkingWolves.LOGGER.info("MinerGoal: mouth item set to {}",
+            pickaxe.getDisplayName().getString());
+        mixin.workingwolves$syncData();
         BlockState state = level.getBlockState(orePos);
         float hardness = state.getDestroySpeed(level, orePos);
         float toolSpeed = Math.max(pickaxe.getDestroySpeed(state), 1.0f);
@@ -289,6 +306,8 @@ public class MinerGoal extends Goal {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
         mixin.workingwolves$setMiningPos(null);
         mixin.workingwolves$setMiningProgress(0);
+        mixin.workingwolves$setMouthItem(ItemStack.EMPTY);
+        mixin.workingwolves$syncData();
         mineTimeForCurrentOre = 0;
     }
 
@@ -392,8 +411,8 @@ public class MinerGoal extends Goal {
             }
         }
         if (!candidates.isEmpty() || cacheSkipped > 0) {
-            WorkingWolves.LOGGER.info("Miner scan: {} candidates, {} cached, center={}",
-                candidates.size(), cacheSkipped, center);
+//            WorkingWolves.LOGGER.info("Miner scan: {} candidates, {} cached, center={}",
+//                candidates.size(), cacheSkipped, center);
         }
         candidates.sort(Comparator.comparingDouble(center::distSqr));
 

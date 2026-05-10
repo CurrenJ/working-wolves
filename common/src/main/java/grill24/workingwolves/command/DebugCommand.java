@@ -1,7 +1,9 @@
 package grill24.workingwolves.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import grill24.workingwolves.Config;
 import grill24.workingwolves.WorkingWolves;
 import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.blockentity.DogBedBlockEntity;
@@ -25,7 +27,51 @@ public class DebugCommand {
             Commands.literal("workingwolves")
                 .then(Commands.literal("debug")
                     .executes(DebugCommand::execute))
+                .then(Commands.literal("tuneMouth")
+                    .then(Commands.literal("x")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-5f, 5f))
+                            .executes(ctx -> tune(ctx, "x", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("y")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-5f, 5f))
+                            .executes(ctx -> tune(ctx, "y", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("z")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-5f, 5f))
+                            .executes(ctx -> tune(ctx, "z", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("rotX")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tune(ctx, "rotX", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("rotY")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tune(ctx, "rotY", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("rotZ")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tune(ctx, "rotZ", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("show")
+                        .executes(DebugCommand::showTuning))
+                )
         );
+    }
+
+    private static int tune(CommandContext<CommandSourceStack> ctx, String field, float value) {
+        switch (field) {
+            case "x" -> Config.mouthOffsetX = value;
+            case "y" -> Config.mouthOffsetY = value;
+            case "z" -> Config.mouthOffsetZ = value;
+            case "rotX" -> Config.mouthRotX = value;
+            case "rotY" -> Config.mouthRotY = value;
+            case "rotZ" -> Config.mouthRotZ = value;
+        }
+        ctx.getSource().sendSuccess(() -> Component.literal(
+            String.format("Mouth item %s = %.3f", field, value)), true);
+        return 1;
+    }
+
+    private static int showTuning(CommandContext<CommandSourceStack> ctx) {
+        ctx.getSource().sendSuccess(() -> Component.literal(String.format(
+            "Mouth item: pos(%.3f, %.3f, %.3f) rot(%.1f, %.1f, %.1f)",
+            Config.mouthOffsetX, Config.mouthOffsetY, Config.mouthOffsetZ,
+            Config.mouthRotX, Config.mouthRotY, Config.mouthRotZ)), false);
+        return 1;
     }
 
     private static int execute(CommandContext<CommandSourceStack> ctx) {

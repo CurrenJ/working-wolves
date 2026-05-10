@@ -34,6 +34,9 @@ public interface IWorkingWolf {
     ItemStack workingwolves$getFilterItem();
     void workingwolves$setFilterItem(ItemStack stack);
 
+    ItemStack workingwolves$getMouthItem();
+    void workingwolves$setMouthItem(ItemStack stack);
+
     void workingwolves$setCollarColorFromTier(net.minecraft.world.item.DyeColor color);
     void workingwolves$syncData();
     void workingwolves$resizeBag();
