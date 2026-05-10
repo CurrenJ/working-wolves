@@ -4,12 +4,12 @@ import com.mojang.logging.LogUtils;
 import com.mojang.logging.LogUtils;
 import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.client.layer.WolfHeldItemLayer;
-import grill24.workingwolves.client.layer.WolfHeldItemTracker;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.WolfRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.WolfRenderState;
 import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -61,15 +61,17 @@ public abstract class WolfRendererMixin {
 
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void workingwolves$extractHeldItem(Wolf entity, WolfRenderState state, float partialTicks, CallbackInfo ci) {
-        WolfHeldItemTracker.heldItem.clear();
-        WolfHeldItemTracker.isCrossbowMouthItem = false;
+        WolfHeldItemLayer layer = WolfHeldItemLayer.getLayer((WolfRenderer) (Object) this);
+        if (layer == null) return;
+        layer.heldItem = new ItemStackRenderState();
+        layer.isCrossbowMouthItem = false;
         if (ITEM_MODEL_RESOLVER == null) return;
         ItemStack mouthItem = ((IWorkingWolf) (Object) entity).workingwolves$getMouthItem();
-        WolfHeldItemTracker.isCrossbowMouthItem = mouthItem.is(net.minecraft.world.item.Items.CROSSBOW);
+        layer.isCrossbowMouthItem = mouthItem.is(net.minecraft.world.item.Items.CROSSBOW);
         if (!mouthItem.isEmpty()) {
             try {
                 ItemModelResolver resolver = (ItemModelResolver) ITEM_MODEL_RESOLVER.get(this);
-                resolver.updateForLiving(WolfHeldItemTracker.heldItem, mouthItem, ItemDisplayContext.GROUND, entity);
+                resolver.updateForLiving(layer.heldItem, mouthItem, ItemDisplayContext.GROUND, entity);
             } catch (Exception e) {
                 LOGGER.error("WolfRendererMixin: extractRenderState FAILED", e);
             }
