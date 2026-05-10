@@ -1,5 +1,6 @@
 package grill24.workingwolves.ai;
 
+import grill24.workingwolves.Config;
 import grill24.workingwolves.api.IWorkingWolf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -27,9 +28,9 @@ import java.util.function.Predicate;
  */
 public class HunterGoal extends Goal {
     private final Wolf wolf;
-    private static final double SPEED = 1.2;
+    private static final double SPEED = 1.5;
     private static final double RETREAT_SPEED = 1.4;
-    private static final int SCAN_RANGE = 32;
+    // Scan range is controlled by Config.hunterScanRange
     private static final int MELEE_RANGE = 2;
     private static final float RETREAT_HEALTH_RATIO = 0.5f;
     private static final float REENGAGE_HEALTH_RATIO = 0.75f;
@@ -37,14 +38,21 @@ public class HunterGoal extends Goal {
     private static final int PREEMPTIVE_RETREAT_DURATION = 60; // 3 seconds
     private static final int PREEMPTIVE_HOSTILE_RANGE = 3;
     private static final int PREEMPTIVE_HOSTILE_COUNT = 3;
-    private static final int REPATH_INTERVAL = 20;
     private static final int SCAN_COOLDOWN = 20;
     private static final int DROP_COLLECT_RANGE = 4;
     private static final float FOOD_HEAL_AMOUNT = 6.0f;
     private static final int FLEE_DISTANCE = 10;
+    // Path recalculation — follows vanilla MeleeAttackGoal pattern:
+    // short adaptive interval, retriggers on target movement, separate from attack timing
+    private static final int PATH_RECALC_BASE_MIN = 4;
+    private static final int PATH_RECALC_BASE_MAX = 10;
 
     private LivingEntity target = null;
-    private int repathTicks = 0;
+    private int ticksUntilNextPathRecalculation = 0;
+    private int ticksUntilNextAttack = 0;
+    private double pathedTargetX;
+    private double pathedTargetY;
+    private double pathedTargetZ;
     private int scanCooldown = 0;
     private boolean isRetreating = false;
     private int retreatTicks = 0;
@@ -67,6 +75,11 @@ public class HunterGoal extends Goal {
     @Override
     public boolean canContinueToUse() {
         return canUse();
+    }
+
+    @Override
+    public void start() {
+        ((IWorkingWolf) (Object) wolf).workingwolves$applyNavBudget(Config.hunterScanRange);
     }
 
     @Override
@@ -163,28 +176,49 @@ public class HunterGoal extends Goal {
 
     private void tickCombat(IWorkingWolf mixin, Level level) {
         if (!target.isAlive()) {
-            // Target died: collect drops, clear target
             lastKillPos = target.blockPosition();
-            collectTicks = 10; // Collect for 0.5 seconds
+            collectTicks = 10;
             target = null;
             wolf.setTarget(null);
             return;
         }
 
-        double distSq = wolf.distanceToSqr(target);
+        wolf.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
-        if (distSq <= MELEE_RANGE * MELEE_RANGE) {
-            // In melee range: attack
-            wolf.doHurtTarget((ServerLevel) wolf.level(), target);
-            repathTicks = 10;
-        } else {
-            // Pursue
-            repathTicks--;
-            if (repathTicks <= 0) {
-                wolf.getNavigation().moveTo(target, SPEED);
-                wolf.setTarget(target);
-                repathTicks = REPATH_INTERVAL;
+        // --- Path recalculation: vanilla MeleeAttackGoal pattern ---
+        // Decoupled from attack timing — attacking does NOT freeze movement.
+        // Repaths when the timer expires AND the target has moved meaningfully,
+        // or on a random hedge. On pathing failure, shrinks the timer to retry sooner.
+        ticksUntilNextPathRecalculation = Math.max(ticksUntilNextPathRecalculation - 1, 0);
+        if (ticksUntilNextPathRecalculation <= 0
+            && (pathedTargetX == 0.0 && pathedTargetY == 0.0 && pathedTargetZ == 0.0
+                || target.distanceToSqr(pathedTargetX, pathedTargetY, pathedTargetZ) >= 1.0
+                || wolf.getRandom().nextFloat() < 0.05F)) {
+
+            pathedTargetX = target.getX();
+            pathedTargetY = target.getY();
+            pathedTargetZ = target.getZ();
+            ticksUntilNextPathRecalculation = PATH_RECALC_BASE_MIN + wolf.getRandom().nextInt(PATH_RECALC_BASE_MAX - PATH_RECALC_BASE_MIN + 1);
+
+            double targetDistSq = wolf.distanceToSqr(target);
+            if (targetDistSq > 1024.0) {
+                ticksUntilNextPathRecalculation += 10;
+            } else if (targetDistSq > 256.0) {
+                ticksUntilNextPathRecalculation += 5;
             }
+
+            if (!wolf.getNavigation().moveTo(target, SPEED)) {
+                ticksUntilNextPathRecalculation += 15;
+            }
+        }
+
+        // --- Attack: separate cooldown, vanilla-style ---
+        ticksUntilNextAttack = Math.max(ticksUntilNextAttack - 1, 0);
+        if (ticksUntilNextAttack <= 0
+            && wolf.isWithinMeleeAttackRange(target)
+            && wolf.getSensing().hasLineOfSight(target)) {
+            wolf.doHurtTarget((ServerLevel) wolf.level(), target);
+            ticksUntilNextAttack = 20;
         }
     }
 
@@ -200,7 +234,7 @@ public class HunterGoal extends Goal {
         Predicate<Monster> predicate = getMobFilter(filterStack);
 
         List<Monster> mobs = level.getEntitiesOfClass(Monster.class,
-            new AABB(wolf.blockPosition()).inflate(SCAN_RANGE),
+            new AABB(wolf.blockPosition()).inflate(Config.hunterScanRange),
             monster -> monster.isAlive() && predicate.test(monster));
 
         if (mobs.isEmpty()) return;
@@ -219,8 +253,11 @@ public class HunterGoal extends Goal {
         if (nearest != null) {
             target = nearest;
             wolf.setTarget(nearest);
+            pathedTargetX = 0.0;
+            pathedTargetY = 0.0;
+            pathedTargetZ = 0.0;
+            ticksUntilNextPathRecalculation = 0;
             wolf.getNavigation().moveTo(nearest, SPEED);
-            repathTicks = REPATH_INTERVAL;
         }
     }
 
@@ -345,15 +382,12 @@ public class HunterGoal extends Goal {
 
     private void eatFoodFromBag(IWorkingWolf mixin) {
         NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-        Level level = wolf.level();
 
         for (int i = 0; i < bag.size(); i++) {
             ItemStack stack = bag.get(i);
             if (!stack.isEmpty() && stack.get(DataComponents.FOOD) != null) {
-                // Consume one item for healing
                 stack.shrink(1);
                 wolf.heal(FOOD_HEAL_AMOUNT);
-                stack.shrink(1);
                 if (stack.isEmpty()) {
                     bag.set(i, ItemStack.EMPTY);
                 }

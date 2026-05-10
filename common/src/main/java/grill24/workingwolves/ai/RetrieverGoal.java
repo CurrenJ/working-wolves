@@ -1,5 +1,6 @@
 package grill24.workingwolves.ai;
 
+import grill24.workingwolves.Config;
 import grill24.workingwolves.api.IWorkingWolf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -22,7 +23,7 @@ import java.util.*;
 public class RetrieverGoal extends Goal {
     private final Wolf wolf;
     private static final double SPEED = 1.0;
-    private static final int SCAN_RANGE = 64;
+    // Scan range is controlled by Config.retrieverScanRange
     private static final int CACHE_TIMEOUT_TICKS = 600; // 30 seconds
     private static final float BAG_FULL_THRESHOLD = 0.8f;
     private static final double PICKUP_DISTANCE_SQ = 1.5 * 1.5;
@@ -52,6 +53,11 @@ public class RetrieverGoal extends Goal {
     @Override
     public boolean canContinueToUse() {
         return canUse();
+    }
+
+    @Override
+    public void start() {
+        ((IWorkingWolf) (Object) wolf).workingwolves$applyNavBudget(Config.retrieverScanRange);
     }
 
     @Override
@@ -96,7 +102,7 @@ public class RetrieverGoal extends Goal {
 
         // Scan for items near the bed
         List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class,
-            new AABB(bedPos).inflate(SCAN_RANGE),
+            new AABB(bedPos).inflate(Config.retrieverScanRange),
             item -> item.isAlive() && !unreachableCache.containsKey(item.blockPosition()));
 
         // Filter by held filter item

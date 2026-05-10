@@ -82,11 +82,12 @@ public class MinerGoal extends Goal {
 
     @Override
     public void start() {
+        ((IWorkingWolf) (Object) wolf).workingwolves$applyNavBudget(Config.detectionRange);
         originPos = wolf.blockPosition().immutable();
         visitedChunks.clear();
         visitedChunks.add(ChunkPos.containing(originPos));
         repathTicks = 0;
-        scanCooldown = 0; // Scan on first tick
+        scanCooldown = 0;
         exploreTicks = 0;
     }
 

@@ -38,6 +38,12 @@ public interface IWorkingWolf {
     void workingwolves$syncData();
     void workingwolves$resizeBag();
 
+    default void workingwolves$applyNavBudget(int range) {
+        net.minecraft.world.entity.animal.wolf.Wolf self = (net.minecraft.world.entity.animal.wolf.Wolf) this;
+        self.getNavigation().pathFinder.setMaxVisitedNodes(range * range / 4);
+        self.getNavigation().requiredPathLength = (float) range;
+    }
+
     @Nullable BlockPos workingwolves$getMiningPos();
     void workingwolves$setMiningPos(@Nullable BlockPos pos);
 

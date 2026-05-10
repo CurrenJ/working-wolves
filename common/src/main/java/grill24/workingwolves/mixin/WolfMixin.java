@@ -358,26 +358,6 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
         }
     }
 
-    // ======== Boost pathfinding range ========
-
-    @Inject(method = "registerGoals", at = @At("HEAD"))
-    private void workingwolves$boostPathfinding(CallbackInfo ci) {
-        int range = Config.detectionRange;
-        // Node budget: enough to search a (range × range) area
-        this.getNavigation().pathFinder.setMaxVisitedNodes(range * range / 4);
-        // Extend search distance from default FOLLOW_RANGE=16 to full detection range
-        this.getNavigation().requiredPathLength = (float) range;
-    }
-
-    @Inject(method = "aiStep", at = @At("HEAD"))
-    private void workingwolves$ensurePathfindingBoost(CallbackInfo ci) {
-        int range = Config.detectionRange;
-        this.getNavigation().pathFinder.setMaxVisitedNodes(range * range / 4);
-        if (this.getNavigation().requiredPathLength < (float) range) {
-            this.getNavigation().requiredPathLength = (float) range;
-        }
-    }
-
     // ======== AI goal registration ========
 
     @Inject(method = "registerGoals", at = @At("TAIL"))

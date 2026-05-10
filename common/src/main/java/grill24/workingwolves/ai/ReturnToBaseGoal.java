@@ -42,6 +42,8 @@ public class ReturnToBaseGoal extends Goal {
 
     @Override
     public void start() {
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        mixin.workingwolves$applyNavBudget(64);
         repathTimer = 0;
         pathfindTowardDestination();
     }
