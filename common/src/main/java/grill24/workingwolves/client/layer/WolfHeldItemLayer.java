@@ -45,6 +45,14 @@ public class WolfHeldItemLayer extends RenderLayer<WolfRenderState, WolfModel> {
                 Config.mouthOffsetX + 0.01F,
                 Config.mouthOffsetY - 0.02F,
                 Config.mouthOffsetZ + 0.05F);
+        } else if (WolfHeldItemTracker.isCrossbowMouthItem) {
+            poseStack.translate(0.000F, 0.094F, -0.375F);
+            poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(0.0F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(-45.0F));
+            heldItem.submit(poseStack, collector, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
+            poseStack.popPose();
+            return;
         } else {
             poseStack.translate(Config.mouthOffsetX, Config.mouthOffsetY, Config.mouthOffsetZ);
         }

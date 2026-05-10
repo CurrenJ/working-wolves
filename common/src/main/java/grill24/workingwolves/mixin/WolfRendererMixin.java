@@ -62,8 +62,10 @@ public abstract class WolfRendererMixin {
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void workingwolves$extractHeldItem(Wolf entity, WolfRenderState state, float partialTicks, CallbackInfo ci) {
         WolfHeldItemTracker.heldItem.clear();
+        WolfHeldItemTracker.isCrossbowMouthItem = false;
         if (ITEM_MODEL_RESOLVER == null) return;
         ItemStack mouthItem = ((IWorkingWolf) (Object) entity).workingwolves$getMouthItem();
+        WolfHeldItemTracker.isCrossbowMouthItem = mouthItem.is(net.minecraft.world.item.Items.CROSSBOW);
         if (!mouthItem.isEmpty()) {
             try {
                 ItemModelResolver resolver = (ItemModelResolver) ITEM_MODEL_RESOLVER.get(this);

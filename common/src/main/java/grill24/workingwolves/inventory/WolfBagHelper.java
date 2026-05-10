@@ -4,10 +4,12 @@ import grill24.workingwolves.api.IWorkingWolf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
@@ -94,6 +96,38 @@ public class WolfBagHelper {
             if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
                 stack.shrink(1);
                 wolf.heal(healAmount);
+                if (stack.isEmpty()) {
+                    bag.set(i, ItemStack.EMPTY);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isMeleeWeapon(ItemStack stack) {
+        return stack.is(ItemTags.SWORDS) || stack.is(ItemTags.AXES) || stack.is(Items.MACE);
+    }
+
+    /** Finds the first arrow stack in the wolf's bag. Returns the stack reference (caller shrinks to consume). */
+    public static ItemStack findAmmo(IWorkingWolf mixin) {
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+        for (int i = 0; i < bag.size(); i++) {
+            ItemStack stack = bag.get(i);
+            if (!stack.isEmpty() && stack.is(ItemTags.ARROWS)) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    /** Consumes one arrow from the bag. Returns true if an arrow was found and consumed. */
+    public static boolean consumeAmmo(IWorkingWolf mixin) {
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+        for (int i = 0; i < bag.size(); i++) {
+            ItemStack stack = bag.get(i);
+            if (!stack.isEmpty() && stack.is(ItemTags.ARROWS)) {
+                stack.shrink(1);
                 if (stack.isEmpty()) {
                     bag.set(i, ItemStack.EMPTY);
                 }

@@ -276,10 +276,9 @@ public class MinerGoal extends Goal {
         mixin.workingwolves$setMiningPos(orePos);
         mixin.workingwolves$setMiningProgress(0);
         ItemStack pickaxe = getPickaxe(mixin);
-        mixin.workingwolves$setMouthItem(pickaxe.copy());
+        mixin.workingwolves$displayMouthItem(pickaxe.copy());
         WorkingWolves.LOGGER.info("MinerGoal: mouth item set to {}",
             pickaxe.getDisplayName().getString());
-        mixin.workingwolves$syncData();
         BlockState state = level.getBlockState(orePos);
         float hardness = state.getDestroySpeed(level, orePos);
         float toolSpeed = Math.max(pickaxe.getDestroySpeed(state), 1.0f);
@@ -306,8 +305,7 @@ public class MinerGoal extends Goal {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
         mixin.workingwolves$setMiningPos(null);
         mixin.workingwolves$setMiningProgress(0);
-        mixin.workingwolves$setMouthItem(ItemStack.EMPTY);
-        mixin.workingwolves$syncData();
+        mixin.workingwolves$clearMouthItem();
         mineTimeForCurrentOre = 0;
     }
 

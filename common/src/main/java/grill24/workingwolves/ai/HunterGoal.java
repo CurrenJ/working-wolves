@@ -7,13 +7,22 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -26,6 +35,7 @@ import java.util.function.Predicate;
  * Priority 2 goal. Active when: collarTier > 0, class is "hunter", expeditionState is "active".
  * Dispatched on expedition to kill hostile mobs and collect drops.
  * Manages health-based retreat/engage, bag capacity, and expedition timer.
+ * Supports melee (swords/axes/mace), crossbow, and bow combat.
  */
 public class HunterGoal extends Goal {
     private final Wolf wolf;
@@ -48,6 +58,11 @@ public class HunterGoal extends Goal {
     private static final int PATH_RECALC_BASE_MIN = 4;
     private static final int PATH_RECALC_BASE_MAX = 10;
 
+    // Ranged combat constants
+    private static final float CROSSBOW_RANGE = 8.0f;
+    private static final float BOW_RANGE = 15.0f;
+    private static final int BOW_PULL_TICKS = 20;
+
     private LivingEntity target = null;
     private int ticksUntilNextPathRecalculation = 0;
     private int ticksUntilNextAttack = 0;
@@ -59,6 +74,14 @@ public class HunterGoal extends Goal {
     private int retreatTicks = 0;
     private int collectTicks = 0;
     private BlockPos lastKillPos = null;
+    private int weaponSlot = -1;
+    private boolean weaponEquipped = false;
+
+    // Ranged combat state
+    private boolean hasRangedWeapon = false;
+    private boolean usingCrossbow = false;
+    private int rangedState = 0; // 0=IDLE/UNCHARGED, 1=CHARGING/PULLING, 2=READY_DELAY/CHARGED, 3=FIRE
+    private int rangedTimer = 0;
 
     public HunterGoal(Wolf wolf) {
         this.wolf = wolf;
@@ -85,6 +108,8 @@ public class HunterGoal extends Goal {
 
     @Override
     public void stop() {
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        unequipWeapon(mixin);
         target = null;
         isRetreating = false;
         retreatTicks = 0;
@@ -174,6 +199,7 @@ public class HunterGoal extends Goal {
 
     private void tickCombat(IWorkingWolf mixin, Level level) {
         if (!target.isAlive()) {
+            unequipWeapon(mixin);
             lastKillPos = target.blockPosition();
             collectTicks = 10;
             target = null;
@@ -181,9 +207,19 @@ public class HunterGoal extends Goal {
             return;
         }
 
+        if (!weaponEquipped) {
+            equipWeapon(mixin);
+        }
+
         wolf.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
-        // --- Path recalculation: vanilla MeleeAttackGoal pattern ---
+        // Delegate to ranged combat if equipped with a ranged weapon
+        if (hasRangedWeapon) {
+            tickRangedCombat(mixin, level);
+            return;
+        }
+
+        // --- Melee path recalculation: vanilla MeleeAttackGoal pattern ---
         // Decoupled from attack timing — attacking does NOT freeze movement.
         // Repaths when the timer expires AND the target has moved meaningfully,
         // or on a random hedge. On pathing failure, shrinks the timer to retry sooner.
@@ -210,7 +246,7 @@ public class HunterGoal extends Goal {
             }
         }
 
-        // --- Attack: separate cooldown, vanilla-style ---
+        // --- Melee attack: separate cooldown, vanilla-style ---
         ticksUntilNextAttack = Math.max(ticksUntilNextAttack - 1, 0);
         if (ticksUntilNextAttack <= 0
             && wolf.isWithinMeleeAttackRange(target)
@@ -220,7 +256,141 @@ public class HunterGoal extends Goal {
         }
     }
 
+    private void tickRangedCombat(IWorkingWolf mixin, Level level) {
+        // If target is too close, back away
+        double distSq = wolf.distanceToSqr(target);
+        if (distSq < 4.0 * 4.0) {
+            Vec3 away = new Vec3(
+                wolf.getX() - target.getX(),
+                0,
+                wolf.getZ() - target.getZ()
+            ).normalize().scale(3);
+            wolf.getNavigation().moveTo(
+                wolf.getX() + away.x,
+                wolf.getY(),
+                wolf.getZ() + away.z,
+                SPEED
+            );
+        } else {
+            // Standard path recalculation toward target
+            ticksUntilNextPathRecalculation = Math.max(ticksUntilNextPathRecalculation - 1, 0);
+            if (ticksUntilNextPathRecalculation <= 0
+                && (pathedTargetX == 0.0 && pathedTargetY == 0.0 && pathedTargetZ == 0.0
+                    || target.distanceToSqr(pathedTargetX, pathedTargetY, pathedTargetZ) >= 1.0
+                    || wolf.getRandom().nextFloat() < 0.05F)) {
+
+                pathedTargetX = target.getX();
+                pathedTargetY = target.getY();
+                pathedTargetZ = target.getZ();
+                ticksUntilNextPathRecalculation = PATH_RECALC_BASE_MIN + wolf.getRandom().nextInt(PATH_RECALC_BASE_MAX - PATH_RECALC_BASE_MIN + 1);
+
+                if (!wolf.getNavigation().moveTo(target, SPEED)) {
+                    ticksUntilNextPathRecalculation += 15;
+                }
+            }
+        }
+
+        // Ranged attack state machine
+        if (usingCrossbow) {
+            tickCrossbowAttack(mixin);
+        } else {
+            tickBowAttack(mixin);
+        }
+    }
+
+    private void tickCrossbowAttack(IWorkingWolf mixin) {
+        InteractionHand hand = InteractionHand.MAIN_HAND;
+        ItemStack handItem = wolf.getItemInHand(hand);
+
+        switch (rangedState) {
+            case 0: // UNCHARGED
+                // Check ammo before loading
+                if (!WolfBagHelper.consumeAmmo(mixin)) {
+                    unequipWeapon(mixin);
+                    return;
+                }
+                // Manually load crossbow with a single arrow
+                handItem.set(DataComponents.CHARGED_PROJECTILES,
+                    ChargedProjectiles.ofNonEmpty(List.of(new ItemStack(Items.ARROW))));
+                wolf.startUsingItem(hand);
+                rangedState = 1; // CHARGING
+                rangedTimer = 25;
+                break;
+            case 1: // CHARGING
+                rangedTimer--;
+                // Refresh mouth item from live crossbow so pull animation renders
+                mixin.workingwolves$displayMouthItem(wolf.getItemInHand(hand).copy());
+                if (rangedTimer <= 0) {
+                    wolf.releaseUsingItem();
+                    rangedState = 2; // CHARGED (ready delay)
+                    rangedTimer = 20 + wolf.getRandom().nextInt(20);
+                }
+                break;
+            case 2: // CHARGED — ready delay
+                rangedTimer--;
+                if (rangedTimer <= 0) {
+                    rangedState = 3; // FIRE
+                }
+                break;
+            case 3: // FIRE
+                performRangedAttack(target, 1.6F);
+                rangedState = 0; // UNCHARGED
+                break;
+        }
+    }
+
+    private void tickBowAttack(IWorkingWolf mixin) {
+        switch (rangedState) {
+            case 0: // IDLE
+                wolf.startUsingItem(InteractionHand.MAIN_HAND);
+                rangedState = 1; // PULLING
+                rangedTimer = BOW_PULL_TICKS;
+                break;
+            case 1: // PULLING
+                rangedTimer--;
+                if (rangedTimer <= 0) {
+                    // Check ammo before shooting
+                    if (!WolfBagHelper.consumeAmmo(mixin)) {
+                        unequipWeapon(mixin);
+                        return;
+                    }
+                    wolf.stopUsingItem();
+                    performRangedAttack(target, BowItem.getPowerForTime(BOW_PULL_TICKS));
+                    rangedState = 0; // IDLE
+                }
+                break;
+        }
+    }
+
+    private void performRangedAttack(LivingEntity target, float power) {
+        Level level = wolf.level();
+        InteractionHand hand = InteractionHand.MAIN_HAND;
+
+        if (usingCrossbow) {
+            ItemStack crossbowStack = wolf.getItemInHand(hand);
+            if (crossbowStack.getItem() instanceof CrossbowItem crossbowItem && level instanceof ServerLevel serverLevel) {
+                crossbowItem.performShooting(level, wolf, hand, crossbowStack, 1.6F,
+                    14 - serverLevel.getDifficulty().getId() * 4, target);
+            }
+        } else {
+            ItemStack bowItem = wolf.getItemInHand(hand);
+            ItemStack arrowStack = new ItemStack(Items.ARROW);
+            AbstractArrow arrow = ProjectileUtil.getMobArrow(wolf, arrowStack, power, bowItem);
+            double dx = target.getX() - wolf.getX();
+            double dy = target.getY(0.333) - arrow.getY();
+            double dz = target.getZ() - wolf.getZ();
+            double dist = Math.sqrt(dx * dx + dz * dz);
+            if (level instanceof ServerLevel sl) {
+                Projectile.spawnProjectileUsingShoot(arrow, sl, arrowStack, dx, dy + dist * 0.2, dz, 1.6F,
+                    14 - sl.getDifficulty().getId() * 4);
+            }
+            wolf.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (wolf.getRandom().nextFloat() * 0.4F + 0.8F));
+        }
+    }
+
     private void startRetreating(int duration) {
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        unequipWeapon(mixin);
         isRetreating = true;
         retreatTicks = duration;
         target = null;
@@ -231,8 +401,22 @@ public class HunterGoal extends Goal {
         ItemStack filterStack = mixin.workingwolves$getFilterItem();
         Predicate<Monster> predicate = getMobFilter(filterStack);
 
+        // Determine scan range: use ranged weapon range if a ranged weapon is in the bag
+        int scanRange = Config.hunterScanRange;
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+        for (ItemStack stack : bag) {
+            if (stack.is(Items.CROSSBOW)) {
+                scanRange = (int) Math.ceil(CROSSBOW_RANGE);
+                break;
+            }
+            if (stack.is(Items.BOW)) {
+                scanRange = (int) Math.ceil(BOW_RANGE);
+                break;
+            }
+        }
+
         List<Monster> mobs = level.getEntitiesOfClass(Monster.class,
-            new AABB(wolf.blockPosition()).inflate(Config.hunterScanRange),
+            new AABB(wolf.blockPosition()).inflate(scanRange),
             monster -> monster.isAlive() && predicate.test(monster));
 
         if (mobs.isEmpty()) return;
@@ -383,5 +567,134 @@ public class HunterGoal extends Goal {
 
     private void collectDropsAt(Level level, BlockPos pos, IWorkingWolf mixin) {
         WolfBagHelper.collectDropsAt(level, pos, mixin, DROP_COLLECT_RANGE);
+    }
+
+    // ======== Weapon handling ========
+
+    /**
+     * Finds the first weapon in the bag (in slot order). Checks crossbow, bow, then melee.
+     * Sets hasRangedWeapon and usingCrossbow flags accordingly.
+     */
+    private ItemStack findWeapon(IWorkingWolf mixin) {
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+
+        // Check cached slot first
+        if (weaponSlot >= 0 && weaponSlot < bag.size()) {
+            ItemStack cached = bag.get(weaponSlot);
+            if (cached.is(Items.CROSSBOW)) {
+                hasRangedWeapon = true;
+                usingCrossbow = true;
+                return cached;
+            }
+            if (cached.is(Items.BOW)) {
+                hasRangedWeapon = true;
+                usingCrossbow = false;
+                return cached;
+            }
+            if (WolfBagHelper.isMeleeWeapon(cached)) {
+                hasRangedWeapon = false;
+                return cached;
+            }
+        }
+
+        // Full scan in slot order: crossbow → bow → melee
+        for (int i = 0; i < bag.size(); i++) {
+            ItemStack stack = bag.get(i);
+            if (stack.is(Items.CROSSBOW)) {
+                weaponSlot = i;
+                hasRangedWeapon = true;
+                usingCrossbow = true;
+                return stack;
+            }
+            if (stack.is(Items.BOW)) {
+                weaponSlot = i;
+                hasRangedWeapon = true;
+                usingCrossbow = false;
+                return stack;
+            }
+            if (WolfBagHelper.isMeleeWeapon(stack)) {
+                weaponSlot = i;
+                hasRangedWeapon = false;
+                return stack;
+            }
+        }
+
+        weaponSlot = -1;
+        hasRangedWeapon = false;
+        return ItemStack.EMPTY;
+    }
+
+    /**
+     * Searches the bag for a melee weapon specifically. Used as fallback when a ranged
+     * weapon is found but no ammo is available.
+     */
+    private ItemStack findMeleeWeaponFromBag(IWorkingWolf mixin) {
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+        for (int i = 0; i < bag.size(); i++) {
+            if (WolfBagHelper.isMeleeWeapon(bag.get(i))) {
+                weaponSlot = i;
+                hasRangedWeapon = false;
+                usingCrossbow = false;
+                return bag.get(i);
+            }
+        }
+        weaponSlot = -1;
+        return ItemStack.EMPTY;
+    }
+
+    private void equipWeapon(IWorkingWolf mixin) {
+        if (wolf.level().isClientSide()) return;
+        ItemStack weapon = findWeapon(mixin);
+        if (weapon.isEmpty()) return;
+
+        // If ranged weapon is found but no ammo, fall back to melee
+        if (hasRangedWeapon) {
+            if (WolfBagHelper.findAmmo(mixin).isEmpty()) {
+                ItemStack melee = findMeleeWeaponFromBag(mixin);
+                if (melee.isEmpty()) return;
+                weapon = melee;
+            }
+        }
+
+        // Equip in main hand
+        wolf.setItemSlot(EquipmentSlot.MAINHAND, weapon.copy());
+        bagRemove(weaponSlot, mixin);
+        mixin.workingwolves$displayMouthItem(weapon.copy());
+        weaponEquipped = true;
+
+        // For crossbow, start the charging cycle
+        if (hasRangedWeapon && usingCrossbow) {
+            wolf.startUsingItem(InteractionHand.MAIN_HAND);
+        }
+    }
+
+    private void unequipWeapon(IWorkingWolf mixin) {
+        if (!weaponEquipped) return;
+        weaponEquipped = false;
+        hasRangedWeapon = false;
+        usingCrossbow = false;
+        rangedState = 0;
+        rangedTimer = 0;
+
+        if (wolf.level().isClientSide()) return;
+
+        // Stop any ongoing item use
+        if (wolf.isUsingItem()) {
+            wolf.stopUsingItem();
+        }
+
+        ItemStack handItem = wolf.getItemBySlot(EquipmentSlot.MAINHAND);
+        if (!handItem.isEmpty()) {
+            WolfBagHelper.addToBag(mixin.workingwolves$getBagInventory(), handItem);
+        }
+        wolf.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        mixin.workingwolves$clearMouthItem();
+    }
+
+    private static void bagRemove(int slot, IWorkingWolf mixin) {
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+        if (slot >= 0 && slot < bag.size()) {
+            bag.set(slot, ItemStack.EMPTY);
+        }
     }
 }
