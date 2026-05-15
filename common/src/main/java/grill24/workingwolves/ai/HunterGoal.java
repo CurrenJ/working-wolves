@@ -30,7 +30,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Priority 2 goal. Active when: collarTier > 0, class is "hunter", expeditionState is "active".
@@ -90,7 +89,7 @@ public class HunterGoal extends Goal {
     public boolean canUse() {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
         if (mixin.workingwolves$getCollarTier() <= 0) return false;
-        if (!"hunter".equals(mixin.workingwolves$getWolfClass())) return false;
+        if (!WolfBagHelper.hasHuntingWeapon(mixin)) return false;
         String state = mixin.workingwolves$getExpeditionState();
         if ("idle".equals(state)) {
             return !wolf.isOrderedToSit() && wolf.getOwner() != null
@@ -409,9 +408,6 @@ public class HunterGoal extends Goal {
     }
 
     private void scanForTarget(Level level, IWorkingWolf mixin) {
-        ItemStack filterStack = mixin.workingwolves$getFilterItem();
-        Predicate<Monster> predicate = getMobFilter(filterStack);
-
         boolean isCompanionMode = "idle".equals(mixin.workingwolves$getExpeditionState());
 
         // Determine scan center: owner position in companion mode, wolf position in expedition mode
@@ -440,7 +436,7 @@ public class HunterGoal extends Goal {
 
         List<Monster> mobs = level.getEntitiesOfClass(Monster.class,
             new AABB(scanCenter).inflate(scanRange),
-            monster -> monster.isAlive() && predicate.test(monster));
+            Monster::isAlive);
 
         if (mobs.isEmpty()) return;
 
@@ -460,70 +456,6 @@ public class HunterGoal extends Goal {
                 break;
             }
         }
-    }
-
-    private Predicate<Monster> getMobFilter(ItemStack filterStack) {
-        if (filterStack.isEmpty()) {
-            return m -> true;
-        }
-
-        if (filterStack.is(Items.BONE)) {
-            return m -> {
-                String name = net.minecraft.world.entity.EntityType.getKey(m.getType()).getPath();
-                return name.contains("skeleton") || name.contains("stray") || name.contains("wither");
-            };
-        }
-        if (filterStack.is(Items.ROTTEN_FLESH)) {
-            return m -> {
-                String name = net.minecraft.world.entity.EntityType.getKey(m.getType()).getPath();
-                return name.contains("zombie") || name.contains("drowned") || name.contains("husk");
-            };
-        }
-        if (filterStack.is(Items.STRING)) {
-            return m -> {
-                String name = net.minecraft.world.entity.EntityType.getKey(m.getType()).getPath();
-                return name.contains("spider");
-            };
-        }
-        if (filterStack.is(Items.GUNPOWDER)) {
-            return m -> {
-                String name = net.minecraft.world.entity.EntityType.getKey(m.getType()).getPath();
-                return name.contains("creeper");
-            };
-        }
-        if (filterStack.is(Items.ENDER_PEARL)) {
-            return m -> {
-                String name = net.minecraft.world.entity.EntityType.getKey(m.getType()).getPath();
-                return name.contains("enderman");
-            };
-        }
-        if (filterStack.is(Items.BLAZE_POWDER) || filterStack.is(Items.BLAZE_ROD)) {
-            return m -> {
-                String name = net.minecraft.world.entity.EntityType.getKey(m.getType()).getPath();
-                return name.contains("blaze");
-            };
-        }
-        if (filterStack.is(Items.GHAST_TEAR)) {
-            return m -> {
-                String name = net.minecraft.world.entity.EntityType.getKey(m.getType()).getPath();
-                return name.contains("ghast");
-            };
-        }
-        if (filterStack.is(Items.ARROW)) {
-            return m -> {
-                String name = net.minecraft.world.entity.EntityType.getKey(m.getType()).getPath();
-                return name.contains("skeleton");
-            };
-        }
-        if (filterStack.is(Items.EMERALD)) {
-            return m -> {
-                String name = net.minecraft.world.entity.EntityType.getKey(m.getType()).getPath();
-                return name.contains("vindicator") || name.contains("evoker")
-                    || name.contains("pillager") || name.contains("ravager");
-            };
-        }
-
-        return m -> true;
     }
 
     private int countHostilesInRange(Level level, BlockPos pos, int range) {

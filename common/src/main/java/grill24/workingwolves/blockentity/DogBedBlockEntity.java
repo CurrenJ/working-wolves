@@ -42,21 +42,24 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     // ======== Expedition simulation ========
 
     private String simState = "inactive"; // "inactive", "running", "complete"
-    private String simWolfClass = "";
+    private boolean simHasMining = false;
+    private boolean simHasHunting = false;
+    private boolean simHasWoodcutting = false;
     private int simCollarTier = 0;
-    private ItemStack simFilterItem = ItemStack.EMPTY;
     private int simSatiation = 0;
     private int simArmorPoints = 0;
     private float simPickaxeSpeed = 1.0f;
     private int simFortune = 0;
     private boolean simSilkTouch = false;
     private int simLooting = 0;
+    private float simAxeSpeed = 1.0f;
     private int simTotalTicks = 0;
     private int simElapsedTicks = 0;
     private int simEventTimer = 0;
     private int simInjuryCount = 0;
     private UUID simWolfUuid = null;
     private String simBiomeCategory = "other";
+    private String simWoodBiome = "forest";
     private final List<ItemStack> simPendingLoot = new ArrayList<>();
     private final List<String> expeditionLog = new ArrayList<>();
 
@@ -143,7 +146,9 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
 
         // Simulation state
         simState = input.getStringOr("sim_state", "inactive");
-        simWolfClass = input.getStringOr("sim_wolf_class", "");
+        simHasMining = input.getIntOr("sim_has_mining", 0) != 0;
+        simHasHunting = input.getIntOr("sim_has_hunting", 0) != 0;
+        simHasWoodcutting = input.getIntOr("sim_has_woodcutting", 0) != 0;
         simCollarTier = input.getIntOr("sim_collar_tier", 0);
         simSatiation = input.getIntOr("sim_satiation", 0);
         simArmorPoints = input.getIntOr("sim_armor_points", 0);
@@ -151,6 +156,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         simFortune = input.getIntOr("sim_fortune", 0);
         simSilkTouch = input.getIntOr("sim_silk_touch", 0) != 0;
         simLooting = input.getIntOr("sim_looting", 0);
+        simAxeSpeed = input.getIntOr("sim_axe_speed_x100", 100) / 100.0f;
         simTotalTicks = input.getIntOr("sim_total_ticks", 0);
         simElapsedTicks = input.getIntOr("sim_elapsed_ticks", 0);
         simEventTimer = input.getIntOr("sim_event_timer", 0);
@@ -158,7 +164,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         String wolfUuidStr = input.getStringOr("sim_wolf_uuid", "");
         simWolfUuid = wolfUuidStr.isEmpty() ? null : UUID.fromString(wolfUuidStr);
         simBiomeCategory = input.getStringOr("sim_biome_category", "other");
-        simFilterItem = input.read("sim_filter_item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        simWoodBiome = input.getStringOr("sim_wood_biome", "forest");
 
         String logStr = input.getStringOr("expedition_log", "");
         expeditionLog.clear();
@@ -182,7 +188,9 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
 
         // Simulation state
         output.putString("sim_state", simState);
-        output.putString("sim_wolf_class", simWolfClass);
+        output.putInt("sim_has_mining", simHasMining ? 1 : 0);
+        output.putInt("sim_has_hunting", simHasHunting ? 1 : 0);
+        output.putInt("sim_has_woodcutting", simHasWoodcutting ? 1 : 0);
         output.putInt("sim_collar_tier", simCollarTier);
         output.putInt("sim_satiation", simSatiation);
         output.putInt("sim_armor_points", simArmorPoints);
@@ -190,13 +198,14 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         output.putInt("sim_fortune", simFortune);
         output.putInt("sim_silk_touch", simSilkTouch ? 1 : 0);
         output.putInt("sim_looting", simLooting);
+        output.putInt("sim_axe_speed_x100", (int)(simAxeSpeed * 100));
         output.putInt("sim_total_ticks", simTotalTicks);
         output.putInt("sim_elapsed_ticks", simElapsedTicks);
         output.putInt("sim_event_timer", simEventTimer);
         output.putInt("sim_injury_count", simInjuryCount);
         if (simWolfUuid != null) output.putString("sim_wolf_uuid", simWolfUuid.toString());
         output.putString("sim_biome_category", simBiomeCategory);
-        output.store("sim_filter_item", ItemStack.OPTIONAL_CODEC, simFilterItem);
+        output.putString("sim_wood_biome", simWoodBiome);
         output.putString("expedition_log", String.join("\n", expeditionLog));
     }
 
@@ -244,7 +253,6 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
 
     @Override
     public void setRemoved() {
-        // If a simulation was running when the bed is destroyed, rescue the wolf
         if ("running".equals(simState) && this.level instanceof ServerLevel sl && simWolfUuid != null) {
             Entity entity = sl.getEntity(simWolfUuid);
             if (entity instanceof Wolf wolf) {
@@ -256,7 +264,6 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
                 mixin.workingwolves$setBedPos(null);
                 mixin.workingwolves$syncData();
             }
-            // Drop any pending loot at the bed position
             for (ItemStack stack : simPendingLoot) {
                 ItemEntity drop = new ItemEntity(
                     sl, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5, stack.copy());
@@ -272,111 +279,69 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     // ======== Simulation ========
 
     public void beginExpeditionSimulation(IWorkingWolf mixin) {
-        simWolfClass = mixin.workingwolves$getWolfClass() != null ? mixin.workingwolves$getWolfClass() : "";
         simCollarTier = mixin.workingwolves$getCollarTier();
-        simFilterItem = mixin.workingwolves$getFilterItem().copy();
         simTotalTicks = mixin.workingwolves$getExpeditionDuration();
-        if (simTotalTicks <= 0) simTotalTicks = 12000; // fallback 10 min
+        if (simTotalTicks <= 0) simTotalTicks = 12000;
 
-        // Move food from bed into wolf's bag, then count total nutrition as satiation
         NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
 
-        for (int i = 0; i < items.size(); i++) {
-            ItemStack bedStack = items.get(i);
-            if (bedStack.isEmpty() || !bedStack.has(DataComponents.FOOD)) continue;
+        // Move food from bed into wolf's bag
+        moveToBag(bag, s -> s.has(DataComponents.FOOD));
 
-            ItemStack remaining = bedStack.copy();
-            // Merge into existing stacks of the same item
-            for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
-                ItemStack bagStack = bag.get(j);
-                if (!bagStack.isEmpty() && ItemStack.isSameItemSameComponents(bagStack, remaining)) {
-                    int space = bagStack.getMaxStackSize() - bagStack.getCount();
-                    int move = Math.min(space, remaining.getCount());
-                    if (move > 0) {
-                        bagStack.grow(move);
-                        remaining.shrink(move);
-                    }
-                }
-            }
-            // Fill empty slots
-            for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
-                if (bag.get(j).isEmpty()) {
-                    bag.set(j, remaining.copy());
-                    remaining = ItemStack.EMPTY;
-                }
-            }
-            items.set(i, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
-        }
+        // Move pickaxes from bed into wolf's bag
+        moveToBag(bag, s -> s.is(ItemTags.PICKAXES));
+
+        // Move axes from bed into wolf's bag
+        moveToBag(bag, s -> s.is(ItemTags.AXES));
+
+        // Move hunting weapons from bed into wolf's bag
+        moveToBag(bag, s -> WolfBagHelper.isHuntingWeapon(s));
 
         simSatiation = 0;
 
-        // Move pickaxes from bed into wolf's bag (miners only)
-        if ("miner".equals(simWolfClass)) {
-            for (int i = 0; i < items.size(); i++) {
-                ItemStack bedStack = items.get(i);
-                if (bedStack.isEmpty() || !bedStack.is(ItemTags.PICKAXES)) continue;
-
-                ItemStack remaining = bedStack.copy();
-                for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
-                    ItemStack bagStack = bag.get(j);
-                    if (!bagStack.isEmpty() && ItemStack.isSameItemSameComponents(bagStack, remaining)) {
-                        int space = bagStack.getMaxStackSize() - bagStack.getCount();
-                        int move = Math.min(space, remaining.getCount());
-                        if (move > 0) {
-                            bagStack.grow(move);
-                            remaining.shrink(move);
-                        }
-                    }
-                }
-                for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
-                    if (bag.get(j).isEmpty()) {
-                        bag.set(j, remaining.copy());
-                        remaining = ItemStack.EMPTY;
-                    }
-                }
-                items.set(i, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
-            }
-        }
-
-        // Snapshot armor (wolf's armor attribute value)
-        Wolf wolf = (Wolf) (Object) mixin;
-        simArmorPoints = (int) wolf.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR);
-
-        // Snapshot pickaxe/weapon stats from bag
+        // Detect roles from bag contents
+        simHasMining = false;
+        simHasHunting = false;
+        simHasWoodcutting = false;
         simPickaxeSpeed = 1.0f;
         simFortune = 0;
         simSilkTouch = false;
         simLooting = 0;
-        for (ItemStack stack : mixin.workingwolves$getBagInventory()) {
+        simAxeSpeed = 1.0f;
+
+        for (ItemStack stack : bag) {
             if (stack.isEmpty()) continue;
-            if ("miner".equals(simWolfClass) && stack.is(ItemTags.PICKAXES)) {
-                BlockState stone = Blocks.STONE.defaultBlockState();
-                simPickaxeSpeed = Math.max(simPickaxeSpeed, stack.getDestroySpeed(stone));
+            if (stack.is(ItemTags.PICKAXES)) {
+                simHasMining = true;
+                float speed = stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
+                if (speed > simPickaxeSpeed) simPickaxeSpeed = speed;
                 for (var entry : stack.getEnchantments().entrySet()) {
                     if (entry.getKey().is(Enchantments.FORTUNE)) simFortune = Math.max(simFortune, entry.getIntValue());
                     if (entry.getKey().is(Enchantments.SILK_TOUCH) && entry.getIntValue() > 0) simSilkTouch = true;
                 }
             }
-            if ("hunter".equals(simWolfClass)) {
-                if (stack.is(ItemTags.SWORDS) || stack.is(ItemTags.AXES)
-                    || stack.getItem() instanceof net.minecraft.world.item.BowItem
-                    || stack.getItem() instanceof net.minecraft.world.item.CrossbowItem) {
-                    for (var entry : stack.getEnchantments().entrySet()) {
-                        if (entry.getKey().is(Enchantments.LOOTING)) simLooting = Math.max(simLooting, entry.getIntValue());
-                    }
+            if (WolfBagHelper.isHuntingWeapon(stack)) {
+                simHasHunting = true;
+                for (var entry : stack.getEnchantments().entrySet()) {
+                    if (entry.getKey().is(Enchantments.LOOTING)) simLooting = Math.max(simLooting, entry.getIntValue());
                 }
+            }
+            if (stack.is(ItemTags.AXES)) {
+                simHasWoodcutting = true;
+                float speed = stack.getDestroySpeed(Blocks.OAK_LOG.defaultBlockState());
+                if (speed > simAxeSpeed) simAxeSpeed = speed;
             }
         }
 
-        // Snapshot wolf UUID
+        Wolf wolf = (Wolf) (Object) mixin;
+        simArmorPoints = (int) wolf.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR);
         simWolfUuid = wolf.getUUID();
 
-        // Biome at bed
         if (this.level != null) {
             simBiomeCategory = getBiomeCategory(this.level, this.worldPosition);
+            simWoodBiome = getWoodBiome(this.level, this.worldPosition);
         }
 
-        // Reset sim state
         simState = "running";
         simElapsedTicks = 0;
         simEventTimer = 60 + (this.level != null ? this.level.getRandom().nextInt(40) : 20);
@@ -388,18 +353,43 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         setChanged();
     }
 
+    private void moveToBag(NonNullList<ItemStack> bag, java.util.function.Predicate<ItemStack> filter) {
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack bedStack = items.get(i);
+            if (bedStack.isEmpty() || !filter.test(bedStack)) continue;
+
+            ItemStack remaining = bedStack.copy();
+            for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
+                ItemStack bagStack = bag.get(j);
+                if (!bagStack.isEmpty() && ItemStack.isSameItemSameComponents(bagStack, remaining)) {
+                    int space = bagStack.getMaxStackSize() - bagStack.getCount();
+                    int move = Math.min(space, remaining.getCount());
+                    if (move > 0) {
+                        bagStack.grow(move);
+                        remaining.shrink(move);
+                    }
+                }
+            }
+            for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
+                if (bag.get(j).isEmpty()) {
+                    bag.set(j, remaining.copy());
+                    remaining = ItemStack.EMPTY;
+                }
+            }
+            items.set(i, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
+        }
+    }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, DogBedBlockEntity be) {
         if (!"running".equals(be.simState)) return;
 
         be.simElapsedTicks++;
 
-        // Check completion by time
         if (be.simElapsedTicks >= be.simTotalTicks) {
             be.completeSimulation(level, false, false);
             return;
         }
 
-        // Advance event timer
         be.simEventTimer--;
         if (be.simEventTimer <= 0) {
             be.rollEvent(level);
@@ -412,15 +402,22 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         float progress = (float) simElapsedTicks / Math.max(simTotalTicks, 1);
         int zone = progress < 0.25f ? 0 : progress < 0.75f ? 1 : 2;
 
-        if ("hunter".equals(simWolfClass)) {
-            rollHunterEvent(level, zone);
-        } else if ("miner".equals(simWolfClass)) {
-            rollMinerEvent(level, zone);
-        }
+        // Count active roles and pick one uniformly at random
+        int roleCount = (simHasMining ? 1 : 0) + (simHasHunting ? 1 : 0) + (simHasWoodcutting ? 1 : 0);
+        if (roleCount == 0) return;
+
+        Random rng = new Random(level.getGameTime() + simElapsedTicks);
+        int roll = rng.nextInt(roleCount);
+        int idx = 0;
+        if (simHasHunting && idx++ == roll) { rollHunterEvent(level, zone); return; }
+        if (simHasMining && idx++ == roll) { rollMinerEvent(level, zone); return; }
+        if (simHasWoodcutting) { rollWoodcutterEvent(level, zone); }
     }
 
+    // ======== Hunter events ========
+
     private void rollHunterEvent(Level level, int zone) {
-        Random rng = new Random(level.getGameTime() + simElapsedTicks);
+        Random rng = new Random(level.getGameTime() + simElapsedTicks + 1);
         int[] weights = switch (zone) {
             case 0 -> new int[]{50, 40, 10};
             case 1 -> new int[]{30, 45, 25};
@@ -429,7 +426,6 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         int roll = rng.nextInt(100);
 
         if (roll < weights[0]) {
-            // Travel event (flavor only)
             String[] travelLines = {
                 "Followed a scent through the trees.",
                 "Something moved ahead. Paused. Continued.",
@@ -440,19 +436,15 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
             };
             addLogLine(travelLines[rng.nextInt(travelLines.length)]);
         } else if (roll < weights[0] + weights[1]) {
-            // Discovery event (loot)
             rollHunterDiscovery(level, zone, rng);
         } else {
-            // Hazard event
             rollHunterHazard(level, rng);
         }
     }
 
     private void rollHunterDiscovery(Level level, int zone, Random rng) {
-        // Determine target mob
-        String mob = getMobFromFilter(zone, rng);
+        String mob = getMobForZone(zone, rng);
 
-        // Per-mob loot
         switch (mob) {
             case "skeleton" -> {
                 int bones = 1 + rng.nextInt(3) + simLooting;
@@ -505,30 +497,17 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
                 if (zone >= 2) {
                     int coal = rng.nextInt(2);
                     if (coal > 0) simPendingLoot.add(new ItemStack(Items.COAL, coal));
-                    // 5% chance of wither skull
                     if (rng.nextFloat() < 0.05f + simLooting * 0.01f) {
                         simPendingLoot.add(new ItemStack(Items.WITHER_SKELETON_SKULL, 1));
                     }
                 }
                 addLogLine("Something in the dark. Much taller.");
             }
-            default -> {
-                addLogLine("Something moved. Gone now.");
-            }
+            default -> addLogLine("Something moved. Gone now.");
         }
     }
 
-    private String getMobFromFilter(int zone, Random rng) {
-        // If filter is set, determine mob from filter item
-        if (!simFilterItem.isEmpty()) {
-            if (simFilterItem.is(Items.BONE) || simFilterItem.is(Items.ARROW)) return "skeleton";
-            if (simFilterItem.is(Items.ROTTEN_FLESH)) return "zombie";
-            if (simFilterItem.is(Items.STRING)) return "spider";
-            if (simFilterItem.is(Items.GUNPOWDER)) return "creeper";
-            if (simFilterItem.is(Items.ENDER_PEARL)) return "enderman";
-            if (simFilterItem.is(Items.BLAZE_POWDER) || simFilterItem.is(Items.BLAZE_ROD)) return "blaze";
-        }
-        // Random from zone pool
+    private String getMobForZone(int zone, Random rng) {
         return switch (zone) {
             case 0 -> {
                 String[] pool = {"skeleton", "zombie", "spider"};
@@ -556,185 +535,13 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
             "Something big. Chose not to engage."
         };
         addLogLine(hazardLines[rng.nextInt(hazardLines.length)]);
-
         applyHazardCost(level, rng);
     }
 
-    private void applyHazardCost(Level level, Random rng) {
-        simSatiation -= 2;
-        if (simSatiation <= 0) {
-            int nutrition = eatFoodFromWolfBag(level);
-            if (nutrition > 0) {
-                simSatiation += nutrition;
-            } else {
-                simInjuryCount++;
-                if (simInjuryCount >= 3) {
-                    boolean death = simArmorPoints < 4 && rng.nextFloat() < 0.12f;
-                    completeSimulation(level, true, death);
-                    return;
-                }
-                addLogLine("Running low. Pushing on.");
-            }
-        }
-    }
-
-    private int eatFoodFromWolfBag(Level level) {
-        if (!(level instanceof ServerLevel sl)) return 0;
-        Entity entity = sl.getEntity(simWolfUuid);
-        if (!(entity instanceof Wolf wolf)) return 0;
-        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
-        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-
-        for (int i = 0; i < bag.size(); i++) {
-            ItemStack stack = bag.get(i);
-            if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
-                var food = stack.get(DataComponents.FOOD);
-                int nutrition = food != null ? food.nutrition() : 4;
-                stack.shrink(1);
-                if (stack.isEmpty()) bag.set(i, ItemStack.EMPTY);
-                return nutrition;
-            }
-        }
-        return 0;
-    }
-
-    // ======== Pickaxe durability ========
-
-    private static final int PICKAXE_LOW_THRESHOLD = 5;
-
-    private boolean applyMinerDurability(Level level, int baseDamage) {
-        if (!(level instanceof ServerLevel sl)) return true;
-        Entity entity = sl.getEntity(simWolfUuid);
-        if (!(entity instanceof Wolf wolf)) return true;
-        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
-        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
-
-        // Find the best pickaxe in the bag
-        int bestSlot = -1;
-        float bestSpeed = 0;
-        for (int i = 0; i < bag.size(); i++) {
-            ItemStack stack = bag.get(i);
-            if (!stack.isEmpty() && stack.is(ItemTags.PICKAXES)) {
-                float speed = stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
-                if (speed > bestSpeed) {
-                    bestSpeed = speed;
-                    bestSlot = i;
-                }
-            }
-        }
-
-        if (bestSlot < 0) {
-            addLogLine("No pickaxe left. Heading back.");
-            return false;
-        }
-
-        ItemStack pickaxe = bag.get(bestSlot);
-        int unbreaking = 0;
-        boolean isEnchanted = pickaxe.isEnchanted();
-        for (var entry : pickaxe.getEnchantments().entrySet()) {
-            if (entry.getKey().is(Enchantments.UNBREAKING)) {
-                unbreaking = entry.getIntValue();
-            }
-        }
-
-        int currentDamage = pickaxe.getDamageValue();
-        int maxDurability = pickaxe.getMaxDamage();
-        int remainingBefore = maxDurability - currentDamage;
-
-        // Enchanted pickaxes are never destroyed — stop at 1 durability
-        if (isEnchanted && remainingBefore <= 1) {
-            if (hasSparePickaxe(bag, bestSlot)) {
-                switchToNextPickaxe(level, bag);
-                addLogLine("Switched to spare pickaxe.");
-                return true;
-            }
-            addLogLine("Pickaxe too precious to break. Heading back.");
-            return false;
-        }
-
-        // Apply damage, respecting unbreaking
-        int actualDamage = 0;
-        for (int d = 0; d < baseDamage; d++) {
-            if (unbreaking == 0 || level.getRandom().nextInt(unbreaking + 1) == 0) {
-                actualDamage++;
-            }
-        }
-        if (actualDamage == 0) return true;
-
-        int newDamage = currentDamage + actualDamage;
-
-        if (isEnchanted && newDamage >= maxDurability) {
-            // Stop at 1 durability, don't destroy
-            pickaxe.setDamageValue(maxDurability - 1);
-            if (hasSparePickaxe(bag, bestSlot)) {
-                switchToNextPickaxe(level, bag);
-                addLogLine("Switched to spare pickaxe.");
-                return true;
-            }
-            addLogLine("Pickaxe too precious to break. Heading back.");
-            return false;
-        }
-
-        if (newDamage >= maxDurability) {
-            // Unenchanted pickaxe breaks
-            bag.set(bestSlot, ItemStack.EMPTY);
-            addLogLine("Pickaxe shattered.");
-            if (!switchToNextPickaxe(level, bag)) {
-                addLogLine("Last pickaxe gone. Heading back.");
-                return false;
-            }
-            return true;
-        }
-
-        pickaxe.setDamageValue(newDamage);
-
-        // Low durability warning with no spare
-        int remainingAfter = maxDurability - newDamage;
-        if (remainingAfter < PICKAXE_LOW_THRESHOLD && !hasSparePickaxe(bag, bestSlot)) {
-            addLogLine("Pickaxe nearly done. Heading back.");
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean switchToNextPickaxe(Level level, NonNullList<ItemStack> bag) {
-        int bestSlot = -1;
-        float bestSpeed = 0;
-        for (int i = 0; i < bag.size(); i++) {
-            ItemStack stack = bag.get(i);
-            if (!stack.isEmpty() && stack.is(ItemTags.PICKAXES)) {
-                float speed = stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
-                if (speed > bestSpeed) {
-                    bestSpeed = speed;
-                    bestSlot = i;
-                }
-            }
-        }
-        if (bestSlot < 0) return false;
-
-        // Update stats to match the new pickaxe
-        ItemStack pickaxe = bag.get(bestSlot);
-        simPickaxeSpeed = pickaxe.getDestroySpeed(Blocks.STONE.defaultBlockState());
-        simFortune = 0;
-        simSilkTouch = false;
-        for (var entry : pickaxe.getEnchantments().entrySet()) {
-            if (entry.getKey().is(Enchantments.FORTUNE)) simFortune = Math.max(simFortune, entry.getIntValue());
-            if (entry.getKey().is(Enchantments.SILK_TOUCH) && entry.getIntValue() > 0) simSilkTouch = true;
-        }
-        return true;
-    }
-
-    private boolean hasSparePickaxe(NonNullList<ItemStack> bag, int excludeSlot) {
-        for (int i = 0; i < bag.size(); i++) {
-            if (i == excludeSlot) continue;
-            if (!bag.get(i).isEmpty() && bag.get(i).is(ItemTags.PICKAXES)) return true;
-        }
-        return false;
-    }
+    // ======== Miner events ========
 
     private void rollMinerEvent(Level level, int zone) {
-        Random rng = new Random(level.getGameTime() + simElapsedTicks);
+        Random rng = new Random(level.getGameTime() + simElapsedTicks + 2);
         int[] weights = switch (zone) {
             case 0 -> new int[]{50, 40, 10};
             case 1 -> new int[]{30, 45, 25};
@@ -743,7 +550,6 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         int roll = rng.nextInt(100);
 
         if (roll < weights[0]) {
-            // Travel event
             String[] travelLines = {
                 "Narrow tunnel. Kept digging.",
                 "Cave system ahead. Dripping water.",
@@ -757,13 +563,11 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
                 completeSimulation(level, false, false);
             }
         } else if (roll < weights[0] + weights[1]) {
-            // Discovery event
             rollMinerDiscovery(level, zone, rng);
             if (!applyMinerDurability(level, 3)) {
                 completeSimulation(level, false, false);
             }
         } else {
-            // Hazard event
             rollMinerHazard(level, rng);
             if (!applyMinerDurability(level, 1)) {
                 completeSimulation(level, false, false);
@@ -772,45 +576,25 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     }
 
     private void rollMinerDiscovery(Level level, int zone, Random rng) {
-        // Biome yield multiplier
         float biomeMultiplier = ("mountain".equals(simBiomeCategory) || "cave".equals(simBiomeCategory)) ? 1.25f : 1.0f;
 
-        // If filter is set, heavily weight toward the requested ore (70% chance)
-        String forcedOre = null;
-        if (!simFilterItem.isEmpty()) {
-            if (simFilterItem.is(Items.COAL)) forcedOre = "coal";
-            else if (simFilterItem.is(Items.RAW_IRON) || simFilterItem.is(Items.IRON_INGOT)) forcedOre = "iron";
-            else if (simFilterItem.is(Items.RAW_COPPER) || simFilterItem.is(Items.COPPER_INGOT)) forcedOre = "copper";
-            else if (simFilterItem.is(Items.RAW_GOLD) || simFilterItem.is(Items.GOLD_INGOT)) forcedOre = "gold";
-            else if (simFilterItem.is(Items.LAPIS_LAZULI)) forcedOre = "lapis";
-            else if (simFilterItem.is(Items.REDSTONE)) forcedOre = "redstone";
-            else if (simFilterItem.is(Items.DIAMOND)) forcedOre = "diamond";
-            else if (simFilterItem.is(Items.AMETHYST_SHARD)) forcedOre = "amethyst";
-        }
+        String ore = switch (zone) {
+            case 0 -> {
+                String[] pool = {"coal", "iron", "flint"};
+                yield pool[rng.nextInt(pool.length)];
+            }
+            case 1 -> {
+                String[] pool = {"iron", "copper", "gold", "lapis"};
+                yield pool[rng.nextInt(pool.length)];
+            }
+            default -> {
+                String[] pool = {"gold", "redstone",
+                    (simCollarTier >= 3 ? "diamond" : "redstone"),
+                    "amethyst"};
+                yield pool[rng.nextInt(pool.length)];
+            }
+        };
 
-        String ore;
-        if (forcedOre != null && rng.nextFloat() < 0.70f) {
-            ore = forcedOre;
-        } else {
-            ore = switch (zone) {
-                case 0 -> {
-                    String[] pool = {"coal", "iron", "flint"};
-                    yield pool[rng.nextInt(pool.length)];
-                }
-                case 1 -> {
-                    String[] pool = {"iron", "copper", "gold", "lapis"};
-                    yield pool[rng.nextInt(pool.length)];
-                }
-                default -> {
-                    String[] pool = {"gold", "redstone",
-                        (simCollarTier >= 3 ? "diamond" : "redstone"),
-                        "amethyst"};
-                    yield pool[rng.nextInt(pool.length)];
-                }
-            };
-        }
-
-        // Fortune multiplier: (1 + fortune * 0.5)
         float fortuneMultiplier = 1.0f + simFortune * 0.5f;
 
         switch (ore) {
@@ -886,9 +670,331 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
             "Lost the vein. Took time to reorient."
         };
         addLogLine(hazardLines[rng.nextInt(hazardLines.length)]);
-
         applyHazardCost(level, rng);
     }
+
+    // ======== Woodcutter events ========
+
+    private void rollWoodcutterEvent(Level level, int zone) {
+        Random rng = new Random(level.getGameTime() + simElapsedTicks + 3);
+        int[] weights = switch (zone) {
+            case 0 -> new int[]{50, 40, 10};
+            case 1 -> new int[]{30, 45, 25};
+            default -> new int[]{20, 35, 45};
+        };
+        int roll = rng.nextInt(100);
+
+        if (roll < weights[0]) {
+            String[] travelLines = {
+                "Deep into the trees.",
+                "Bark and pine needles underfoot.",
+                "Sound of wind through the canopy.",
+                "A clearing, then more forest.",
+                "Old growth. Roots everywhere.",
+                "Light through the branches."
+            };
+            addLogLine(travelLines[rng.nextInt(travelLines.length)]);
+            if (!applyWoodcutterDurability(level, 1)) {
+                completeSimulation(level, false, false);
+            }
+        } else if (roll < weights[0] + weights[1]) {
+            rollWoodcutterDiscovery(level, zone, rng);
+            if (!applyWoodcutterDurability(level, 3)) {
+                completeSimulation(level, false, false);
+            }
+        } else {
+            rollWoodcutterHazard(level, rng);
+            if (!applyWoodcutterDurability(level, 1)) {
+                completeSimulation(level, false, false);
+            }
+        }
+    }
+
+    private void rollWoodcutterDiscovery(Level level, int zone, Random rng) {
+        // Axe speed scales yield: iron axe (speed 6) = baseline 1.0x
+        float axeMultiplier = Math.max(0.5f, simAxeSpeed / 6.0f);
+
+        switch (simWoodBiome) {
+            case "jungle" -> {
+                int logs = Math.max(1, (int)((1 + rng.nextInt(4)) * axeMultiplier));
+                simPendingLoot.add(new ItemStack(Items.JUNGLE_LOG, logs));
+                if (rng.nextFloat() < 0.4f) simPendingLoot.add(new ItemStack(Items.BAMBOO, 1 + rng.nextInt(3)));
+                if (rng.nextFloat() < 0.25f) simPendingLoot.add(new ItemStack(Items.COCOA_BEANS, 1 + rng.nextInt(2)));
+                if (rng.nextFloat() < 0.2f) simPendingLoot.add(new ItemStack(Items.JUNGLE_SAPLING, 1));
+                String[] lines = {"Dense jungle. Machete work.", "Vines and thick trunks.", "Found a good stand of jungle trees."};
+                addLogLine(lines[rng.nextInt(lines.length)]);
+            }
+            case "dark_forest" -> {
+                int logs = Math.max(1, (int)((1 + rng.nextInt(4)) * axeMultiplier));
+                simPendingLoot.add(new ItemStack(Items.DARK_OAK_LOG, logs));
+                if (rng.nextFloat() < 0.2f) simPendingLoot.add(new ItemStack(Items.DARK_OAK_SAPLING, 1));
+                if (rng.nextFloat() < 0.15f) simPendingLoot.add(new ItemStack(Items.BROWN_MUSHROOM, 1 + rng.nextInt(2)));
+                if (rng.nextFloat() < 0.15f) simPendingLoot.add(new ItemStack(Items.RED_MUSHROOM, 1));
+                String[] lines = {"Dark canopy. Barely any light.", "Ancient dark oaks. Hard wood.", "Mushrooms at the base of every trunk."};
+                addLogLine(lines[rng.nextInt(lines.length)]);
+            }
+            case "taiga" -> {
+                int logs = Math.max(1, (int)((1 + rng.nextInt(4)) * axeMultiplier));
+                simPendingLoot.add(new ItemStack(Items.SPRUCE_LOG, logs));
+                if (rng.nextFloat() < 0.3f) simPendingLoot.add(new ItemStack(Items.SWEET_BERRIES, 1 + rng.nextInt(3)));
+                if (rng.nextFloat() < 0.2f) simPendingLoot.add(new ItemStack(Items.SPRUCE_SAPLING, 1));
+                if (rng.nextFloat() < 0.1f) simPendingLoot.add(new ItemStack(Items.STICK, 2 + rng.nextInt(4)));
+                String[] lines = {"Spruce stands. Cold air.", "Tall conifers, quiet.", "Pine needles everywhere."};
+                addLogLine(lines[rng.nextInt(lines.length)]);
+            }
+            case "savanna" -> {
+                int logs = Math.max(1, (int)((1 + rng.nextInt(3)) * axeMultiplier));
+                simPendingLoot.add(new ItemStack(Items.ACACIA_LOG, logs));
+                if (rng.nextFloat() < 0.2f) simPendingLoot.add(new ItemStack(Items.ACACIA_SAPLING, 1));
+                String[] lines = {"Scattered acacia. Flat light.", "Twisted trunks in the savanna heat.", "A lone acacia. Took what was there."};
+                addLogLine(lines[rng.nextInt(lines.length)]);
+            }
+            case "cherry" -> {
+                int logs = Math.max(1, (int)((1 + rng.nextInt(3)) * axeMultiplier));
+                simPendingLoot.add(new ItemStack(Items.CHERRY_LOG, logs));
+                if (rng.nextFloat() < 0.3f) simPendingLoot.add(new ItemStack(Items.CHERRY_SAPLING, 1));
+                if (rng.nextFloat() < 0.4f) simPendingLoot.add(new ItemStack(Items.PINK_PETALS, 1 + rng.nextInt(3)));
+                String[] lines = {"Petals drifting down.", "Cherry blossoms overhead.", "Beautiful grove. Worked carefully."};
+                addLogLine(lines[rng.nextInt(lines.length)]);
+            }
+            case "mangrove" -> {
+                int logs = Math.max(1, (int)((1 + rng.nextInt(3)) * axeMultiplier));
+                simPendingLoot.add(new ItemStack(Items.MANGROVE_LOG, logs));
+                if (rng.nextFloat() < 0.3f) simPendingLoot.add(new ItemStack(Items.MANGROVE_PROPAGULE, 1));
+                if (rng.nextFloat() < 0.2f) simPendingLoot.add(new ItemStack(Items.MANGROVE_ROOTS, 1 + rng.nextInt(2)));
+                String[] lines = {"Roots in the water.", "Tangled mangrove. Hard going.", "Salty air. Good timber."};
+                addLogLine(lines[rng.nextInt(lines.length)]);
+            }
+            default -> { // "forest" and everything else
+                int logs = Math.max(1, (int)((1 + rng.nextInt(4)) * axeMultiplier));
+                boolean birch = rng.nextBoolean();
+                simPendingLoot.add(new ItemStack(birch ? Items.BIRCH_LOG : Items.OAK_LOG, logs));
+                if (rng.nextFloat() < 0.25f) simPendingLoot.add(new ItemStack(Items.APPLE, 1 + rng.nextInt(2)));
+                if (rng.nextFloat() < 0.15f) simPendingLoot.add(new ItemStack(birch ? Items.BIRCH_SAPLING : Items.OAK_SAPLING, 1));
+                String[] lines = {"Good stand of oak.", "Birch grove, white bark.", "Mixed forest. Decent timber.", "Quiet woods. Productive."};
+                addLogLine(lines[rng.nextInt(lines.length)]);
+            }
+        }
+    }
+
+    private void rollWoodcutterHazard(Level level, Random rng) {
+        String[] hazardLines = {
+            "Tree fell the wrong way. Close call.",
+            "Beehive in the branches. Stings.",
+            "Hostile mob in the undergrowth.",
+            "Fog rolling in. Slowed down.",
+            "Thorns and thick brush.",
+            "Roots tangled the path. Lost time."
+        };
+        addLogLine(hazardLines[rng.nextInt(hazardLines.length)]);
+        applyHazardCost(level, rng);
+    }
+
+    // ======== Shared hazard cost ========
+
+    private void applyHazardCost(Level level, Random rng) {
+        simSatiation -= 2;
+        if (simSatiation <= 0) {
+            int nutrition = eatFoodFromWolfBag(level);
+            if (nutrition > 0) {
+                simSatiation += nutrition;
+            } else {
+                simInjuryCount++;
+                if (simInjuryCount >= 3) {
+                    boolean death = simArmorPoints < 4 && rng.nextFloat() < 0.12f;
+                    completeSimulation(level, true, death);
+                    return;
+                }
+                addLogLine("Running low. Pushing on.");
+            }
+        }
+    }
+
+    private int eatFoodFromWolfBag(Level level) {
+        if (!(level instanceof ServerLevel sl)) return 0;
+        Entity entity = sl.getEntity(simWolfUuid);
+        if (!(entity instanceof Wolf wolf)) return 0;
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+
+        for (int i = 0; i < bag.size(); i++) {
+            ItemStack stack = bag.get(i);
+            if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
+                var food = stack.get(DataComponents.FOOD);
+                int nutrition = food != null ? food.nutrition() : 4;
+                stack.shrink(1);
+                if (stack.isEmpty()) bag.set(i, ItemStack.EMPTY);
+                return nutrition;
+            }
+        }
+        return 0;
+    }
+
+    // ======== Pickaxe durability ========
+
+    private static final int TOOL_LOW_THRESHOLD = 5;
+
+    private boolean applyMinerDurability(Level level, int baseDamage) {
+        return applyToolDurability(level, baseDamage, ItemTags.PICKAXES, "pickaxe",
+            "No pickaxe left. Heading back.",
+            "Pickaxe too precious to break. Heading back.",
+            "Pickaxe shattered.",
+            "Last pickaxe gone. Heading back.",
+            "Switched to spare pickaxe.",
+            "Pickaxe nearly done. Heading back.");
+    }
+
+    private boolean applyWoodcutterDurability(Level level, int baseDamage) {
+        return applyToolDurability(level, baseDamage, ItemTags.AXES, "axe",
+            "No axe left. Heading back.",
+            "Axe too precious to break. Heading back.",
+            "Axe handle shattered.",
+            "Last axe gone. Heading back.",
+            "Switched to spare axe.",
+            "Axe nearly done. Heading back.");
+    }
+
+    private boolean applyToolDurability(Level level, int baseDamage,
+            net.minecraft.tags.TagKey<net.minecraft.world.item.Item> toolTag,
+            String toolName,
+            String noToolMsg, String enchantedProtectMsg, String brokeMsg,
+            String lastGoneMsg, String switchedMsg, String lowMsg) {
+        if (!(level instanceof ServerLevel sl)) return true;
+        Entity entity = sl.getEntity(simWolfUuid);
+        if (!(entity instanceof Wolf wolf)) return true;
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+
+        int bestSlot = -1;
+        float bestSpeed = 0;
+        BlockState testBlock = toolTag == ItemTags.PICKAXES
+            ? Blocks.STONE.defaultBlockState()
+            : Blocks.OAK_LOG.defaultBlockState();
+
+        for (int i = 0; i < bag.size(); i++) {
+            ItemStack stack = bag.get(i);
+            if (!stack.isEmpty() && stack.is(toolTag)) {
+                float speed = stack.getDestroySpeed(testBlock);
+                if (speed > bestSpeed) {
+                    bestSpeed = speed;
+                    bestSlot = i;
+                }
+            }
+        }
+
+        if (bestSlot < 0) {
+            addLogLine(noToolMsg);
+            return false;
+        }
+
+        ItemStack tool = bag.get(bestSlot);
+        int unbreaking = 0;
+        boolean isEnchanted = tool.isEnchanted();
+        for (var entry : tool.getEnchantments().entrySet()) {
+            if (entry.getKey().is(Enchantments.UNBREAKING)) {
+                unbreaking = entry.getIntValue();
+            }
+        }
+
+        int currentDamage = tool.getDamageValue();
+        int maxDurability = tool.getMaxDamage();
+        int remainingBefore = maxDurability - currentDamage;
+
+        if (isEnchanted && remainingBefore <= 1) {
+            if (hasSpare(bag, bestSlot, toolTag)) {
+                switchToNextTool(bag, bestSlot, toolTag, testBlock, toolTag == ItemTags.PICKAXES);
+                addLogLine(switchedMsg);
+                return true;
+            }
+            addLogLine(enchantedProtectMsg);
+            return false;
+        }
+
+        int actualDamage = 0;
+        for (int d = 0; d < baseDamage; d++) {
+            if (unbreaking == 0 || level.getRandom().nextInt(unbreaking + 1) == 0) {
+                actualDamage++;
+            }
+        }
+        if (actualDamage == 0) return true;
+
+        int newDamage = currentDamage + actualDamage;
+
+        if (isEnchanted && newDamage >= maxDurability) {
+            tool.setDamageValue(maxDurability - 1);
+            if (hasSpare(bag, bestSlot, toolTag)) {
+                switchToNextTool(bag, bestSlot, toolTag, testBlock, toolTag == ItemTags.PICKAXES);
+                addLogLine(switchedMsg);
+                return true;
+            }
+            addLogLine(enchantedProtectMsg);
+            return false;
+        }
+
+        if (newDamage >= maxDurability) {
+            bag.set(bestSlot, ItemStack.EMPTY);
+            addLogLine(brokeMsg);
+            if (!switchToNextTool(bag, -1, toolTag, testBlock, toolTag == ItemTags.PICKAXES)) {
+                addLogLine(lastGoneMsg);
+                return false;
+            }
+            return true;
+        }
+
+        tool.setDamageValue(newDamage);
+
+        int remainingAfter = maxDurability - newDamage;
+        if (remainingAfter < TOOL_LOW_THRESHOLD && !hasSpare(bag, bestSlot, toolTag)) {
+            addLogLine(lowMsg);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean hasSpare(NonNullList<ItemStack> bag, int excludeSlot,
+            net.minecraft.tags.TagKey<net.minecraft.world.item.Item> toolTag) {
+        for (int i = 0; i < bag.size(); i++) {
+            if (i == excludeSlot) continue;
+            if (!bag.get(i).isEmpty() && bag.get(i).is(toolTag)) return true;
+        }
+        return false;
+    }
+
+    private boolean switchToNextTool(NonNullList<ItemStack> bag, int excludeSlot,
+            net.minecraft.tags.TagKey<net.minecraft.world.item.Item> toolTag,
+            BlockState testBlock, boolean updatePickaxeStats) {
+        int bestSlot = -1;
+        float bestSpeed = 0;
+        for (int i = 0; i < bag.size(); i++) {
+            if (i == excludeSlot) continue;
+            ItemStack stack = bag.get(i);
+            if (!stack.isEmpty() && stack.is(toolTag)) {
+                float speed = stack.getDestroySpeed(testBlock);
+                if (speed > bestSpeed) {
+                    bestSpeed = speed;
+                    bestSlot = i;
+                }
+            }
+        }
+        if (bestSlot < 0) return false;
+
+        if (updatePickaxeStats) {
+            ItemStack tool = bag.get(bestSlot);
+            simPickaxeSpeed = tool.getDestroySpeed(testBlock);
+            simFortune = 0;
+            simSilkTouch = false;
+            for (var entry : tool.getEnchantments().entrySet()) {
+                if (entry.getKey().is(Enchantments.FORTUNE)) simFortune = Math.max(simFortune, entry.getIntValue());
+                if (entry.getKey().is(Enchantments.SILK_TOUCH) && entry.getIntValue() > 0) simSilkTouch = true;
+            }
+        } else {
+            simAxeSpeed = bag.get(bestSlot).getDestroySpeed(testBlock);
+        }
+        return true;
+    }
+
+    // ======== Completion ========
 
     private void completeSimulation(Level level, boolean failed, boolean death) {
         if (!"running".equals(simState)) return;
@@ -899,7 +1005,6 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
             if (level instanceof ServerLevel sl) {
                 Entity entity = sl.getEntity(simWolfUuid);
                 if (entity instanceof Wolf wolf) {
-                    // Drop pending loot at bed pos
                     for (ItemStack stack : simPendingLoot) {
                         ItemEntity drop = new ItemEntity(
                             sl, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5, stack.copy());
@@ -916,7 +1021,6 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
             triggerWolfArrival(level);
         } else {
             addLogLine("Home. Bag heavy.");
-            // Deposit pending loot into bed storage
             for (ItemStack stack : simPendingLoot) {
                 ItemStack remaining = tryInsert(stack);
                 if (!remaining.isEmpty()) {
@@ -940,7 +1044,6 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         simState = "complete";
         addLogLine("Called back early.");
 
-        // Deposit pending loot (same as normal completion)
         for (ItemStack stack : simPendingLoot) {
             ItemStack remaining = tryInsert(stack);
             if (!remaining.isEmpty() && this.level instanceof ServerLevel sl) {
@@ -964,14 +1067,12 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
 
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
 
-        // Pick arrival point ~10-14 blocks from bed in a random direction
         Random rng = new Random(level.getGameTime());
         float angle = rng.nextFloat() * 2 * (float) Math.PI;
         int dist = 10 + rng.nextInt(5);
         int arrX = worldPosition.getX() + (int) (Math.cos(angle) * dist);
         int arrZ = worldPosition.getZ() + (int) (Math.sin(angle) * dist);
         int arrY = worldPosition.getY();
-        // Find ground at arrival point
         for (int dy = 3; dy >= -3; dy--) {
             BlockPos check = new BlockPos(arrX, arrY + dy, arrZ);
             if (level.getBlockState(check.below()).isSolid() && level.getBlockState(check).isAir()) {
@@ -1000,7 +1101,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         setChanged();
     }
 
-    // ======== Biome helper ========
+    // ======== Biome helpers ========
 
     private static String getBiomeCategory(Level level, BlockPos pos) {
         Holder<Biome> holder = level.getBiome(pos);
@@ -1014,6 +1115,22 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         if (path.contains("ocean") || path.contains("beach") || path.contains("swamp") || path.contains("mangrove")) return "ocean";
         if (path.contains("plains") || path.contains("meadow") || path.contains("savanna")) return "plains";
         return "other";
+    }
+
+    private static String getWoodBiome(Level level, BlockPos pos) {
+        Holder<Biome> holder = level.getBiome(pos);
+        Identifier loc = holder.unwrapKey()
+            .map(k -> k.identifier()).orElse(null);
+        if (loc == null) return "forest";
+        String path = loc.getPath();
+        if (path.contains("bamboo") || path.contains("jungle")) return "jungle";
+        if (path.contains("cherry")) return "cherry";
+        if (path.contains("dark_forest")) return "dark_forest";
+        if (path.contains("mangrove")) return "mangrove";
+        if (path.contains("savanna")) return "savanna";
+        if (path.contains("taiga") || path.contains("snowy_forest") || path.contains("spruce")
+                || path.contains("grove") || path.contains("mountain") || path.contains("peak")) return "taiga";
+        return "forest";
     }
 
     // ======== Simulation state accessors ========

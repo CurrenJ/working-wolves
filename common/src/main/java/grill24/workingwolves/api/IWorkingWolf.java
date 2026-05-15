@@ -14,9 +14,6 @@ public interface IWorkingWolf {
     int workingwolves$getCollarTier();
     void workingwolves$setCollarTier(int tier);
 
-    @Nullable String workingwolves$getWolfClass();
-    void workingwolves$setWolfClass(@Nullable String wolfClass);
-
     @Nullable BlockPos workingwolves$getBedPos();
     void workingwolves$setBedPos(@Nullable BlockPos pos);
 
@@ -30,9 +27,6 @@ public interface IWorkingWolf {
     void workingwolves$setExpeditionDuration(int duration);
 
     NonNullList<ItemStack> workingwolves$getBagInventory();
-
-    ItemStack workingwolves$getFilterItem();
-    void workingwolves$setFilterItem(ItemStack stack);
 
     ItemStack workingwolves$getMouthItem();
     void workingwolves$setMouthItem(ItemStack stack);

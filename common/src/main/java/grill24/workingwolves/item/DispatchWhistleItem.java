@@ -1,6 +1,7 @@
 package grill24.workingwolves.item;
 
 import grill24.workingwolves.api.IWorkingWolf;
+import grill24.workingwolves.inventory.WolfBagHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -61,19 +62,31 @@ public class DispatchWhistleItem extends Item {
                 return InteractionResult.SUCCESS;
             }
 
-            // Only hunters and miners can be dispatched
-            String wolfClass = accessor.workingwolves$getWolfClass();
-            if (!"hunter".equals(wolfClass) && !"miner".equals(wolfClass)) {
-                player.sendSystemMessage(
-                    Component.translatable("message.workingwolves.no_collar"));
-                return InteractionResult.FAIL;
-            }
-
             // Guard: wolf must have a bed assigned
             BlockPos bedPos = accessor.workingwolves$getBedPos();
             if (bedPos == null) {
                 player.sendSystemMessage(
                     Component.translatable("message.workingwolves.no_bed_assigned"));
+                return InteractionResult.FAIL;
+            }
+
+            // Guard: wolf needs at least one expedition tool (weapon in bag; pickaxe/axe in bag or bed)
+            boolean hasExpeditionTool = WolfBagHelper.hasAnyExpeditionTool(accessor);
+            if (!hasExpeditionTool && wolf.level().getBlockEntity(bedPos) instanceof grill24.workingwolves.blockentity.DogBedBlockEntity bedBE) {
+                for (int i = 0; i < bedBE.getContainerSize(); i++) {
+                    ItemStack bedStack = bedBE.getItem(i);
+                    if (!bedStack.isEmpty() && (
+                            bedStack.is(net.minecraft.tags.ItemTags.PICKAXES) ||
+                            bedStack.is(net.minecraft.tags.ItemTags.AXES) ||
+                            WolfBagHelper.isHuntingWeapon(bedStack))) {
+                        hasExpeditionTool = true;
+                        break;
+                    }
+                }
+            }
+            if (!hasExpeditionTool) {
+                player.sendSystemMessage(
+                    Component.translatable("message.workingwolves.no_expedition_tools"));
                 return InteractionResult.FAIL;
             }
 
@@ -84,9 +97,9 @@ public class DispatchWhistleItem extends Item {
                     totalFood += stack.getCount();
                 }
             }
-            if (wolf.level().getBlockEntity(bedPos) instanceof grill24.workingwolves.blockentity.DogBedBlockEntity bedBE) {
-                for (int i = 0; i < bedBE.getContainerSize(); i++) {
-                    ItemStack bedStack = bedBE.getItem(i);
+            if (wolf.level().getBlockEntity(bedPos) instanceof grill24.workingwolves.blockentity.DogBedBlockEntity bedBE2) {
+                for (int i = 0; i < bedBE2.getContainerSize(); i++) {
+                    ItemStack bedStack = bedBE2.getItem(i);
                     if (!bedStack.isEmpty() && bedStack.has(net.minecraft.core.component.DataComponents.FOOD)) {
                         totalFood += bedStack.getCount();
                     }
@@ -96,31 +109,6 @@ public class DispatchWhistleItem extends Item {
                 player.sendSystemMessage(
                     Component.translatable("message.workingwolves.no_food_for_expedition"));
                 return InteractionResult.FAIL;
-            }
-
-            // Guard: miners must have a pickaxe in bag or bed inventory
-            if ("miner".equals(wolfClass)) {
-                boolean hasPickaxe = false;
-                for (ItemStack stack : accessor.workingwolves$getBagInventory()) {
-                    if (!stack.isEmpty() && stack.is(net.minecraft.tags.ItemTags.PICKAXES)) {
-                        hasPickaxe = true;
-                        break;
-                    }
-                }
-                if (!hasPickaxe && wolf.level().getBlockEntity(bedPos) instanceof grill24.workingwolves.blockentity.DogBedBlockEntity bedBE2) {
-                    for (int i = 0; i < bedBE2.getContainerSize(); i++) {
-                        ItemStack bedStack = bedBE2.getItem(i);
-                        if (!bedStack.isEmpty() && bedStack.is(net.minecraft.tags.ItemTags.PICKAXES)) {
-                            hasPickaxe = true;
-                            break;
-                        }
-                    }
-                }
-                if (!hasPickaxe) {
-                    player.sendSystemMessage(
-                        Component.translatable("message.workingwolves.no_pickaxe"));
-                    return InteractionResult.FAIL;
-                }
             }
 
             // Start departure

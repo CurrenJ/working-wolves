@@ -13,22 +13,20 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.item.ItemStack;
 
-public record WolfDataSyncPacket(int wolfId, int collarTier, String wolfClass,
+public record WolfDataSyncPacket(int wolfId, int collarTier,
                                  BlockPos bedPos, String expeditionState,
                                  long expeditionStartTime, int expeditionDuration,
-                                 ItemStack filterItem, ItemStack mouthItem) implements CustomPacketPayload {
+                                 ItemStack mouthItem) implements CustomPacketPayload {
 
     public static final Type<WolfDataSyncPacket> TYPE = new Type<>(WorkingWolves.id("wolf_data_sync"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, WolfDataSyncPacket> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.VAR_INT, WolfDataSyncPacket::wolfId,
         ByteBufCodecs.VAR_INT, WolfDataSyncPacket::collarTier,
-        ByteBufCodecs.STRING_UTF8, WolfDataSyncPacket::wolfClass,
         BlockPos.STREAM_CODEC, WolfDataSyncPacket::bedPos,
         ByteBufCodecs.STRING_UTF8, WolfDataSyncPacket::expeditionState,
         ByteBufCodecs.LONG, WolfDataSyncPacket::expeditionStartTime,
         ByteBufCodecs.VAR_INT, WolfDataSyncPacket::expeditionDuration,
-        ItemStack.OPTIONAL_STREAM_CODEC, WolfDataSyncPacket::filterItem,
         ItemStack.OPTIONAL_STREAM_CODEC, WolfDataSyncPacket::mouthItem,
         WolfDataSyncPacket::new
     );
@@ -43,12 +41,10 @@ public record WolfDataSyncPacket(int wolfId, int collarTier, String wolfClass,
         return new WolfDataSyncPacket(
             wolf.getId(),
             mixin.workingwolves$getCollarTier(),
-            mixin.workingwolves$getWolfClass() != null ? mixin.workingwolves$getWolfClass() : "",
             mixin.workingwolves$getBedPos() != null ? mixin.workingwolves$getBedPos() : BlockPos.ZERO,
             mixin.workingwolves$getExpeditionState(),
             mixin.workingwolves$getExpeditionStartTime(),
             mixin.workingwolves$getExpeditionDuration(),
-            mixin.workingwolves$getFilterItem(),
             mixin.workingwolves$getMouthItem()
         );
     }
@@ -59,12 +55,10 @@ public record WolfDataSyncPacket(int wolfId, int collarTier, String wolfClass,
         if (entity instanceof Wolf wolf) {
             IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
             mixin.workingwolves$setCollarTier(packet.collarTier());
-            mixin.workingwolves$setWolfClass(packet.wolfClass().isEmpty() ? null : packet.wolfClass());
             mixin.workingwolves$setBedPos(packet.bedPos().equals(BlockPos.ZERO) ? null : packet.bedPos());
             mixin.workingwolves$setExpeditionState(packet.expeditionState());
             mixin.workingwolves$setExpeditionStartTime(packet.expeditionStartTime());
             mixin.workingwolves$setExpeditionDuration(packet.expeditionDuration());
-            mixin.workingwolves$setFilterItem(packet.filterItem());
             mixin.workingwolves$setMouthItem(packet.mouthItem());
             if (!packet.mouthItem().isEmpty()) {
                 WorkingWolves.LOGGER.info("WolfDataSync: received mouth item '{}' for wolf {}", packet.mouthItem().getDisplayName().getString(), packet.wolfId());

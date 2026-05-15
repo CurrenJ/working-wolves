@@ -6,15 +6,15 @@
 
 Fields exposed:
 - `collarTier` (int, 0 = no collar)
-- `wolfClass` (nullable String: "retriever", "hunter", "miner")
 - `bedPos` (nullable BlockPos)
 - `expeditionState` (String: "idle", "departing", "on_expedition", "returning")
 - `expeditionStartTime` (long, game ticks)
 - `expeditionDuration` (int, ticks)
 - `bagInventory` (NonNullList\<ItemStack\>, sized dynamically)
-- `filterItem` (ItemStack, held in mouth for filtering)
 - `unlockedSlots` (int, bonus bag slots from netherite ingots)
-- `miningPos` / `miningProgress` (transient mining state, not persisted)
+- `miningPos` / `miningProgress` (transient mining/chopping state, not persisted)
+
+Note: `wolfClass` and `filterItem` were removed. Role is now auto-detected from bag contents at dispatch and at goal activation. Use `WolfBagHelper.has*Tool/Weapon` helpers for role checks.
 
 Helper methods:
 - `resizeBag()` — rebuilds bag NonNullList to new base size + unlocked slots
@@ -33,13 +33,11 @@ Helper methods:
 | Key | Type |
 |---|---|
 | `ww_collar_tier` | int |
-| `ww_wolf_class` | String (nullable) |
 | `ww_bed_pos` | BlockPos (nullable) |
 | `ww_expedition_state` | String |
 | `ww_expedition_start_time` | long |
 | `ww_expedition_duration` | int |
 | `ww_bag` | `ItemStack.OPTIONAL_CODEC.listOf()` |
-| `ww_filter_item` | `ItemStack.OPTIONAL_CODEC` |
 | `ww_unlocked_slots` | int |
 | `ww_departure_timer` | int |
 | `ww_dep_x` / `ww_dep_y` / `ww_dep_z` | int (only stored when non-null) |
@@ -58,48 +56,57 @@ On load, the wolf's collar color is restored based on `collarTier` (BROWN/GRAY/Y
 
 ### Pathfinding budget
 
-`IWorkingWolf.workingwolves$applyNavBudget(int range)` is a default method that sets `pathFinder.maxVisitedNodes = range² / 4` and `navigation.requiredPathLength = range`. Each goal calls it in `start()` with its own config range:
-
-- `HunterGoal`: `Config.hunterScanRange` (32)
-- `RetrieverGoal`: `Config.retrieverScanRange` (64)
-- `MinerGoal`: `Config.detectionRange` (64)
-- `ReturnToBaseGoal`: `64` (matches waypoint segment distance)
-
-Each goal pays only for the range it actually needs — no shared max overhead.
+`IWorkingWolf.workingwolves$applyNavBudget(int range)` is a default method that sets `pathFinder.maxVisitedNodes = range² / 4` and `navigation.requiredPathLength = range`. Each goal calls it in `start()` with its own config range.
 
 ### AI goal registration
 
-`@Inject(method = "registerGoals", at = @At("TAIL"))` adds 6 goals:
+`@Inject(method = "registerGoals", at = @At("TAIL"))` adds 5 goals:
 
 | Priority | Goal | Purpose |
 |---|---|---|
 | 0 | `AntiStuckGoal` | Teleport if stuck 30s |
 | 0 | `SelfPreservationGoal` | Lava/fire/fall/crowding avoidance |
 | 1 | `ReturnToBaseGoal` | Navigate back to bed |
-| 2 | `RetrieverGoal` | Collect dropped items near bed |
-| 2 | `HunterGoal` | Kill hostiles on expedition |
-| 2 | `MinerGoal` | Mine ores on expedition |
+| 2 | `HunterGoal` | Kill hostiles near owner (bag has hunting weapon) |
+| 2 | `MinerGoal` | Mine ores near owner (bag has pickaxe) |
+| 2 | `WoodcutterGoal` | Chop logs near owner (bag has axe) |
+| 2 | `RetrieverGoal` | Collect dropped items near bed (no expedition tools in bag) |
+
+## Role Detection
+
+Role is determined from bag contents — there is no explicit `wolfClass` field.
+
+| Tool in bag | Role activated |
+|-------------|---------------|
+| Pickaxe | Mining (expedition + `MinerGoal`) |
+| Sword / Bow / Crossbow / Mace | Hunting (expedition + `HunterGoal`) |
+| Axe | Woodcutting (expedition + `WoodcutterGoal`) |
+| None of the above | Retriever (`RetrieverGoal` only) |
+
+Axes count as hunting weapons for `isMeleeWeapon()` (used to equip in combat), but for **role detection** only swords/bows/mace trigger hunting. An axe-only wolf is a woodcutter, not a hunter.
+
+Helpers in `WolfBagHelper`:
+- `hasHuntingWeapon(mixin)` — swords, bows, crossbows, mace
+- `hasMiningTool(mixin)` — pickaxes
+- `hasWoodcuttingTool(mixin)` — axes
+- `hasAnyExpeditionTool(mixin)` — any of the above
 
 ## Network Sync
 
 `WolfDataSyncPacket` (`common/.../network/WolfDataSyncPacket.java`) — a `CustomPacketPayload` record with type `workingwolves:wolf_data_sync`.
 
-Fields: `wolfId`, `collarTier`, `wolfClass`, `bedPos`, `expeditionState`, `expeditionStartTime`, `expeditionDuration`, `filterItem`.
+Fields: `wolfId`, `collarTier`, `bedPos`, `expeditionState`, `expeditionStartTime`, `expeditionDuration`, `mouthItem`.
 
-`StreamCodec` uses composite: `VAR_INT`, `VAR_INT`, `STRING_UTF8`, `BlockPos.STREAM_CODEC`, `STRING_UTF8`, `LONG`, `VAR_INT`, `ItemStack.OPTIONAL_STREAM_CODEC`.
-
-`WorkingWolvesPackets.syncWolfData(wolf)` calls `sendToTracking.accept(wolf, WolfDataSyncPacket.fromWolf(wolf))`. The `sendToTracking` consumer is set by platform init (NeoForge `PacketDistributor.sendToPlayersTrackingEntity`, Fabric `PayloadTypeRegistry.playS2C` + `PlayerLookup.tracking`).
+`WorkingWolvesPackets.syncWolfData(wolf)` calls `sendToTracking.accept(wolf, WolfDataSyncPacket.fromWolf(wolf))`.
 
 ## Data Components
 
-`ModDataComponents` registers 7 `DataComponentType<?>` holders (used on items, not directly used in current code — the mixin stores data directly on the wolf entity):
+`ModDataComponents` registers 5 `DataComponentType<?>` holders:
 
-- `wolf_class` — String
 - `collar_tier` — Integer
 - `bed_position` — BlockPos
 - `expedition_state` — String
 - `expedition_start_time` — Long
 - `expedition_duration` — Integer
-- `filter_item` — ItemStack
 
 All use `.persistent(Codec).networkSynchronized(StreamCodec)` builder pattern.

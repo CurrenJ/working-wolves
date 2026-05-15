@@ -1,12 +1,12 @@
 package grill24.workingwolves.mixin;
 
-import com.mojang.serialization.Codec;
 import grill24.workingwolves.Config;
 import grill24.workingwolves.ai.AntiStuckGoal;
 import grill24.workingwolves.ai.HunterGoal;
 import grill24.workingwolves.ai.MinerGoal;
 import grill24.workingwolves.ai.ReturnToBaseGoal;
 import grill24.workingwolves.ai.RetrieverGoal;
+import grill24.workingwolves.ai.WoodcutterGoal;
 import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.blockentity.DogBedBlockEntity;
 import grill24.workingwolves.inventory.WolfBagContainer;
@@ -56,10 +56,6 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
 
     @Unique
     @Nullable
-    private String workingwolves$wolfClass = null;
-
-    @Unique
-    @Nullable
     private BlockPos workingwolves$bedPos = null;
 
     @Unique
@@ -73,9 +69,6 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
 
     @Unique
     private NonNullList<ItemStack> workingwolves$bagInventory = NonNullList.withSize(0, ItemStack.EMPTY);
-
-    @Unique
-    private ItemStack workingwolves$filterItem = ItemStack.EMPTY;
 
     @Unique
     private int workingwolves$unlockedSlots = 0;
@@ -123,13 +116,11 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
     private void workingwolves$addAdditionalSaveData(ValueOutput output, CallbackInfo ci) {
         output.putInt("ww_collar_tier", this.workingwolves$collarTier);
-        output.storeNullable("ww_wolf_class", Codec.STRING, this.workingwolves$wolfClass);
         output.storeNullable("ww_bed_pos", BlockPos.CODEC, this.workingwolves$bedPos);
         output.putString("ww_expedition_state", this.workingwolves$expeditionState);
         output.putLong("ww_expedition_start_time", this.workingwolves$expeditionStartTime);
         output.putInt("ww_expedition_duration", this.workingwolves$expeditionDuration);
         output.store("ww_bag", ItemStack.OPTIONAL_CODEC.listOf(), this.workingwolves$bagInventory);
-        output.store("ww_filter_item", ItemStack.OPTIONAL_CODEC, this.workingwolves$filterItem);
         output.putInt("ww_unlocked_slots", this.workingwolves$unlockedSlots);
         output.putInt("ww_departure_timer", workingwolves$departureTimer);
         if (workingwolves$departureTargetPos != null) {
@@ -142,7 +133,6 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void workingwolves$readAdditionalSaveData(ValueInput input, CallbackInfo ci) {
         this.workingwolves$collarTier = input.getIntOr("ww_collar_tier", 0);
-        this.workingwolves$wolfClass = input.read("ww_wolf_class", Codec.STRING).orElse(null);
         this.workingwolves$bedPos = input.read("ww_bed_pos", BlockPos.CODEC).orElse(null);
         this.workingwolves$expeditionState = input.getStringOr("ww_expedition_state", "idle");
         this.workingwolves$expeditionStartTime = input.getLongOr("ww_expedition_start_time", 0);
@@ -155,7 +145,6 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
             }
         });
 
-        this.workingwolves$filterItem = input.read("ww_filter_item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         this.workingwolves$unlockedSlots = input.getIntOr("ww_unlocked_slots", 0);
         this.workingwolves$departureTimer = input.getIntOr("ww_departure_timer", 0);
         int depX = input.getIntOr("ww_dep_x", Integer.MIN_VALUE);
@@ -188,17 +177,6 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     @Unique
     public void workingwolves$setCollarTier(int tier) {
         this.workingwolves$collarTier = tier;
-    }
-
-    @Unique
-    @Nullable
-    public String workingwolves$getWolfClass() {
-        return this.workingwolves$wolfClass;
-    }
-
-    @Unique
-    public void workingwolves$setWolfClass(@Nullable String wolfClass) {
-        this.workingwolves$wolfClass = wolfClass;
     }
 
     @Unique
@@ -245,16 +223,6 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     @Unique
     public NonNullList<ItemStack> workingwolves$getBagInventory() {
         return this.workingwolves$bagInventory;
-    }
-
-    @Unique
-    public ItemStack workingwolves$getFilterItem() {
-        return this.workingwolves$filterItem;
-    }
-
-    @Unique
-    public void workingwolves$setFilterItem(ItemStack stack) {
-        this.workingwolves$filterItem = stack;
     }
 
     @Unique
@@ -492,8 +460,9 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
         Wolf self = (Wolf) (Object) this;
         this.goalSelector.addGoal(0, new AntiStuckGoal(self));
         this.goalSelector.addGoal(1, new ReturnToBaseGoal(self));
-        this.goalSelector.addGoal(2, new RetrieverGoal(self));
         this.goalSelector.addGoal(2, new HunterGoal(self));
         this.goalSelector.addGoal(2, new MinerGoal(self));
+        this.goalSelector.addGoal(2, new WoodcutterGoal(self));
+        this.goalSelector.addGoal(2, new RetrieverGoal(self));
     }
 }

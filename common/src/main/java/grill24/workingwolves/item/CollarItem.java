@@ -68,12 +68,6 @@ public class CollarItem extends Item {
             accessor.workingwolves$setCollarTier(tier);
             accessor.workingwolves$setExpeditionDuration(expeditionDurationTicks);
 
-            // Keep existing class or set default
-            String existingClass = accessor.workingwolves$getWolfClass();
-            if (existingClass == null) {
-                accessor.workingwolves$setWolfClass(CollarItem.getDefaultClassForTier(tier));
-            }
-
             // Resize bag if tier changed
             if (oldTier != tier) {
                 accessor.workingwolves$resizeBag();
@@ -126,15 +120,6 @@ public class CollarItem extends Item {
             case 2 -> new ItemStack(ModItems.IRON_STUDDED_COLLAR.value());
             case 3 -> new ItemStack(ModItems.GOLD_TRIMMED_COLLAR.value());
             default -> ItemStack.EMPTY;
-        };
-    }
-
-    public static String getDefaultClassForTier(int tier) {
-        return switch (tier) {
-            case 1 -> "retriever";
-            case 2 -> "hunter";
-            case 3 -> "miner";
-            default -> "retriever";
         };
     }
 

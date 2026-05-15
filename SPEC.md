@@ -2,11 +2,22 @@
 
 ## Overview
 
-Working Wolves adds roles and logistics to tamed wolves via craftable collars. Each collar tier unlocks wolf classes: Retriever, Hunter, and Miner.
+Working Wolves adds roles and logistics to tamed wolves via craftable collars. Wolf roles are determined automatically by what tools and weapons the wolf carries in its bag — no manual class assignment.
 
-Retriever wolves operate physically in the world near their bed. Hunter and Miner wolves go on **simulated expeditions** — they appear to leave, the server runs a tick-based simulation that produces loot and a live narrative log, then they return. This gives the feel of a physical expedition without the fragility of long-range pathfinding and chunk loading.
+Wolves with expedition tools go on **simulated expeditions** — they appear to leave, the server runs a tick-based simulation that produces loot and a live narrative log, then they return. This gives the feel of a physical expedition without the fragility of long-range pathfinding and chunk loading.
 
-Separately, all collared wolves support **companion mode**: when idle and near their owner, they physically assist — hunting nearby mobs, mining nearby ores — without going on expedition.
+Separately, all collared wolves support **companion mode**: when idle and near their owner, they physically assist based on their bag contents — hunting nearby mobs, mining nearby ores, chopping nearby logs — without going on expedition. Wolves with no expedition tools default to **retriever** behavior, collecting nearby dropped items.
+
+### Role detection
+
+| Tool in bag | Expedition role | Companion behavior |
+|---|---|---|
+| Pickaxe | Mining | `MinerGoal` — mines ores near owner |
+| Sword / Bow / Crossbow / Mace | Hunting | `HunterGoal` — hunts hostiles near owner |
+| Axe | Woodcutting | `WoodcutterGoal` — chops logs near owner |
+| None | — (no expedition) | `RetrieverGoal` — collects dropped items near bed |
+
+**Mixed tools:** a wolf with multiple tool types splits expedition events proportionally between active roles (one type = one equal share). Total event count is fixed by expedition duration, so a mixed wolf gets similar total yield as a specialized one — just with variety. Quality scaling (pickaxe speed, axe speed, looting level) still applies within each role's events.
 
 ---
 
@@ -28,13 +39,13 @@ Overlapping zones from nearby wolves merge into a single ticket to reduce server
 
 ### Collar Progression
 
-Collars are crafted items applied to a tamed wolf to grant it a class and inventory. Higher tiers unlock more classes and bag space. Upgrading a collar preserves the wolf's current class assignment.
+Collars are crafted items applied to a tamed wolf to grant it an inventory and set expedition duration. Higher tiers provide more bag space and longer expeditions. All collar tiers allow all expedition types — the collar determines how much the wolf can carry and how long it stays out, not what it does.
 
-| Tier | Item | Classes unlocked | Bag slots | Expedition duration |
-|---|---|---|---|---|
-| Leather collar | Leather + string | Retriever | 5 | — |
-| Iron-studded collar | Leather collar + iron ingots | Retriever, Hunter | 9 | 10 min |
-| Gold-trimmed collar | Iron-studded collar + gold ingots | Retriever, Hunter, Miner | 15 | 15 min |
+| Tier | Item | Bag slots | Expedition duration |
+|---|---|---|---|
+| Leather collar | Leather + string | 5 | 10 min |
+| Iron-studded collar | Leather collar + iron ingots | 9 | 15 min |
+| Gold-trimmed collar | Iron-studded collar + gold ingots | 15 | 15 min |
 
 Collar color on the wolf model changes to indicate tier.
 
@@ -42,9 +53,11 @@ Collar color on the wolf model changes to indicate tier.
 
 Each collar provides an inventory accessible by right-clicking the wolf. Wolves autonomously use items from this bag:
 - **Food**: consumed to heal (proportional to nutrition value). Also acts as expedition endurance — low food increases injury risk during simulation.
-- **Pickaxes**: equipped by miner wolves in companion mode; pickaxe quality and enchants scale simulated mining yield.
-- **Weapons**: weapon damage and Looting enchant scale simulated combat yield for hunters.
-- **Filter items**: held in mouth to set behavior target (companion mode and retriever) or focus simulated expedition loot.
+- **Pickaxes**: activate mining role; quality and Fortune/Silk Touch scale simulated ore yield.
+- **Axes**: activate woodcutting role; quality scales simulated wood yield.
+- **Weapons** (swords, bows, mace): activate hunting role; Looting scales simulated combat yield.
+
+At dispatch, pickaxes and axes are automatically moved from the dog bed inventory into the wolf's bag (the player can pre-stock the bed). Weapons must already be in the bag.
 
 ### Wolf Armor Interaction
 
@@ -110,11 +123,12 @@ In `TRAVELING`, the sim rolls against a weighted event table each step. Weights 
 
 | Factor | Effect |
 |---|---|
-| **Collar tier** | Unlocks event categories; higher tier = access to rarer loot tables |
-| **Biome at bed** | Primary loot flavor — biome determines available event pools (e.g., plains gives common mob drops and crops; underground/cave gives ores; dangerous biomes increase hazard weight) |
-| **Filter item** | Focuses rolls toward one loot category; increases quantity of that type, reduces variety |
-| **Pickaxe in bag** *(miner)* | Tool speed stat scales ore yield; Fortune increases drop count; Silk Touch changes drop type |
-| **Weapon in bag** *(hunter)* | Damage stat scales combat success chance; Looting increases mob drop rolls |
+| **Active roles** | Each tool type (pickaxe, weapon, axe) adds one role; event rolls are split equally among active roles |
+| **Collar tier** | Higher tier = more bag space + longer expeditions; mining rarity scales with tier (diamonds require gold collar) |
+| **Biome at bed** | Drives hunting mob pools, mining yield multiplier, and woodcutting wood type |
+| **Pickaxe quality** | Speed scales ore yield; Fortune increases drop count; Silk Touch changes drop type |
+| **Axe quality** | Speed scales wood yield (iron axe = baseline) |
+| **Looting enchant** | Increases mob drop rolls (hunting role) |
 | **Food in bag** | Expedition endurance — low food increases injury event probability; no food makes severe injury likely |
 | **Wolf armor** | Reduces injury and death probability |
 | **Expedition duration** | More time = more event rolls, with diminishing returns after ~⅔ of the timer has elapsed |
@@ -155,47 +169,65 @@ Death probability is a function of: food level at injury, armor, biome danger, a
 
 ---
 
-## Classes
+## Expedition Roles
 
-### Retriever Wolf
+Roles are determined by bag contents, not a class setting. Multiple roles can be active simultaneously; the simulation splits event rolls proportionally.
 
-**Unlocked at:** Leather collar
+### Retriever (no expedition tools in bag)
+
 **Role:** Idles near bed, collects nearby dropped items and deposits them. No expedition.
 
 | Property | Value |
 |---|---|
 | Pickup range | Configured scan range from bed |
 | Idle behavior | Sits by bed when no items to collect |
-| Filter | Held item in mouth filters which items to pick up (empty = all) |
 | Pathfinding | Skips unreachable items; caches failures for 30 seconds |
 
-Retriever operates continuously and indefinitely. It does not have a dispatch flow.
+Retriever operates continuously and indefinitely. A wolf with no expedition tools cannot be dispatched.
 
-### Hunter Wolf
+### Hunter (sword / bow / crossbow / mace in bag)
 
-**Unlocked at:** Iron-studded collar
 **Role:** Simulated expedition to hunt hostile mobs and collect their drops.
 
-Loot flavor is driven by the filter item and bed biome. Log events describe tracking, engaging mobs, and collecting drops. Companion mode (idle, near owner): physically hunts nearby hostile mobs while following the owner.
+Loot flavor is driven by bed biome and collar tier depth. Log events describe tracking, engaging mobs, and collecting drops. Companion mode: physically hunts nearby hostile mobs while following the owner.
 
 | Property | Value |
 |---|---|
-| Filter | Held item sets target mob type; empty = any hostile |
 | Retreat threshold | 50% health (companion mode) |
 | Re-engage threshold | 75% health (companion mode) |
+| Looting | Scales mob drop count |
 | Expedition death risk | Low, scales with food and armor |
 
-### Miner Wolf
+### Miner (pickaxe in bag)
 
-**Unlocked at:** Gold-trimmed collar
 **Role:** Simulated expedition to locate and mine ores.
 
-Loot flavor is driven by filter item, pickaxe quality, and bed biome. Log events describe navigating caves, finding veins, and mining. Companion mode (idle, near owner): physically mines ores near the owner.
+Loot is driven by pickaxe quality, Fortune/Silk Touch, bed biome, and collar tier. Log events describe navigating caves, finding veins, and mining. Companion mode: physically mines ores near the owner.
 
 | Property | Value |
 |---|---|
-| Filter | Held ore item sets target ore type; empty = any ore |
-| Pickaxe | Required in bag; quality and enchants influence simulated yield |
+| Pickaxe | Quality and enchants influence simulated yield |
+| Expedition death risk | Low, scales with food and armor |
+
+### Woodcutter (axe in bag)
+
+**Role:** Simulated expedition to chop trees and collect wood. Loot is biome-driven — the bed biome determines which wood types are available. Collar tier affects bag capacity and expedition duration only.
+
+| Biome | Wood loot |
+|---|---|
+| Forest / plains | Oak, birch, saplings, apples |
+| Taiga / mountain | Spruce, sweet berries |
+| Jungle | Jungle wood, bamboo, cocoa beans |
+| Dark forest | Dark oak, mushrooms |
+| Savanna | Acacia |
+| Cherry grove | Cherry wood, pink petals |
+| Mangrove swamp | Mangrove, propagule |
+
+Axe quality scales log yield (iron axe = baseline). Companion mode: physically chops logs near the owner.
+
+| Property | Value |
+|---|---|
+| Axe | Quality scales simulated yield |
 | Expedition death risk | Low, scales with food and armor |
 
 ---

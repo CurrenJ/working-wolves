@@ -108,11 +108,10 @@ public class DebugCommand {
         BlockPos bedPos = mixin.workingwolves$getBedPos();
 
         ctx.getSource().sendSuccess(() -> Component.literal(String.format(
-            "Wolf at %d %d %d  dim=%s  state=%s  class=%s  tier=%d  bed=%s  bedLoaded=%s",
+            "Wolf at %d %d %d  dim=%s  state=%s  tier=%d  bed=%s  bedLoaded=%s",
             wolfPos.getX(), wolfPos.getY(), wolfPos.getZ(),
             wolf.level().dimension().identifier(),
             mixin.workingwolves$getExpeditionState(),
-            mixin.workingwolves$getWolfClass(),
             mixin.workingwolves$getCollarTier(),
             bedPos != null ? bedPos.getX() + " " + bedPos.getY() + " " + bedPos.getZ() : "null",
             bedPos != null ? wolf.level().isLoaded(bedPos) : "N/A"

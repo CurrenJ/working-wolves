@@ -49,7 +49,7 @@ public class RetrieverGoal extends Goal {
     public boolean canUse() {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
         return mixin.workingwolves$getCollarTier() > 0
-            && "retriever".equals(mixin.workingwolves$getWolfClass())
+            && !WolfBagHelper.hasAnyExpeditionTool(mixin)
             && "idle".equals(mixin.workingwolves$getExpeditionState())
             && !wolf.isOrderedToSit();
     }
@@ -118,18 +118,9 @@ public class RetrieverGoal extends Goal {
         scanCooldown = SCAN_COOLDOWN;
 
         // Scan for items near the scan center (bed or owner)
-        List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class,
+        List<ItemEntity> validItems = level.getEntitiesOfClass(ItemEntity.class,
             new AABB(scanCenter).inflate(Config.retrieverScanRange),
             item -> item.isAlive() && !unreachableCache.containsKey(item.blockPosition()));
-
-        // Filter by held filter item
-        ItemStack filterStack = mixin.workingwolves$getFilterItem();
-        List<ItemEntity> validItems = new ArrayList<>();
-        for (ItemEntity item : items) {
-            if (filterStack.isEmpty() || ItemStack.isSameItem(filterStack, item.getItem())) {
-                validItems.add(item);
-            }
-        }
 
         if (validItems.isEmpty()) {
             // Nothing to pick up — if we have items in bag, tick the idle deposit timer

@@ -13,7 +13,6 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -76,7 +75,7 @@ public class MinerGoal extends Goal {
     public boolean canUse() {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
         if (mixin.workingwolves$getCollarTier() <= 0) return false;
-        if (!"miner".equals(mixin.workingwolves$getWolfClass())) return false;
+        if (!WolfBagHelper.hasMiningTool(mixin)) return false;
         String state = mixin.workingwolves$getExpeditionState();
         if ("idle".equals(state)) {
             return !wolf.isOrderedToSit() && wolf.getOwner() != null
@@ -433,7 +432,6 @@ public class MinerGoal extends Goal {
         BlockPos center = isCompanionMode() && wolf.getOwner() != null
             ? wolf.getOwner().blockPosition()
             : wolf.blockPosition();
-        ItemStack filterStack = mixin.workingwolves$getFilterItem();
         long gameTime = level.getGameTime();
 
         int r = isCompanionMode() ? COMPANION_RANGE : oreScanRange();
@@ -458,7 +456,7 @@ public class MinerGoal extends Goal {
                 }
             }
             BlockState state = level.getBlockState(pos);
-            if (isTargetOre(state, filterStack) && hasExposedFace(level, pos)) {
+            if (isAnyOre(state) && hasExposedFace(level, pos)) {
                 candidates.add(pos.immutable());
             }
         }
@@ -564,21 +562,6 @@ public class MinerGoal extends Goal {
     }
 
     // ======== Ore detection ========
-
-    private boolean isTargetOre(BlockState state, ItemStack filterStack) {
-        if (filterStack.isEmpty()) return isAnyOre(state);
-
-        if (filterStack.is(Items.COAL)) return state.is(BlockTags.COAL_ORES);
-        if (filterStack.is(Items.COPPER_INGOT) || filterStack.is(Items.RAW_COPPER)) return state.is(BlockTags.COPPER_ORES);
-        if (filterStack.is(Items.IRON_INGOT) || filterStack.is(Items.RAW_IRON)) return state.is(BlockTags.IRON_ORES);
-        if (filterStack.is(Items.LAPIS_LAZULI)) return state.is(BlockTags.LAPIS_ORES);
-        if (filterStack.is(Items.GOLD_INGOT) || filterStack.is(Items.RAW_GOLD)) return state.is(BlockTags.GOLD_ORES);
-        if (filterStack.is(Items.REDSTONE)) return state.is(BlockTags.REDSTONE_ORES);
-        if (filterStack.is(Items.EMERALD)) return state.is(BlockTags.EMERALD_ORES);
-        if (filterStack.is(Items.DIAMOND)) return state.is(BlockTags.DIAMOND_ORES);
-
-        return isAnyOre(state);
-    }
 
     private boolean hasExposedFace(Level level, BlockPos pos) {
         BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();

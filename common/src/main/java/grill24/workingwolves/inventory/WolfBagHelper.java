@@ -123,6 +123,35 @@ public class WolfBagHelper {
         return stack.is(ItemTags.SWORDS) || stack.is(ItemTags.AXES) || stack.is(Items.MACE);
     }
 
+    public static boolean hasHuntingWeapon(IWorkingWolf mixin) {
+        for (ItemStack stack : mixin.workingwolves$getBagInventory()) {
+            if (!stack.isEmpty() && isHuntingWeapon(stack)) return true;
+        }
+        return false;
+    }
+
+    public static boolean isHuntingWeapon(ItemStack stack) {
+        return stack.is(ItemTags.SWORDS) || stack.is(Items.BOW) || stack.is(Items.CROSSBOW) || stack.is(Items.MACE);
+    }
+
+    public static boolean hasMiningTool(IWorkingWolf mixin) {
+        for (ItemStack stack : mixin.workingwolves$getBagInventory()) {
+            if (!stack.isEmpty() && stack.is(ItemTags.PICKAXES)) return true;
+        }
+        return false;
+    }
+
+    public static boolean hasWoodcuttingTool(IWorkingWolf mixin) {
+        for (ItemStack stack : mixin.workingwolves$getBagInventory()) {
+            if (!stack.isEmpty() && stack.is(ItemTags.AXES)) return true;
+        }
+        return false;
+    }
+
+    public static boolean hasAnyExpeditionTool(IWorkingWolf mixin) {
+        return hasHuntingWeapon(mixin) || hasMiningTool(mixin) || hasWoodcuttingTool(mixin);
+    }
+
     /** Finds the first arrow stack in the wolf's bag. Returns the stack reference (caller shrinks to consume). */
     public static ItemStack findAmmo(IWorkingWolf mixin) {
         NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
