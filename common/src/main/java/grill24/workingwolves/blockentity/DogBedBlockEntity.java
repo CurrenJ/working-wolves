@@ -251,11 +251,18 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         simTotalTicks = mixin.workingwolves$getExpeditionDuration();
         if (simTotalTicks <= 0) simTotalTicks = 12000; // fallback 10 min
 
-        // Snapshot food endurance (count food stacks in bag)
+        // Snapshot food endurance (count food stacks in bag + take from bed inventory)
         simFoodEndurance = 0;
         for (ItemStack stack : mixin.workingwolves$getBagInventory()) {
             if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
                 simFoodEndurance += stack.getCount();
+            }
+        }
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack stack = items.get(i);
+            if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
+                simFoodEndurance += stack.getCount();
+                items.set(i, ItemStack.EMPTY);
             }
         }
 

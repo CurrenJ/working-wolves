@@ -14,6 +14,7 @@
   "message.workingwolves.wolf_recalled": "Wolf recalled to idle",
   "message.workingwolves.all_wolves_recalled": "All wolves recalled",
   "message.workingwolves.no_bed_assigned": "Wolf has no bed assigned",
+  "message.workingwolves.no_food_for_expedition": "Wolf needs at least 1 food item in its bag or dog bed to depart",
   "message.workingwolves.not_owner": "This wolf does not belong to you",
   "message.workingwolves.collar_applied": "Collar applied: %s",
   "message.workingwolves.bed_assigned": "Wolf assigned to bed",

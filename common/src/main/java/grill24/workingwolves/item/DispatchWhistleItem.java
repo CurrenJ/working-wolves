@@ -19,7 +19,7 @@ public class DispatchWhistleItem extends Item {
     }
 
     @Override
-    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
+    public InteractionResult interactLivingEntity(ItemStack s, Player player, LivingEntity target, InteractionHand hand) {
         if (!(target instanceof Wolf wolf)) {
             return InteractionResult.PASS;
         }
@@ -70,9 +70,31 @@ public class DispatchWhistleItem extends Item {
             }
 
             // Guard: wolf must have a bed assigned
-            if (accessor.workingwolves$getBedPos() == null) {
+            BlockPos bedPos = accessor.workingwolves$getBedPos();
+            if (bedPos == null) {
                 player.sendSystemMessage(
                     Component.translatable("message.workingwolves.no_bed_assigned"));
+                return InteractionResult.FAIL;
+            }
+
+            // Guard: must have at least 1 food in bag or bed inventory
+            int totalFood = 0;
+            for (ItemStack stack : accessor.workingwolves$getBagInventory()) {
+                if (!stack.isEmpty() && stack.has(net.minecraft.core.component.DataComponents.FOOD)) {
+                    totalFood += stack.getCount();
+                }
+            }
+            if (wolf.level().getBlockEntity(bedPos) instanceof grill24.workingwolves.blockentity.DogBedBlockEntity bedBE) {
+                for (int i = 0; i < bedBE.getContainerSize(); i++) {
+                    ItemStack bedStack = bedBE.getItem(i);
+                    if (!bedStack.isEmpty() && bedStack.has(net.minecraft.core.component.DataComponents.FOOD)) {
+                        totalFood += bedStack.getCount();
+                    }
+                }
+            }
+            if (totalFood < 1) {
+                player.sendSystemMessage(
+                    Component.translatable("message.workingwolves.no_food_for_expedition"));
                 return InteractionResult.FAIL;
             }
 
