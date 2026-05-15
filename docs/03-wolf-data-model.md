@@ -70,7 +70,6 @@ On load, the wolf's collar color is restored based on `collarTier` (BROWN/GRAY/Y
 | 2 | `HunterGoal` | Kill hostiles near owner (bag has hunting weapon) |
 | 2 | `MinerGoal` | Mine ores near owner (bag has pickaxe) |
 | 2 | `WoodcutterGoal` | Chop logs near owner (bag has axe) |
-| 2 | `RetrieverGoal` | Collect dropped items near bed (no expedition tools in bag) |
 
 ## Role Detection
 
@@ -81,7 +80,6 @@ Role is determined from bag contents — there is no explicit `wolfClass` field.
 | Pickaxe | Mining (expedition + `MinerGoal`) |
 | Sword / Bow / Crossbow / Mace | Hunting (expedition + `HunterGoal`) |
 | Axe | Woodcutting (expedition + `WoodcutterGoal`) |
-| None of the above | Retriever (`RetrieverGoal` only) |
 
 Axes count as hunting weapons for `isMeleeWeapon()` (used to equip in combat), but for **role detection** only swords/bows/mace trigger hunting. An axe-only wolf is a woodcutter, not a hunter.
 

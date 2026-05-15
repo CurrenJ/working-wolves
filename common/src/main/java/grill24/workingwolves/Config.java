@@ -10,9 +10,6 @@ public class Config {
     /** Range (in blocks) within which hunter wolves scan for hostile mobs. */
     public static int hunterScanRange = 32;
 
-    /** Range (in blocks) within which retriever wolves collect dropped items (centered on bed). */
-    public static int retrieverScanRange = 64;
-
     /** Expedition duration in minutes. 0 = unlimited. */
     public static int expeditionDurationMinutes = 15;
 

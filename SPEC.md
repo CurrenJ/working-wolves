@@ -6,7 +6,7 @@ Working Wolves adds roles and logistics to tamed wolves via craftable collars. W
 
 Wolves with expedition tools go on **simulated expeditions** — they appear to leave, the server runs a tick-based simulation that produces loot and a live narrative log, then they return. This gives the feel of a physical expedition without the fragility of long-range pathfinding and chunk loading.
 
-Separately, all collared wolves support **companion mode**: when idle and near their owner, they physically assist based on their bag contents — hunting nearby mobs, mining nearby ores, chopping nearby logs — without going on expedition. Wolves with no expedition tools default to **retriever** behavior, collecting nearby dropped items.
+Separately, all collared wolves support **companion mode**: when idle and near their owner, they physically assist based on their bag contents — hunting nearby mobs, mining nearby ores, chopping nearby logs — without going on expedition. Wolves with no expedition tools simply follow their owner with vanilla wolf behavior and cannot be dispatched.
 
 ### Role detection
 
@@ -15,7 +15,6 @@ Separately, all collared wolves support **companion mode**: when idle and near t
 | Pickaxe | Mining | `MinerGoal` — mines ores near owner |
 | Sword / Bow / Crossbow / Mace | Hunting | `HunterGoal` — hunts hostiles near owner |
 | Axe | Woodcutting | `WoodcutterGoal` — chops logs near owner |
-| None | — (no expedition) | `RetrieverGoal` — collects dropped items near bed |
 
 **Mixed tools:** a wolf with multiple tool types splits expedition events proportionally between active roles (one type = one equal share). Total event count is fixed by expedition duration, so a mixed wolf gets similar total yield as a specialized one — just with variety. Quality scaling (pickaxe speed, axe speed, looting level) still applies within each role's events.
 
@@ -25,13 +24,13 @@ Separately, all collared wolves support **companion mode**: when idle and near t
 
 ### Chunk Loading
 
-Only retriever wolves hold chunk tickets. Hunter and Miner wolves on simulated expeditions have their AI suppressed and do not load chunks.
+Collared wolves hold chunk tickets to keep their work area loaded. Wolves on simulated expeditions have their AI suppressed and do not load chunks.
 
 | Role state | Chunk radius |
 |---|---|
-| Retriever (active) | 3×3 chunks |
-| Hunter / Miner on expedition | None |
-| Any wolf (idle / companion mode) | None |
+| Active expedition (physical) | 5×5 chunks |
+| Idle / companion mode | 3×3 chunks |
+| On simulated expedition | None |
 
 Overlapping zones from nearby wolves merge into a single ticket to reduce server load.
 
@@ -173,18 +172,6 @@ Death probability is a function of: food level at injury, armor, biome danger, a
 
 Roles are determined by bag contents, not a class setting. Multiple roles can be active simultaneously; the simulation splits event rolls proportionally.
 
-### Retriever (no expedition tools in bag)
-
-**Role:** Idles near bed, collects nearby dropped items and deposits them. No expedition.
-
-| Property | Value |
-|---|---|
-| Pickup range | Configured scan range from bed |
-| Idle behavior | Sits by bed when no items to collect |
-| Pathfinding | Skips unreachable items; caches failures for 30 seconds |
-
-Retriever operates continuously and indefinitely. A wolf with no expedition tools cannot be dispatched.
-
 ### Hunter (sword / bow / crossbow / mace in bag)
 
 **Role:** Simulated expedition to hunt hostile mobs and collect their drops.
@@ -236,7 +223,7 @@ Axe quality scales log yield (iron axe = baseline). Companion mode: physically c
 
 ### Dispatch Whistle
 
-**Status: Deprecated (functional).** Right-click an assigned, idle Hunter or Miner wolf to begin a simulated expedition. Will be supplemented by a bed GUI button in a future update.
+**Status: Deprecated (functional).** Right-click an assigned, idle wolf with expedition tools to begin a simulated expedition. Will be supplemented by a bed GUI button in a future update.
 
 ### Recall Whistle
 
@@ -248,7 +235,7 @@ Axe quality scales log yield (iron axe = baseline). Companion mode: physically c
 
 ### Physical Death
 
-When a wolf dies in the world (companion mode or retriever):
+When a wolf dies in the world (companion mode):
 - Collar is destroyed
 - Bag contents drop at the death location
 - Wolf must be replaced with a new tamed wolf and collar
@@ -263,7 +250,7 @@ When a simulated expedition ends in death:
 
 ### Self-Preservation (Physical)
 
-Handled by `WolfSelfPreservationMixin` (injected at `Wolf.aiStep()`). Active for all physical wolves (retriever, companion mode). Behaviors:
+Handled by `WolfSelfPreservationMixin` (injected at `Wolf.aiStep()`). Active for all physical wolves in companion mode. Behaviors:
 
 | Threat | Response |
 |---|---|

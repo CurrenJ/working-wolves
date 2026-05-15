@@ -9,10 +9,9 @@
 | `maxWolvesPerPlayer` | 5 | `WolfChunkManager` tick + `countWorkingWolves`, `CollarItem` cap check |
 | `detectionRange` | 64 | `MinerGoal` ore scan + explore step range |
 | `hunterScanRange` | 32 | `HunterGoal` mob detection scan AABB |
-| `retrieverScanRange` | 64 | `RetrieverGoal` item pickup scan AABB (centered on bed) |
 | `expeditionDurationMinutes` | 15 | `ModItems` collar constructor (multiplied to ticks) |
 
-Pathfinding boost (`WolfMixin`) uses `max(detectionRange, hunterScanRange, retrieverScanRange)` to set `maxVisitedNodes` and `requiredPathLength`, ensuring the navigation budget covers whichever goal is active.
+Pathfinding boost (`WolfMixin`) uses `max(detectionRange, hunterScanRange)` to set `maxVisitedNodes` and `requiredPathLength`, ensuring the navigation budget covers whichever goal is active.
 
 Platform config classes (`FabricConfig`, `NeoForgeConfig`) exist but currently just reference the static fields.
 

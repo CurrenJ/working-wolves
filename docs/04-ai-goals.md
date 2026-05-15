@@ -2,17 +2,17 @@
 
 Custom goals are injected into the wolf's goal selector via `WolfMixin.workingwolves$registerGoals`. All goals gate on `collarTier > 0`.
 
-Hunter and Miner wolves use **simulated expeditions** — when dispatched, their AI is suppressed and a server-side simulation runs in `DogBedBlockEntity`. The goals below only apply to **physical** wolf behaviors: retriever operation and companion mode.
+Wolves use **simulated expeditions** — when dispatched, their AI is suppressed and a server-side simulation runs in `DogBedBlockEntity`. The goals below only apply to **physical** wolf behaviors: companion mode.
 
 ## Priority ordering
 
 | Prio | Goal | Active states | Purpose |
 |---|---|---|---|
-| 0 | `AntiStuckGoal` | retriever idle, companion mode | Unstick teleport after 30s no movement |
-| 1 | `ReturnToBaseGoal` | returning (retriever bag full) | Pathfind to bed and deposit |
-| 2 | `RetrieverGoal` | idle + retriever class | Collect items near bed or owner |
-| 2 | `HunterGoal` | idle + hunter class (companion mode) | Kill nearby hostiles while following owner |
-| 2 | `MinerGoal` | idle + miner class (companion mode) | Find and mine ores near owner |
+| 0 | `AntiStuckGoal` | idle, companion mode | Unstick teleport after 30s no movement |
+| 1 | `ReturnToBaseGoal` | returning | Pathfind to bed and deposit |
+| 2 | `HunterGoal` | idle + hunting weapon (companion mode) | Kill nearby hostiles while following owner |
+| 2 | `MinerGoal` | idle + pickaxe (companion mode) | Find and mine ores near owner |
+| 2 | `WoodcutterGoal` | idle + axe (companion mode) | Chop logs near owner |
 
 Self-preservation runs outside the goal system — see `WolfSelfPreservationMixin`.
 
@@ -32,7 +32,7 @@ Active when `expeditionState` is `"idle"` (not during simulated expedition).
 
 ## ReturnToBaseGoal
 
-Active when `expeditionState == "returning"` (retriever bag full).
+Active when `expeditionState == "returning"` (expedition complete or recall).
 
 **Flags:** `noneOf` — does not claim MOVE flag, allowing other movement to coexist.
 
@@ -47,27 +47,9 @@ Active when `expeditionState == "returning"` (retriever bag full).
 
 ---
 
-## RetrieverGoal
-
-Active: `collarTier > 0`, `wolfClass == "retriever"`, `expeditionState == "idle"`, `!isOrderedToSit`.
-
-**Scan center:** `bedPos` if assigned; otherwise owner position (companion mode, requires owner within 32 blocks).
-
-**Scan:** Every 20 ticks, scans for `ItemEntity` within `Config.retrieverScanRange` blocks of the scan center. Filters by `filterItem`.
-
-**Unreachable cache:** Failed pathfinding positions cached for 30 seconds (600 ticks). `findNearestReachableItem` iterates by distance, tests each with `navigation.createPath + canReach()`, caches failures.
-
-**Pursuit:** Paths to target item at speed 1.0. Repaths every 20 ticks. Picks up at 1.5 blocks.
-
-**Bag capacity:** ≥80% full → sets state to `"returning"`.
-
-**Idle deposit:** No collectible items for 10 seconds (200 ticks) while bag has items → triggers return.
-
----
-
 ## HunterGoal (companion mode only)
 
-Active: `collarTier > 0`, `wolfClass == "hunter"`, `expeditionState == "idle"`, `!isOrderedToSit`, owner within 32 blocks.
+Active: `collarTier > 0`, hunting weapon in bag, `expeditionState == "idle"`, `!isOrderedToSit`, owner within 32 blocks.
 
 Scans within 24 blocks of the owner for hostile mobs. Engages the nearest **pathfindable** target (reachability check via `navigation.createPath + canReach()`). Follows owner when no target found and >16 blocks away.
 
@@ -81,7 +63,7 @@ Scans within 24 blocks of the owner for hostile mobs. Engages the nearest **path
 
 ## MinerGoal (companion mode only)
 
-Active: `collarTier > 0`, `wolfClass == "miner"`, `expeditionState == "idle"`, `!isOrderedToSit`, owner within 32 blocks.
+Active: `collarTier > 0`, pickaxe in bag, `expeditionState == "idle"`, `!isOrderedToSit`, owner within 32 blocks.
 
 Scans within 16 blocks of the owner for ores. Mines them at half player speed using the best pickaxe from the bag (via `hurtAndBreak`, Unbreaking-aware). Follows owner when no ore found for 30 seconds (600 ticks) or when owner is >8 blocks away.
 

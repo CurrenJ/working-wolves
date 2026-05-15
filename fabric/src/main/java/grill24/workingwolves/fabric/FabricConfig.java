@@ -31,9 +31,6 @@ public class FabricConfig {
                 if (obj.has("hunterScanRange")) {
                     Config.hunterScanRange = obj.get("hunterScanRange").getAsInt();
                 }
-                if (obj.has("retrieverScanRange")) {
-                    Config.retrieverScanRange = obj.get("retrieverScanRange").getAsInt();
-                }
 
                 WorkingWolves.LOGGER.info("Loaded config from {}", CONFIG_PATH);
             } catch (IOException e) {
@@ -51,7 +48,6 @@ public class FabricConfig {
         obj.addProperty("detectionRange", Config.detectionRange);
         obj.addProperty("expeditionDurationMinutes", Config.expeditionDurationMinutes);
         obj.addProperty("hunterScanRange", Config.hunterScanRange);
-        obj.addProperty("retrieverScanRange", Config.retrieverScanRange);
         try {
             Files.createDirectories(CONFIG_PATH.getParent());
             Files.writeString(CONFIG_PATH, new GsonBuilder().setPrettyPrinting().create().toJson(obj));

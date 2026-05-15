@@ -11,7 +11,6 @@ public class NeoForgeConfig {
     public static final ModConfigSpec.IntValue DETECTION_RANGE;
     public static final ModConfigSpec.IntValue EXPEDITION_DURATION_MINUTES;
     public static final ModConfigSpec.IntValue HUNTER_SCAN_RANGE;
-    public static final ModConfigSpec.IntValue RETRIEVER_SCAN_RANGE;
 
     public static final ModConfigSpec SPEC;
 
@@ -32,10 +31,6 @@ public class NeoForgeConfig {
                 .comment("Range (blocks) within which hunter wolves scan for hostile mobs.")
                 .defineInRange("hunterScanRange", 32, 8, 128);
 
-        RETRIEVER_SCAN_RANGE = BUILDER
-                .comment("Range (blocks) within which retriever wolves collect dropped items, centered on bed.")
-                .defineInRange("retrieverScanRange", 64, 8, 256);
-
         SPEC = BUILDER.build();
     }
 
@@ -44,7 +39,6 @@ public class NeoForgeConfig {
         Config.detectionRange = DETECTION_RANGE.get();
         Config.expeditionDurationMinutes = EXPEDITION_DURATION_MINUTES.get();
         Config.hunterScanRange = HUNTER_SCAN_RANGE.get();
-        Config.retrieverScanRange = RETRIEVER_SCAN_RANGE.get();
     }
 
     public static void onReload(ModConfigEvent.Reloading event) {
@@ -52,6 +46,5 @@ public class NeoForgeConfig {
         Config.detectionRange = DETECTION_RANGE.get();
         Config.expeditionDurationMinutes = EXPEDITION_DURATION_MINUTES.get();
         Config.hunterScanRange = HUNTER_SCAN_RANGE.get();
-        Config.retrieverScanRange = RETRIEVER_SCAN_RANGE.get();
     }
 }

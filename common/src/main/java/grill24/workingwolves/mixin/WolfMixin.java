@@ -5,7 +5,7 @@ import grill24.workingwolves.ai.AntiStuckGoal;
 import grill24.workingwolves.ai.HunterGoal;
 import grill24.workingwolves.ai.MinerGoal;
 import grill24.workingwolves.ai.ReturnToBaseGoal;
-import grill24.workingwolves.ai.RetrieverGoal;
+
 import grill24.workingwolves.ai.WoodcutterGoal;
 import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.blockentity.DogBedBlockEntity;
@@ -463,6 +463,5 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
         this.goalSelector.addGoal(2, new HunterGoal(self));
         this.goalSelector.addGoal(2, new MinerGoal(self));
         this.goalSelector.addGoal(2, new WoodcutterGoal(self));
-        this.goalSelector.addGoal(2, new RetrieverGoal(self));
     }
 }

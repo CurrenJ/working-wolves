@@ -89,7 +89,8 @@ public class HunterGoal extends Goal {
     public boolean canUse() {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
         if (mixin.workingwolves$getCollarTier() <= 0) return false;
-        if (!WolfBagHelper.hasHuntingWeapon(mixin)) return false;
+        if (!WolfBagHelper.hasHuntingWeapon(mixin)
+            && !WolfBagHelper.isHuntingWeapon(wolf.getMainHandItem())) return false;
         String state = mixin.workingwolves$getExpeditionState();
         if ("idle".equals(state)) {
             return !wolf.isOrderedToSit() && wolf.getOwner() != null
