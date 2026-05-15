@@ -26,10 +26,12 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 /**
- * Priority 2 goal. Active when: collarTier > 0, class is "miner", expeditionState is "active".
- * Scans for ores within 12 blocks, mines them at half player speed using a pickaxe from the bag.
+ * Priority 2 goal. Active when: collarTier > 0, class is "miner", expeditionState is "active"
+ * or "idle" (companion mode).
+ * Scans for ores, mines them at half player speed using a pickaxe from the bag.
  * Progressively explores outward from the dispatch point when no ores are found nearby,
  * tracking visited regions to avoid circling.
+ * In companion mode (idle), stays near the owner and mines ores within COMPANION_RANGE of them.
  */
 public class MinerGoal extends Goal {
     private final Wolf wolf;
@@ -39,6 +41,7 @@ public class MinerGoal extends Goal {
     private static final int REPATH_INTERVAL = 30;
     private static final int ORE_SCAN_COOLDOWN = 10;
     private static final int EXPLORE_SCAN_DELAY = 60;
+    private static final int COMPANION_RANGE = 16;
 
     private int oreScanRange() { return Config.detectionRange; }
     private int exploreStepRange() { return Config.detectionRange * 2; }
@@ -62,6 +65,7 @@ public class MinerGoal extends Goal {
     private int pickaxeSlot = -1;
     private boolean isExploring = false;
     private BlockPos exploreTarget = null;
+    private int companionIdleTicks = 0;
 
     public MinerGoal(Wolf wolf) {
         this.wolf = wolf;
@@ -71,9 +75,15 @@ public class MinerGoal extends Goal {
     @Override
     public boolean canUse() {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
-        return mixin.workingwolves$getCollarTier() > 0
-            && "miner".equals(mixin.workingwolves$getWolfClass())
-            && "active".equals(mixin.workingwolves$getExpeditionState());
+        if (mixin.workingwolves$getCollarTier() <= 0) return false;
+        if (!"miner".equals(mixin.workingwolves$getWolfClass())) return false;
+        String state = mixin.workingwolves$getExpeditionState();
+        if ("active".equals(state)) return true;
+        if ("idle".equals(state)) {
+            return !wolf.isOrderedToSit() && wolf.getOwner() != null
+                && wolf.distanceToSqr(wolf.getOwner()) <= 32.0 * 32.0;
+        }
+        return false;
     }
 
     @Override
@@ -90,6 +100,7 @@ public class MinerGoal extends Goal {
         repathTicks = 0;
         scanCooldown = 0;
         exploreTicks = 0;
+        companionIdleTicks = 0;
     }
 
     @Override
@@ -100,6 +111,7 @@ public class MinerGoal extends Goal {
         repathTicks = 0;
         exploreTicks = 0;
         pickaxeSlot = -1;
+        companionIdleTicks = 0;
         resetMiningProgress();
     }
 
@@ -137,6 +149,12 @@ public class MinerGoal extends Goal {
             return;
         }
 
+        // Companion mode: if owner too far, just follow — don't trigger full return
+        if (isCompanionMode() && wolf.getOwner() != null && wolf.distanceToSqr(wolf.getOwner()) > 32.0 * 32.0) {
+            // canUse() will return false next tick, wolf follows owner naturally
+            return;
+        }
+
         // 5. Scan frequently (every 10 ticks = 0.5s) — fast enough to catch ores while moving
         scanCooldown--;
         if (scanCooldown <= 0) {
@@ -150,17 +168,51 @@ public class MinerGoal extends Goal {
             return;
         }
 
-        // 7. Handle exploration movement
+        // 7. Companion mode: idle behavior — no exploration, stay near / follow owner
+        if (isCompanionMode()) {
+            tickCompanionIdle(level, mixin);
+            return;
+        }
+
+        // 8. Handle exploration movement
         if (isExploring) {
             tickExploring(level, mixin);
             return;
         }
 
-        // 8. Idle — tick explore delay before venturing further
+        // 9. Idle — tick explore delay before venturing further
         exploreTicks++;
         if (exploreTicks >= EXPLORE_SCAN_DELAY) {
             exploreTicks = 0;
             startExploring(level);
+        }
+    }
+
+    // ======== Companion mode ========
+
+    private boolean isCompanionMode() {
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        return "idle".equals(mixin.workingwolves$getExpeditionState());
+    }
+
+    /**
+     * Companion mode idle behavior: stay near the owner.
+     * After 30 seconds (600 ticks) without finding ore, actively follow the owner.
+     */
+    private void tickCompanionIdle(Level level, IWorkingWolf mixin) {
+        companionIdleTicks++;
+
+        // After 30 seconds without ore, actively follow the owner
+        if (companionIdleTicks >= 600 && wolf.getOwner() != null) {
+            wolf.getNavigation().moveTo(wolf.getOwner(), SPEED);
+            return;
+        }
+
+        // Stay near owner (within ~8 blocks)
+        if (wolf.getOwner() != null && wolf.distanceToSqr(wolf.getOwner()) > 8.0 * 8.0) {
+            wolf.getNavigation().moveTo(wolf.getOwner(), SPEED);
+        } else if (!wolf.getNavigation().isDone()) {
+            wolf.getNavigation().stop();
         }
     }
 
@@ -284,6 +336,7 @@ public class MinerGoal extends Goal {
         float toolSpeed = Math.max(pickaxe.getDestroySpeed(state), 1.0f);
         // Player mines at ticks ≈ hardness * 1.5 / speed. Wolf mines at half speed (×2).
         mineTimeForCurrentOre = Math.max(10, (int)(hardness * 3.0f / toolSpeed));
+        companionIdleTicks = 0;
     }
 
     private ItemStack getPickaxe(IWorkingWolf mixin) {
@@ -378,11 +431,13 @@ public class MinerGoal extends Goal {
     // ======== Ore scanning ========
 
     private void scanForOres(Level level, IWorkingWolf mixin) {
-        BlockPos center = wolf.blockPosition();
+        BlockPos center = isCompanionMode() && wolf.getOwner() != null
+            ? wolf.getOwner().blockPosition()
+            : wolf.blockPosition();
         ItemStack filterStack = mixin.workingwolves$getFilterItem();
         long gameTime = level.getGameTime();
 
-        int r = oreScanRange();
+        int r = isCompanionMode() ? COMPANION_RANGE : oreScanRange();
         BlockPos minPos = center.offset(-r, -r / 2, -r);
         BlockPos maxPos = center.offset(r, r / 2, r);
 
@@ -458,6 +513,7 @@ public class MinerGoal extends Goal {
             }
             if (path != null && path.canReach() && path.getTarget().distSqr(bestPos) <= MINING_CLOSE_DIST_SQ) {
                 targetOre = bestPos;
+                companionIdleTicks = 0;
                 repathTicks = REPATH_INTERVAL;
                 wolf.getNavigation().stop();
                 wolf.getNavigation().moveTo(path, SPEED);

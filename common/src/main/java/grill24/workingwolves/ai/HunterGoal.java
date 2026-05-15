@@ -24,6 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -46,13 +47,10 @@ public class HunterGoal extends Goal {
     private static final float RETREAT_HEALTH_RATIO = 0.5f;
     private static final float REENGAGE_HEALTH_RATIO = 0.75f;
     private static final int RETREAT_DURATION = 100; // 5 seconds
-    private static final int PREEMPTIVE_RETREAT_DURATION = 60; // 3 seconds
-    private static final int PREEMPTIVE_HOSTILE_RANGE = 3;
-    private static final int PREEMPTIVE_HOSTILE_COUNT = 3;
     private static final int SCAN_COOLDOWN = 20;
     private static final int DROP_COLLECT_RANGE = 4;
-    private static final float FOOD_HEAL_AMOUNT = 6.0f;
     private static final int FLEE_DISTANCE = 10;
+    private static final int COMPANION_RANGE = 24;
     // Path recalculation — follows vanilla MeleeAttackGoal pattern:
     // short adaptive interval, retriggers on target movement, separate from attack timing
     private static final int PATH_RECALC_BASE_MIN = 4;
@@ -91,9 +89,15 @@ public class HunterGoal extends Goal {
     @Override
     public boolean canUse() {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
-        return mixin.workingwolves$getCollarTier() > 0
-            && "hunter".equals(mixin.workingwolves$getWolfClass())
-            && "active".equals(mixin.workingwolves$getExpeditionState());
+        if (mixin.workingwolves$getCollarTier() <= 0) return false;
+        if (!"hunter".equals(mixin.workingwolves$getWolfClass())) return false;
+        String state = mixin.workingwolves$getExpeditionState();
+        if ("active".equals(state)) return true;
+        if ("idle".equals(state)) {
+            return !wolf.isOrderedToSit() && wolf.getOwner() != null
+                && wolf.distanceToSqr(wolf.getOwner()) <= 32.0 * 32.0;
+        }
+        return false;
     }
 
     @Override
@@ -103,7 +107,9 @@ public class HunterGoal extends Goal {
 
     @Override
     public void start() {
-        ((IWorkingWolf) (Object) wolf).workingwolves$applyNavBudget(Config.hunterScanRange);
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        boolean isCompanionMode = "idle".equals(mixin.workingwolves$getExpeditionState());
+        mixin.workingwolves$applyNavBudget(isCompanionMode ? COMPANION_RANGE : Config.hunterScanRange);
     }
 
     @Override
@@ -147,14 +153,7 @@ public class HunterGoal extends Goal {
             return;
         }
 
-        // 4. Preemptive retreat if 3+ hostiles within melee range
-        if (!isRetreating && countHostilesInRange(level, wolf.blockPosition(), PREEMPTIVE_HOSTILE_RANGE) >= PREEMPTIVE_HOSTILE_COUNT) {
-            startRetreating(RETREAT_DURATION);
-            fleeFromNearestHostile(level, mixin);
-            return;
-        }
-
-        // 5. Health management
+        // 4. Health management
         float healthRatio = wolf.getHealth() / wolf.getMaxHealth();
 
         if (isRetreating) {
@@ -168,17 +167,25 @@ public class HunterGoal extends Goal {
             return;
         }
 
-        // 6. Combat logic
+        // 5. Combat logic
         if (target != null) {
             tickCombat(mixin, level);
             return;
         }
 
-        // 7. Scan for targets
+        // 6. Scan for targets
         scanCooldown--;
         if (scanCooldown <= 0) {
             scanCooldown = SCAN_COOLDOWN;
             scanForTarget(level, mixin);
+        }
+
+        // 7. Companion mode: path toward owner if too far (>16 blocks) and no target found
+        if ("idle".equals(mixin.workingwolves$getExpeditionState()) && target == null) {
+            LivingEntity owner = wolf.getOwner();
+            if (owner != null && wolf.distanceToSqr(owner) > 16.0 * 16.0) {
+                wolf.getNavigation().moveTo(owner, SPEED);
+            }
         }
     }
 
@@ -342,6 +349,11 @@ public class HunterGoal extends Goal {
     private void tickBowAttack(IWorkingWolf mixin) {
         switch (rangedState) {
             case 0: // IDLE
+                // Don't start pulling if no ammo
+                if (WolfBagHelper.findAmmo(mixin).isEmpty()) {
+                    unequipWeapon(mixin);
+                    return;
+                }
                 wolf.startUsingItem(InteractionHand.MAIN_HAND);
                 rangedState = 1; // PULLING
                 rangedTimer = BOW_PULL_TICKS;
@@ -401,8 +413,20 @@ public class HunterGoal extends Goal {
         ItemStack filterStack = mixin.workingwolves$getFilterItem();
         Predicate<Monster> predicate = getMobFilter(filterStack);
 
-        // Determine scan range: use ranged weapon range if a ranged weapon is in the bag
-        int scanRange = Config.hunterScanRange;
+        boolean isCompanionMode = "idle".equals(mixin.workingwolves$getExpeditionState());
+
+        // Determine scan center: owner position in companion mode, wolf position in expedition mode
+        BlockPos scanCenter;
+        if (isCompanionMode) {
+            LivingEntity owner = wolf.getOwner();
+            scanCenter = owner != null ? owner.blockPosition() : wolf.blockPosition();
+        } else {
+            scanCenter = wolf.blockPosition();
+        }
+
+        // Determine scan range: use companion range in companion mode
+        int scanRange = isCompanionMode ? COMPANION_RANGE : Config.hunterScanRange;
+        // Ranged weapon override: reduce scan range to weapon range in either mode
         NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
         for (ItemStack stack : bag) {
             if (stack.is(Items.CROSSBOW)) {
@@ -416,30 +440,26 @@ public class HunterGoal extends Goal {
         }
 
         List<Monster> mobs = level.getEntitiesOfClass(Monster.class,
-            new AABB(wolf.blockPosition()).inflate(scanRange),
+            new AABB(scanCenter).inflate(scanRange),
             monster -> monster.isAlive() && predicate.test(monster));
 
         if (mobs.isEmpty()) return;
 
-        // Pick nearest
-        Monster nearest = null;
-        double nearestDist = Double.MAX_VALUE;
-        for (Monster mob : mobs) {
-            double dist = wolf.distanceToSqr(mob);
-            if (dist < nearestDist) {
-                nearestDist = dist;
-                nearest = mob;
-            }
-        }
+        // Sort by distance, iterate to find nearest reachable target
+        mobs.sort((a, b) -> Double.compare(wolf.distanceToSqr(a), wolf.distanceToSqr(b)));
 
-        if (nearest != null) {
-            target = nearest;
-            wolf.setTarget(nearest);
-            pathedTargetX = 0.0;
-            pathedTargetY = 0.0;
-            pathedTargetZ = 0.0;
-            ticksUntilNextPathRecalculation = 0;
-            wolf.getNavigation().moveTo(nearest, SPEED);
+        for (Monster mob : mobs) {
+            Path path = wolf.getNavigation().createPath(mob, 0);
+            if (path != null && path.canReach()) {
+                target = mob;
+                wolf.setTarget(mob);
+                pathedTargetX = 0.0;
+                pathedTargetY = 0.0;
+                pathedTargetZ = 0.0;
+                ticksUntilNextPathRecalculation = 0;
+                wolf.getNavigation().moveTo(path, SPEED);
+                break;
+            }
         }
     }
 
@@ -562,7 +582,7 @@ public class HunterGoal extends Goal {
     }
 
     private void eatFoodFromBag(IWorkingWolf mixin) {
-        WolfBagHelper.eatFoodFromBag(mixin, wolf, FOOD_HEAL_AMOUNT);
+        WolfBagHelper.eatFoodFromBag(mixin, wolf);
     }
 
     private void collectDropsAt(Level level, BlockPos pos, IWorkingWolf mixin) {
@@ -647,12 +667,20 @@ public class HunterGoal extends Goal {
         ItemStack weapon = findWeapon(mixin);
         if (weapon.isEmpty()) return;
 
-        // If ranged weapon is found but no ammo, fall back to melee
+        // If ranged weapon is found...
         if (hasRangedWeapon) {
+            // ...but no ammo, fall back to melee
             if (WolfBagHelper.findAmmo(mixin).isEmpty()) {
                 ItemStack melee = findMeleeWeaponFromBag(mixin);
                 if (melee.isEmpty()) return;
                 weapon = melee;
+            }
+            // ...or target is within 3 blocks, prefer melee
+            else if (target != null && wolf.distanceToSqr(target) <= 9.0) {
+                ItemStack melee = findMeleeWeaponFromBag(mixin);
+                if (!melee.isEmpty()) {
+                    weapon = melee;
+                }
             }
         }
 

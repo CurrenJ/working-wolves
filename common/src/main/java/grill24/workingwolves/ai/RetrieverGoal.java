@@ -5,6 +5,7 @@ import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.inventory.WolfBagHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -17,7 +18,8 @@ import java.util.*;
 
 /**
  * Priority 2 goal. Active when: collarTier > 0, class is "retriever", expeditionState is "idle".
- * Scans for dropped items within 64 blocks of the bed, picks them up into the bag.
+ * Scans for dropped items within the configured range of the bed (or the owner in companion mode),
+ * picks them up into the bag.
  * When bag is nearly full, sets expeditionState to "returning".
  * Caches unreachable items for 30 seconds.
  */
@@ -48,7 +50,8 @@ public class RetrieverGoal extends Goal {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
         return mixin.workingwolves$getCollarTier() > 0
             && "retriever".equals(mixin.workingwolves$getWolfClass())
-            && "idle".equals(mixin.workingwolves$getExpeditionState());
+            && "idle".equals(mixin.workingwolves$getExpeditionState())
+            && !wolf.isOrderedToSit();
     }
 
     @Override
@@ -82,9 +85,23 @@ public class RetrieverGoal extends Goal {
             return;
         }
 
+        // Determine scan center: bed if assigned, otherwise the owner (companion mode)
         BlockPos bedPos = mixin.workingwolves$getBedPos();
-        if (bedPos == null) {
-            return; // No bed assigned, nothing to do
+        BlockPos scanCenter;
+
+        if (bedPos != null) {
+            scanCenter = bedPos;
+        } else {
+            // Companion mode: scan around the owner instead of a bed
+            LivingEntity owner = wolf.getOwner();
+            if (owner == null) {
+                return; // No bed and no owner, nothing to do
+            }
+            // Don't scan if too far from owner — the wolf should stay close and follow
+            if (wolf.distanceToSqr(owner) > 32.0 * 32.0) {
+                return;
+            }
+            scanCenter = owner.blockPosition();
         }
 
         // Handle target item pursuit
@@ -100,9 +117,9 @@ public class RetrieverGoal extends Goal {
         }
         scanCooldown = SCAN_COOLDOWN;
 
-        // Scan for items near the bed
+        // Scan for items near the scan center (bed or owner)
         List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class,
-            new AABB(bedPos).inflate(Config.retrieverScanRange),
+            new AABB(scanCenter).inflate(Config.retrieverScanRange),
             item -> item.isAlive() && !unreachableCache.containsKey(item.blockPosition()));
 
         // Filter by held filter item

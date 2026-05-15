@@ -88,12 +88,26 @@ public class WolfBagHelper {
         return (float) usedSlots / bag.size() >= threshold;
     }
 
-    /** Attempts to eat one food item from the wolf's bag to heal. Returns true if food was found and consumed. */
-    public static boolean eatFoodFromBag(IWorkingWolf mixin, LivingEntity wolf, float healAmount) {
+    /** Finds the first food item in the bag without consuming it. Returns the stack reference. */
+    public static ItemStack findFood(IWorkingWolf mixin) {
         NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
         for (int i = 0; i < bag.size(); i++) {
             ItemStack stack = bag.get(i);
             if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    /** Attempts to eat one food item from the wolf's bag. Heals proportionally to the food's nutrition value. */
+    public static boolean eatFoodFromBag(IWorkingWolf mixin, LivingEntity wolf) {
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+        for (int i = 0; i < bag.size(); i++) {
+            ItemStack stack = bag.get(i);
+            if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
+                var food = stack.get(DataComponents.FOOD);
+                float healAmount = food != null ? food.nutrition() : 4.0f;
                 stack.shrink(1);
                 wolf.heal(healAmount);
                 if (stack.isEmpty()) {

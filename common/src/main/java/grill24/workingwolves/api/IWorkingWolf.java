@@ -74,6 +74,20 @@ public interface IWorkingWolf {
     int workingwolves$getMiningProgress();
     void workingwolves$setMiningProgress(int progress);
 
+    // ======== Corner tracking ========
+
+    int workingwolves$getCornerHurtCount();
+    void workingwolves$setCornerHurtCount(int count);
+
+    long workingwolves$getCornerHurtStartTime();
+    void workingwolves$setCornerHurtStartTime(long time);
+
+    @Nullable BlockPos workingwolves$getCornerHurtStartPos();
+    void workingwolves$setCornerHurtStartPos(@Nullable BlockPos pos);
+
+    long workingwolves$getPrevHurtTimestamp();
+    void workingwolves$setPrevHurtTimestamp(long timestamp);
+
     int workingwolves$getUnlockedSlots();
     void workingwolves$setUnlockedSlots(int slots);
     void workingwolves$unlockSlot();

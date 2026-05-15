@@ -16,6 +16,9 @@ public class Config {
     /** Expedition duration in minutes. 0 = unlimited. */
     public static int expeditionDurationMinutes = 15;
 
+    /** When true, creepers will not prime or explode when targeted by working wolves. */
+    public static boolean hunterCreeperSafe = true;
+
     // Mouth item render tuning (runtime, not persisted to config files)
     public static float mouthOffsetX = 0.125F;
     public static float mouthOffsetY = 0.094F;

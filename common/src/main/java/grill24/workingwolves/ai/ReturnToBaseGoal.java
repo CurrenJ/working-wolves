@@ -26,7 +26,7 @@ public class ReturnToBaseGoal extends Goal {
 
     public ReturnToBaseGoal(Wolf wolf) {
         this.wolf = wolf;
-        this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        this.setFlags(EnumSet.noneOf(Goal.Flag.class));
     }
 
     @Override

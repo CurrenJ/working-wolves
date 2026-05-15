@@ -7,7 +7,6 @@ import grill24.workingwolves.ai.HunterGoal;
 import grill24.workingwolves.ai.MinerGoal;
 import grill24.workingwolves.ai.ReturnToBaseGoal;
 import grill24.workingwolves.ai.RetrieverGoal;
-import grill24.workingwolves.ai.SelfPreservationGoal;
 import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.blockentity.DogBedBlockEntity;
 import grill24.workingwolves.inventory.WolfBagContainer;
@@ -89,6 +88,21 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
 
     @Unique
     private int workingwolves$miningProgress = 0;
+
+    // ======== Corner tracking ========
+
+    @Unique
+    private int workingwolves$cornerHurtCount = 0;
+
+    @Unique
+    private long workingwolves$cornerHurtStartTime = 0;
+
+    @Unique
+    @Nullable
+    private BlockPos workingwolves$cornerHurtStartPos = null;
+
+    @Unique
+    private long workingwolves$prevHurtTimestamp = 0;
 
     // ======== Mouth item (visual only, not persisted) ========
 
@@ -224,6 +238,49 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     @Unique
     public void workingwolves$setMouthItem(ItemStack stack) {
         this.workingwolves$mouthItem = stack;
+    }
+
+    // ======== Corner tracking accessors ========
+
+    @Unique
+    public int workingwolves$getCornerHurtCount() {
+        return this.workingwolves$cornerHurtCount;
+    }
+
+    @Unique
+    public void workingwolves$setCornerHurtCount(int count) {
+        this.workingwolves$cornerHurtCount = count;
+    }
+
+    @Unique
+    public long workingwolves$getCornerHurtStartTime() {
+        return this.workingwolves$cornerHurtStartTime;
+    }
+
+    @Unique
+    public void workingwolves$setCornerHurtStartTime(long time) {
+        this.workingwolves$cornerHurtStartTime = time;
+    }
+
+    @Unique
+    @Nullable
+    public BlockPos workingwolves$getCornerHurtStartPos() {
+        return this.workingwolves$cornerHurtStartPos;
+    }
+
+    @Unique
+    public void workingwolves$setCornerHurtStartPos(@Nullable BlockPos pos) {
+        this.workingwolves$cornerHurtStartPos = pos;
+    }
+
+    @Unique
+    public long workingwolves$getPrevHurtTimestamp() {
+        return this.workingwolves$prevHurtTimestamp;
+    }
+
+    @Unique
+    public void workingwolves$setPrevHurtTimestamp(long timestamp) {
+        this.workingwolves$prevHurtTimestamp = timestamp;
     }
 
     @Unique
@@ -384,7 +441,6 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     private void workingwolves$registerGoals(CallbackInfo ci) {
         Wolf self = (Wolf) (Object) this;
         this.goalSelector.addGoal(0, new AntiStuckGoal(self));
-        this.goalSelector.addGoal(0, new SelfPreservationGoal(self));
         this.goalSelector.addGoal(1, new ReturnToBaseGoal(self));
         this.goalSelector.addGoal(2, new RetrieverGoal(self));
         this.goalSelector.addGoal(2, new HunterGoal(self));

@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
   "client": ["WolfModelAccessor", "WolfRendererMixin"],
-  "mixins": ["WolfMixin"],
+  "mixins": ["WolfMixin", "CreeperMixin", "WolfSelfPreservationMixin"],
   "injectors": {
     "defaultRequire": 1
   }
