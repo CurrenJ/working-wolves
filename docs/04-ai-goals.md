@@ -95,7 +95,11 @@ Scans within 16 blocks of the owner for ores. Mines them at half player speed us
 
 ## WolfSelfPreservationMixin
 
-Not a goal — injected at `Wolf.aiStep()` HEAD. Runs every tick for collared wolves. Runs regardless of expedition state, but wolves on simulated expeditions have AI fully suppressed so this injection still fires but `workingwolves$getCollarTier() <= 0` check... actually: the mixin checks collar tier, not expedition state, so it runs for all collared wolves including those on expedition.
+Not a goal — injected at `Wolf.aiStep()` HEAD. Runs every tick for collared wolves (`collarTier > 0`).
+
+**Early returns:**
+- If `expeditionState == "on_expedition"` → return immediately (wolf is hidden, no AI, all processing skipped).
+- If `expeditionState == "departing"` → count down `departureTimer` (server only). On expiry, calls `triggerVanish()`: wolf becomes invisible/NoAI/invulnerable, teleports inside the bed block (Y + 0.2), starts the bed BE simulation, sets state to `"on_expedition"`. Returns without running survival behaviors.
 
 **Behavior order:**
 1. Corner tracking — accumulates hurt count; resets if wolf moves or time window expires.
@@ -111,10 +115,12 @@ Not a goal — injected at `Wolf.aiStep()` HEAD. Runs every tick for collared wo
 
 ## Simulated Expedition (not a goal)
 
-The expedition simulation lives in `DogBedBlockEntity`. See `SPEC.md §Simulated Expedition` for the full design. Summary:
+The expedition simulation lives in `DogBedBlockEntity`. See `docs/02-dog-bed.md §Expedition simulation` for the full implementation. Summary:
 
-- Dispatch Whistle → wolf walks ~12 blocks away, vanishes (invisible, teleported inside bed block, AI off).
-- `DogBedBlockEntity.tick()` advances the simulation every 60–100 ticks, generating log lines and loot.
+- Dispatch Whistle → wolf navigates ~12 blocks away, vanishes (invisible, teleported inside bed block at Y+0.2, AI off).
+- `DogBedBlockEntity.serverTick()` advances the simulation, rolling events every 60–100 ticks that generate log lines and loot.
 - Log lines pushed to open clients via packet.
-- On completion: wolf reappears ~12 blocks from bed, walks home, deposits loot.
-- Failure paths: return empty (common) or death / collar destruction (rare, config-tunable).
+- **Food:** Moved from bed to wolf bag at dispatch. Hazards drain satiation; when depleted, food items are eaten from the bag with nutrition-based value.
+- **Pickaxe durability (miners):** Applied on each event. Unbreaking respected. Enchanted pickaxes stop at 1 durability. Switches to spares automatically.
+- On completion: wolf reappears 10–14 blocks from bed, walks home, deposits loot (and leftover food/tools).
+- Failure paths: return empty (hazards/injuries), pickaxe exhaustion, or rare death.

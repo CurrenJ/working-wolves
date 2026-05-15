@@ -8,7 +8,7 @@ Fields exposed:
 - `collarTier` (int, 0 = no collar)
 - `wolfClass` (nullable String: "retriever", "hunter", "miner")
 - `bedPos` (nullable BlockPos)
-- `expeditionState` (String: "idle", "active", "returning")
+- `expeditionState` (String: "idle", "departing", "on_expedition", "returning")
 - `expeditionStartTime` (long, game ticks)
 - `expeditionDuration` (int, ticks)
 - `bagInventory` (NonNullList\<ItemStack\>, sized dynamically)
@@ -41,8 +41,10 @@ Helper methods:
 | `ww_bag` | `ItemStack.OPTIONAL_CODEC.listOf()` |
 | `ww_filter_item` | `ItemStack.OPTIONAL_CODEC` |
 | `ww_unlocked_slots` | int |
+| `ww_departure_timer` | int |
+| `ww_dep_x` / `ww_dep_y` / `ww_dep_z` | int (only stored when non-null) |
 
-On load, the wolf's collar color is restored based on `collarTier` (BROWN/GRAY/YELLOW).
+On load, the wolf's collar color is restored based on `collarTier` (BROWN/GRAY/YELLOW). If `expeditionState == "on_expedition"`, the wolf's hidden state is defensively re-applied (`setInvisible(true)`, `setNoAi(true)`, `setInvulnerable(true)`) to prevent visibility leaks after chunk unload/reload.
 
 ### mobInteract interception
 
