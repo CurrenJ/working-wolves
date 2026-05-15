@@ -242,6 +242,33 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         return WolfBagHelper.tryInsert(this, stack);
     }
 
+    @Override
+    public void setRemoved() {
+        // If a simulation was running when the bed is destroyed, rescue the wolf
+        if ("running".equals(simState) && this.level instanceof ServerLevel sl && simWolfUuid != null) {
+            Entity entity = sl.getEntity(simWolfUuid);
+            if (entity instanceof Wolf wolf) {
+                wolf.setInvisible(false);
+                wolf.setNoAi(false);
+                wolf.setInvulnerable(false);
+                IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+                mixin.workingwolves$setExpeditionState("idle");
+                mixin.workingwolves$setBedPos(null);
+                mixin.workingwolves$syncData();
+            }
+            // Drop any pending loot at the bed position
+            for (ItemStack stack : simPendingLoot) {
+                ItemEntity drop = new ItemEntity(
+                    sl, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5, stack.copy());
+                sl.addFreshEntity(drop);
+            }
+            simPendingLoot.clear();
+            simState = "inactive";
+            addLogLine("Bed destroyed. Expedition abandoned.");
+        }
+        super.setRemoved();
+    }
+
     // ======== Simulation ========
 
     public void beginExpeditionSimulation(IWorkingWolf mixin) {
