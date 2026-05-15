@@ -50,6 +50,10 @@ public class DispatchWhistleItem extends Item {
             // Cancel an active or departing expedition
             if ("on_expedition".equals(currentState) || "departing".equals(currentState)) {
                 accessor.workingwolves$setExpeditionState("idle");
+                accessor.workingwolves$setDepartureTimer(0);
+                wolf.setInvisible(false);
+                wolf.setNoAi(false);
+                wolf.setInvulnerable(false);
                 wolf.setOrderedToSit(false);
                 accessor.workingwolves$syncData();
                 player.sendSystemMessage(

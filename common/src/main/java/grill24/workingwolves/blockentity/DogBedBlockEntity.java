@@ -663,6 +663,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
                             sl, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5, stack.copy());
                         sl.addFreshEntity(drop);
                     }
+                    wolf.setInvulnerable(false);
                     wolf.hurt(sl.damageSources().genericKill(), Float.MAX_VALUE);
                 }
             }
@@ -719,6 +720,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         wolf.teleportTo(arrX + 0.5, arrY, arrZ + 0.5);
         wolf.setInvisible(false);
         wolf.setNoAi(false);
+        wolf.setInvulnerable(false);
 
         mixin.workingwolves$setExpeditionState("returning");
         wolf.setOrderedToSit(false);

@@ -87,13 +87,15 @@ public abstract class WolfSelfPreservationMixin {
         // Wolf is hidden during expedition — skip all processing
         if ("on_expedition".equals(state)) return;
 
-        // Handle departure countdown
+        // Handle departure countdown (server only — client never has the timer value)
         if ("departing".equals(state)) {
-            int timer = mixin.workingwolves$getDepartureTimer();
-            timer--;
-            mixin.workingwolves$setDepartureTimer(timer);
-            if (timer <= 0) {
-                workingwolves$triggerVanish(self, mixin);
+            if (!self.level().isClientSide()) {
+                int timer = mixin.workingwolves$getDepartureTimer();
+                timer--;
+                mixin.workingwolves$setDepartureTimer(timer);
+                if (timer <= 0) {
+                    workingwolves$triggerVanish(self, mixin);
+                }
             }
             return; // Don't run survival behaviors during departure walk
         }
@@ -242,8 +244,9 @@ public abstract class WolfSelfPreservationMixin {
             return;
         }
 
-        // Teleport wolf to inside the bed block (hidden during expedition)
-        self.teleportTo(bedPos.getX() + 0.5, bedPos.getY(), bedPos.getZ() + 0.5);
+        // Teleport wolf above the bed block (hidden, invulnerable during expedition)
+        self.setInvulnerable(true);
+        self.teleportTo(bedPos.getX() + 0.5, bedPos.getY() + 1.0, bedPos.getZ() + 0.5);
 
         // Notify the bed BE to start the simulation
         if (self.level() instanceof net.minecraft.server.level.ServerLevel sl) {
