@@ -34,7 +34,7 @@ public class AntiStuckGoal extends Goal {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
         if (mixin.workingwolves$getCollarTier() <= 0) return false;
         String state = mixin.workingwolves$getExpeditionState();
-        return "active".equals(state) || "returning".equals(state);
+        return "returning".equals(state);
     }
 
     @Override

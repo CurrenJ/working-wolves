@@ -2,6 +2,7 @@ package grill24.workingwolves.mixin;
 
 import grill24.workingwolves.ai.WolfAIHelper;
 import grill24.workingwolves.api.IWorkingWolf;
+import grill24.workingwolves.blockentity.DogBedBlockEntity;
 import grill24.workingwolves.inventory.WolfBagHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -81,6 +82,22 @@ public abstract class WolfSelfPreservationMixin {
         if (mixin.workingwolves$getCollarTier() <= 0) return;
 
         Wolf self = (Wolf) (Object) this;
+        String state = mixin.workingwolves$getExpeditionState();
+
+        // Wolf is hidden during expedition — skip all processing
+        if ("on_expedition".equals(state)) return;
+
+        // Handle departure countdown
+        if ("departing".equals(state)) {
+            int timer = mixin.workingwolves$getDepartureTimer();
+            timer--;
+            mixin.workingwolves$setDepartureTimer(timer);
+            if (timer <= 0) {
+                workingwolves$triggerVanish(self, mixin);
+            }
+            return; // Don't run survival behaviors during departure walk
+        }
+
         Level level = self.level();
         BlockPos wolfPos = self.blockPosition();
         long gameTime = level.getGameTime();
@@ -203,6 +220,43 @@ public abstract class WolfSelfPreservationMixin {
                 mixin.workingwolves$clearMouthItem();
             }
         }
+    }
+
+    // ===================================================================
+    //  Departure / vanish
+    // ===================================================================
+
+    @Unique
+    private void workingwolves$triggerVanish(Wolf self, IWorkingWolf mixin) {
+        self.setInvisible(true);
+        self.setNoAi(true);
+        self.getNavigation().stop();
+
+        BlockPos bedPos = mixin.workingwolves$getBedPos();
+        if (bedPos == null) {
+            // No bed — cancel expedition
+            mixin.workingwolves$setExpeditionState("idle");
+            self.setInvisible(false);
+            self.setNoAi(false);
+            mixin.workingwolves$syncData();
+            return;
+        }
+
+        // Teleport wolf to inside the bed block (hidden during expedition)
+        self.teleportTo(bedPos.getX() + 0.5, bedPos.getY(), bedPos.getZ() + 0.5);
+
+        // Notify the bed BE to start the simulation
+        if (self.level() instanceof net.minecraft.server.level.ServerLevel sl) {
+            net.minecraft.world.level.block.entity.BlockEntity be = sl.getBlockEntity(bedPos);
+            if (be instanceof DogBedBlockEntity bedBE) {
+                bedBE.beginExpeditionSimulation(mixin);
+            }
+        }
+
+        mixin.workingwolves$setExpeditionState("on_expedition");
+        mixin.workingwolves$setDepartureTargetPos(null);
+        mixin.workingwolves$setDepartureTimer(0);
+        mixin.workingwolves$syncData();
     }
 
     // ===================================================================

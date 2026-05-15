@@ -74,6 +74,14 @@ public interface IWorkingWolf {
     int workingwolves$getMiningProgress();
     void workingwolves$setMiningProgress(int progress);
 
+    // ======== Departure fields ========
+
+    int workingwolves$getDepartureTimer();
+    void workingwolves$setDepartureTimer(int timer);
+
+    @Nullable BlockPos workingwolves$getDepartureTargetPos();
+    void workingwolves$setDepartureTargetPos(@Nullable BlockPos pos);
+
     // ======== Corner tracking ========
 
     int workingwolves$getCornerHurtCount();

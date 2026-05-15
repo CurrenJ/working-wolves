@@ -1,6 +1,7 @@
 package grill24.workingwolves.block;
 
 import com.mojang.serialization.MapCodec;
+import grill24.workingwolves.ModBlockEntityTypes;
 import grill24.workingwolves.blockentity.DogBedBlockEntity;
 import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.pairing.WolfBedPairing;
@@ -21,6 +22,8 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -50,6 +53,14 @@ public class DogBedBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new DogBedBlockEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        if (level.isClientSide()) return null;
+        return createTickerHelper(type, (BlockEntityType<DogBedBlockEntity>) ModBlockEntityTypes.DOG_BED.value(), DogBedBlockEntity::serverTick);
     }
 
     @Override

@@ -89,6 +89,15 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     @Unique
     private int workingwolves$miningProgress = 0;
 
+    // ======== Departure fields ========
+
+    @Unique
+    private int workingwolves$departureTimer = 0;
+
+    @Unique
+    @Nullable
+    private BlockPos workingwolves$departureTargetPos = null;
+
     // ======== Corner tracking ========
 
     @Unique
@@ -122,6 +131,12 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
         output.store("ww_bag", ItemStack.OPTIONAL_CODEC.listOf(), this.workingwolves$bagInventory);
         output.store("ww_filter_item", ItemStack.OPTIONAL_CODEC, this.workingwolves$filterItem);
         output.putInt("ww_unlocked_slots", this.workingwolves$unlockedSlots);
+        output.putInt("ww_departure_timer", workingwolves$departureTimer);
+        if (workingwolves$departureTargetPos != null) {
+            output.putInt("ww_dep_x", workingwolves$departureTargetPos.getX());
+            output.putInt("ww_dep_y", workingwolves$departureTargetPos.getY());
+            output.putInt("ww_dep_z", workingwolves$departureTargetPos.getZ());
+        }
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
@@ -142,6 +157,11 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
 
         this.workingwolves$filterItem = input.read("ww_filter_item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         this.workingwolves$unlockedSlots = input.getIntOr("ww_unlocked_slots", 0);
+        this.workingwolves$departureTimer = input.getIntOr("ww_departure_timer", 0);
+        int depX = input.getIntOr("ww_dep_x", Integer.MIN_VALUE);
+        int depY = input.getIntOr("ww_dep_y", Integer.MIN_VALUE);
+        int depZ = input.getIntOr("ww_dep_z", Integer.MIN_VALUE);
+        this.workingwolves$departureTargetPos = (depX == Integer.MIN_VALUE) ? null : new BlockPos(depX, depY, depZ);
 
         // Restore collar color based on tier
         Wolf self = (Wolf) (Object) this;
@@ -328,6 +348,29 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
     @Unique
     public void workingwolves$setMiningProgress(int progress) {
         this.workingwolves$miningProgress = progress;
+    }
+
+    // ======== Departure accessors ========
+
+    @Unique
+    public int workingwolves$getDepartureTimer() {
+        return this.workingwolves$departureTimer;
+    }
+
+    @Unique
+    public void workingwolves$setDepartureTimer(int timer) {
+        this.workingwolves$departureTimer = timer;
+    }
+
+    @Unique
+    @Nullable
+    public BlockPos workingwolves$getDepartureTargetPos() {
+        return this.workingwolves$departureTargetPos;
+    }
+
+    @Unique
+    public void workingwolves$setDepartureTargetPos(@Nullable BlockPos pos) {
+        this.workingwolves$departureTargetPos = pos;
     }
 
     @Unique

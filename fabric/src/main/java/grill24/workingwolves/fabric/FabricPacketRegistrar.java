@@ -1,5 +1,6 @@
 package grill24.workingwolves.fabric;
 
+import grill24.workingwolves.network.BedJournalUpdatePacket;
 import grill24.workingwolves.network.WolfDataSyncPacket;
 import grill24.workingwolves.network.WorkingWolvesPackets;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -29,9 +30,16 @@ public class FabricPacketRegistrar {
 
     public static void registerClient() {
         PayloadTypeRegistry.clientboundPlay().register(WolfDataSyncPacket.TYPE, WolfDataSyncPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(BedJournalUpdatePacket.TYPE, BedJournalUpdatePacket.STREAM_CODEC);
 
         ClientPlayNetworking.registerGlobalReceiver(WolfDataSyncPacket.TYPE,
             (packet, ctx) -> ctx.client().execute(() -> applyClientData(packet)));
+
+        ClientPlayNetworking.registerGlobalReceiver(BedJournalUpdatePacket.TYPE,
+            (packet, ctx) -> {
+                // Client-side handler stub — GUI not yet implemented
+                // When bed journal GUI is added, handle the incoming line here
+            });
     }
 
     private static void applyClientData(WolfDataSyncPacket packet) {

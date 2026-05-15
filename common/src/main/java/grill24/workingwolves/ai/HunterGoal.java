@@ -92,7 +92,6 @@ public class HunterGoal extends Goal {
         if (mixin.workingwolves$getCollarTier() <= 0) return false;
         if (!"hunter".equals(mixin.workingwolves$getWolfClass())) return false;
         String state = mixin.workingwolves$getExpeditionState();
-        if ("active".equals(state)) return true;
         if ("idle".equals(state)) {
             return !wolf.isOrderedToSit() && wolf.getOwner() != null
                 && wolf.distanceToSqr(wolf.getOwner()) <= 32.0 * 32.0;
