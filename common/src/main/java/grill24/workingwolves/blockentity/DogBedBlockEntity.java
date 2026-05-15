@@ -45,7 +45,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     private String simWolfClass = "";
     private int simCollarTier = 0;
     private ItemStack simFilterItem = ItemStack.EMPTY;
-    private int simFoodEndurance = 0;
+    private int simSatiation = 0;
     private int simArmorPoints = 0;
     private float simPickaxeSpeed = 1.0f;
     private int simFortune = 0;
@@ -145,7 +145,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         simState = input.getStringOr("sim_state", "inactive");
         simWolfClass = input.getStringOr("sim_wolf_class", "");
         simCollarTier = input.getIntOr("sim_collar_tier", 0);
-        simFoodEndurance = input.getIntOr("sim_food_endurance", 0);
+        simSatiation = input.getIntOr("sim_satiation", 0);
         simArmorPoints = input.getIntOr("sim_armor_points", 0);
         simPickaxeSpeed = input.getIntOr("sim_pickaxe_speed_x100", 100) / 100.0f;
         simFortune = input.getIntOr("sim_fortune", 0);
@@ -184,7 +184,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         output.putString("sim_state", simState);
         output.putString("sim_wolf_class", simWolfClass);
         output.putInt("sim_collar_tier", simCollarTier);
-        output.putInt("sim_food_endurance", simFoodEndurance);
+        output.putInt("sim_satiation", simSatiation);
         output.putInt("sim_armor_points", simArmorPoints);
         output.putInt("sim_pickaxe_speed_x100", (int)(simPickaxeSpeed * 100));
         output.putInt("sim_fortune", simFortune);
@@ -278,20 +278,37 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         simTotalTicks = mixin.workingwolves$getExpeditionDuration();
         if (simTotalTicks <= 0) simTotalTicks = 12000; // fallback 10 min
 
-        // Snapshot food endurance (count food stacks in bag + take from bed inventory)
-        simFoodEndurance = 0;
-        for (ItemStack stack : mixin.workingwolves$getBagInventory()) {
-            if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
-                simFoodEndurance += stack.getCount();
-            }
-        }
+        // Move food from bed into wolf's bag, then count total nutrition as satiation
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+
         for (int i = 0; i < items.size(); i++) {
-            ItemStack stack = items.get(i);
-            if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
-                simFoodEndurance += stack.getCount();
-                items.set(i, ItemStack.EMPTY);
+            ItemStack bedStack = items.get(i);
+            if (bedStack.isEmpty() || !bedStack.has(DataComponents.FOOD)) continue;
+
+            ItemStack remaining = bedStack.copy();
+            // Merge into existing stacks of the same item
+            for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
+                ItemStack bagStack = bag.get(j);
+                if (!bagStack.isEmpty() && ItemStack.isSameItemSameComponents(bagStack, remaining)) {
+                    int space = bagStack.getMaxStackSize() - bagStack.getCount();
+                    int move = Math.min(space, remaining.getCount());
+                    if (move > 0) {
+                        bagStack.grow(move);
+                        remaining.shrink(move);
+                    }
+                }
             }
+            // Fill empty slots
+            for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
+                if (bag.get(j).isEmpty()) {
+                    bag.set(j, remaining.copy());
+                    remaining = ItemStack.EMPTY;
+                }
+            }
+            items.set(i, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
         }
+
+        simSatiation = 0;
 
         // Snapshot armor (wolf's armor attribute value)
         Wolf wolf = (Wolf) (Object) mixin;
@@ -512,17 +529,45 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         };
         addLogLine(hazardLines[rng.nextInt(hazardLines.length)]);
 
-        // Consume food endurance
-        simFoodEndurance--;
-        if (simFoodEndurance < 0) {
-            simInjuryCount++;
-            if (simInjuryCount >= 3) {
-                boolean death = simArmorPoints < 4 && rng.nextFloat() < 0.12f;
-                completeSimulation(level, true, death);
-                return;
+        applyHazardCost(level, rng);
+    }
+
+    private void applyHazardCost(Level level, Random rng) {
+        simSatiation -= 2;
+        if (simSatiation <= 0) {
+            int nutrition = eatFoodFromWolfBag(level);
+            if (nutrition > 0) {
+                simSatiation += nutrition;
+            } else {
+                simInjuryCount++;
+                if (simInjuryCount >= 3) {
+                    boolean death = simArmorPoints < 4 && rng.nextFloat() < 0.12f;
+                    completeSimulation(level, true, death);
+                    return;
+                }
+                addLogLine("Running low. Pushing on.");
             }
-            addLogLine("Running low. Pushing on.");
         }
+    }
+
+    private int eatFoodFromWolfBag(Level level) {
+        if (!(level instanceof ServerLevel sl)) return 0;
+        Entity entity = sl.getEntity(simWolfUuid);
+        if (!(entity instanceof Wolf wolf)) return 0;
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+
+        for (int i = 0; i < bag.size(); i++) {
+            ItemStack stack = bag.get(i);
+            if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
+                var food = stack.get(DataComponents.FOOD);
+                int nutrition = food != null ? food.nutrition() : 4;
+                stack.shrink(1);
+                if (stack.isEmpty()) bag.set(i, ItemStack.EMPTY);
+                return nutrition;
+            }
+        }
+        return 0;
     }
 
     private void rollMinerEvent(Level level, int zone) {
@@ -670,17 +715,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         };
         addLogLine(hazardLines[rng.nextInt(hazardLines.length)]);
 
-        // Consume food endurance
-        simFoodEndurance--;
-        if (simFoodEndurance < 0) {
-            simInjuryCount++;
-            if (simInjuryCount >= 3) {
-                boolean death = simArmorPoints < 4 && rng.nextFloat() < 0.12f;
-                completeSimulation(level, true, death);
-                return;
-            }
-            addLogLine("Running low. Pushing on.");
-        }
+        applyHazardCost(level, rng);
     }
 
     private void completeSimulation(Level level, boolean failed, boolean death) {
@@ -724,6 +759,27 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         }
 
         setChanged();
+    }
+
+    public boolean recallExpedition() {
+        if (!"running".equals(simState) || this.level == null) return false;
+
+        simState = "complete";
+        addLogLine("Called back early.");
+
+        // Deposit pending loot (same as normal completion)
+        for (ItemStack stack : simPendingLoot) {
+            ItemStack remaining = tryInsert(stack);
+            if (!remaining.isEmpty() && this.level instanceof ServerLevel sl) {
+                ItemEntity drop = new ItemEntity(
+                    sl, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5, remaining);
+                sl.addFreshEntity(drop);
+            }
+        }
+        simPendingLoot.clear();
+        triggerWolfArrival(this.level);
+        setChanged();
+        return true;
     }
 
     private void triggerWolfArrival(Level level) {

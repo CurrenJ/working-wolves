@@ -169,6 +169,13 @@ public abstract class WolfMixin extends TamableAnimal implements IWorkingWolf {
             DyeColor expectedColor = CollarItem.getCollarColorForTier(this.workingwolves$collarTier);
             self.setCollarColor(expectedColor);
         }
+
+        // Re-apply hidden state if on expedition (may be lost during chunk load)
+        if ("on_expedition".equals(this.workingwolves$expeditionState)) {
+            self.setInvisible(true);
+            self.setNoAi(true);
+            self.setInvulnerable(true);
+        }
     }
 
     // ======== Accessor methods ========

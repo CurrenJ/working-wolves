@@ -2,6 +2,8 @@ package grill24.workingwolves.item;
 
 import grill24.workingwolves.WorkingWolves;
 import grill24.workingwolves.api.IWorkingWolf;
+import grill24.workingwolves.blockentity.DogBedBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -12,9 +14,12 @@ import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.UUID;
 
 public class RecallWhistleItem extends Item {
     private static final int COOLDOWN_TICKS = 100; // 2 minutes (20 ticks per second)
@@ -72,5 +77,36 @@ public class RecallWhistleItem extends Item {
         }
 
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext ctx) {
+        Level level = ctx.getLevel();
+        BlockPos pos = ctx.getClickedPos();
+        Player player = ctx.getPlayer();
+        ItemStack stack = ctx.getItemInHand();
+
+        if (level.isClientSide() || player == null) return InteractionResult.SUCCESS;
+
+        if (!(level.getBlockEntity(pos) instanceof DogBedBlockEntity bedBE)) return InteractionResult.PASS;
+
+        // Bed must have a running expedition
+        if (!"running".equals(bedBE.getSimState())) return InteractionResult.PASS;
+
+        // Verify the assigned wolf belongs to this player
+        UUID wolfUuid = bedBE.getAssignedWolfUuid();
+        if (wolfUuid == null) return InteractionResult.PASS;
+        if (!(level instanceof ServerLevel sl)) return InteractionResult.PASS;
+        if (!(sl.getEntity(wolfUuid) instanceof Wolf wolf) || !wolf.isOwnedBy(player)) return InteractionResult.PASS;
+
+        if (player.getCooldowns().isOnCooldown(stack)) return InteractionResult.PASS;
+
+        if (bedBE.recallExpedition()) {
+            player.getCooldowns().addCooldown(stack, COOLDOWN_TICKS);
+            player.sendSystemMessage(Component.translatable("message.workingwolves.wolf_recalled"));
+            return InteractionResult.SUCCESS;
+        }
+
+        return InteractionResult.PASS;
     }
 }

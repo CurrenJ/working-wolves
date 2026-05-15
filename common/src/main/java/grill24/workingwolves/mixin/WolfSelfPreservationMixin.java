@@ -244,9 +244,11 @@ public abstract class WolfSelfPreservationMixin {
             return;
         }
 
-        // Teleport wolf above the bed block (hidden, invulnerable during expedition)
+        // Teleport wolf into the bed block (hidden, invulnerable during expedition).
+        // Y+0.2 keeps the hitbox mostly inside the bed — only 0.05 blocks overlap
+        // with a player standing on top, and noAI prevents block-collision push-out.
         self.setInvulnerable(true);
-        self.teleportTo(bedPos.getX() + 0.5, bedPos.getY() + 1.0, bedPos.getZ() + 0.5);
+        self.teleportTo(bedPos.getX() + 0.5, bedPos.getY(), bedPos.getZ() + 0.5);
 
         // Notify the bed BE to start the simulation
         if (self.level() instanceof net.minecraft.server.level.ServerLevel sl) {
