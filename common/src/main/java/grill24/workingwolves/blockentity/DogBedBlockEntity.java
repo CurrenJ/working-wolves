@@ -310,6 +310,34 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
 
         simSatiation = 0;
 
+        // Move pickaxes from bed into wolf's bag (miners only)
+        if ("miner".equals(simWolfClass)) {
+            for (int i = 0; i < items.size(); i++) {
+                ItemStack bedStack = items.get(i);
+                if (bedStack.isEmpty() || !bedStack.is(ItemTags.PICKAXES)) continue;
+
+                ItemStack remaining = bedStack.copy();
+                for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
+                    ItemStack bagStack = bag.get(j);
+                    if (!bagStack.isEmpty() && ItemStack.isSameItemSameComponents(bagStack, remaining)) {
+                        int space = bagStack.getMaxStackSize() - bagStack.getCount();
+                        int move = Math.min(space, remaining.getCount());
+                        if (move > 0) {
+                            bagStack.grow(move);
+                            remaining.shrink(move);
+                        }
+                    }
+                }
+                for (int j = 0; j < bag.size() && !remaining.isEmpty(); j++) {
+                    if (bag.get(j).isEmpty()) {
+                        bag.set(j, remaining.copy());
+                        remaining = ItemStack.EMPTY;
+                    }
+                }
+                items.set(i, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
+            }
+        }
+
         // Snapshot armor (wolf's armor attribute value)
         Wolf wolf = (Wolf) (Object) mixin;
         simArmorPoints = (int) wolf.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR);
@@ -570,6 +598,141 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         return 0;
     }
 
+    // ======== Pickaxe durability ========
+
+    private static final int PICKAXE_LOW_THRESHOLD = 5;
+
+    private boolean applyMinerDurability(Level level, int baseDamage) {
+        if (!(level instanceof ServerLevel sl)) return true;
+        Entity entity = sl.getEntity(simWolfUuid);
+        if (!(entity instanceof Wolf wolf)) return true;
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+
+        // Find the best pickaxe in the bag
+        int bestSlot = -1;
+        float bestSpeed = 0;
+        for (int i = 0; i < bag.size(); i++) {
+            ItemStack stack = bag.get(i);
+            if (!stack.isEmpty() && stack.is(ItemTags.PICKAXES)) {
+                float speed = stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
+                if (speed > bestSpeed) {
+                    bestSpeed = speed;
+                    bestSlot = i;
+                }
+            }
+        }
+
+        if (bestSlot < 0) {
+            addLogLine("No pickaxe left. Heading back.");
+            return false;
+        }
+
+        ItemStack pickaxe = bag.get(bestSlot);
+        int unbreaking = 0;
+        boolean isEnchanted = pickaxe.isEnchanted();
+        for (var entry : pickaxe.getEnchantments().entrySet()) {
+            if (entry.getKey().is(Enchantments.UNBREAKING)) {
+                unbreaking = entry.getIntValue();
+            }
+        }
+
+        int currentDamage = pickaxe.getDamageValue();
+        int maxDurability = pickaxe.getMaxDamage();
+        int remainingBefore = maxDurability - currentDamage;
+
+        // Enchanted pickaxes are never destroyed — stop at 1 durability
+        if (isEnchanted && remainingBefore <= 1) {
+            if (hasSparePickaxe(bag, bestSlot)) {
+                switchToNextPickaxe(level, bag);
+                addLogLine("Switched to spare pickaxe.");
+                return true;
+            }
+            addLogLine("Pickaxe too precious to break. Heading back.");
+            return false;
+        }
+
+        // Apply damage, respecting unbreaking
+        int actualDamage = 0;
+        for (int d = 0; d < baseDamage; d++) {
+            if (unbreaking == 0 || level.getRandom().nextInt(unbreaking + 1) == 0) {
+                actualDamage++;
+            }
+        }
+        if (actualDamage == 0) return true;
+
+        int newDamage = currentDamage + actualDamage;
+
+        if (isEnchanted && newDamage >= maxDurability) {
+            // Stop at 1 durability, don't destroy
+            pickaxe.setDamageValue(maxDurability - 1);
+            if (hasSparePickaxe(bag, bestSlot)) {
+                switchToNextPickaxe(level, bag);
+                addLogLine("Switched to spare pickaxe.");
+                return true;
+            }
+            addLogLine("Pickaxe too precious to break. Heading back.");
+            return false;
+        }
+
+        if (newDamage >= maxDurability) {
+            // Unenchanted pickaxe breaks
+            bag.set(bestSlot, ItemStack.EMPTY);
+            addLogLine("Pickaxe shattered.");
+            if (!switchToNextPickaxe(level, bag)) {
+                addLogLine("Last pickaxe gone. Heading back.");
+                return false;
+            }
+            return true;
+        }
+
+        pickaxe.setDamageValue(newDamage);
+
+        // Low durability warning with no spare
+        int remainingAfter = maxDurability - newDamage;
+        if (remainingAfter < PICKAXE_LOW_THRESHOLD && !hasSparePickaxe(bag, bestSlot)) {
+            addLogLine("Pickaxe nearly done. Heading back.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean switchToNextPickaxe(Level level, NonNullList<ItemStack> bag) {
+        int bestSlot = -1;
+        float bestSpeed = 0;
+        for (int i = 0; i < bag.size(); i++) {
+            ItemStack stack = bag.get(i);
+            if (!stack.isEmpty() && stack.is(ItemTags.PICKAXES)) {
+                float speed = stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
+                if (speed > bestSpeed) {
+                    bestSpeed = speed;
+                    bestSlot = i;
+                }
+            }
+        }
+        if (bestSlot < 0) return false;
+
+        // Update stats to match the new pickaxe
+        ItemStack pickaxe = bag.get(bestSlot);
+        simPickaxeSpeed = pickaxe.getDestroySpeed(Blocks.STONE.defaultBlockState());
+        simFortune = 0;
+        simSilkTouch = false;
+        for (var entry : pickaxe.getEnchantments().entrySet()) {
+            if (entry.getKey().is(Enchantments.FORTUNE)) simFortune = Math.max(simFortune, entry.getIntValue());
+            if (entry.getKey().is(Enchantments.SILK_TOUCH) && entry.getIntValue() > 0) simSilkTouch = true;
+        }
+        return true;
+    }
+
+    private boolean hasSparePickaxe(NonNullList<ItemStack> bag, int excludeSlot) {
+        for (int i = 0; i < bag.size(); i++) {
+            if (i == excludeSlot) continue;
+            if (!bag.get(i).isEmpty() && bag.get(i).is(ItemTags.PICKAXES)) return true;
+        }
+        return false;
+    }
+
     private void rollMinerEvent(Level level, int zone) {
         Random rng = new Random(level.getGameTime() + simElapsedTicks);
         int[] weights = switch (zone) {
@@ -590,12 +753,21 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
                 "Long corridor. Nothing yet."
             };
             addLogLine(travelLines[rng.nextInt(travelLines.length)]);
+            if (!applyMinerDurability(level, 1)) {
+                completeSimulation(level, false, false);
+            }
         } else if (roll < weights[0] + weights[1]) {
             // Discovery event
             rollMinerDiscovery(level, zone, rng);
+            if (!applyMinerDurability(level, 3)) {
+                completeSimulation(level, false, false);
+            }
         } else {
             // Hazard event
             rollMinerHazard(level, rng);
+            if (!applyMinerDurability(level, 1)) {
+                completeSimulation(level, false, false);
+            }
         }
     }
 
@@ -719,6 +891,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     }
 
     private void completeSimulation(Level level, boolean failed, boolean death) {
+        if (!"running".equals(simState)) return;
         simState = "complete";
 
         if (death) {

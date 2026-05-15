@@ -98,6 +98,31 @@ public class DispatchWhistleItem extends Item {
                 return InteractionResult.FAIL;
             }
 
+            // Guard: miners must have a pickaxe in bag or bed inventory
+            if ("miner".equals(wolfClass)) {
+                boolean hasPickaxe = false;
+                for (ItemStack stack : accessor.workingwolves$getBagInventory()) {
+                    if (!stack.isEmpty() && stack.is(net.minecraft.tags.ItemTags.PICKAXES)) {
+                        hasPickaxe = true;
+                        break;
+                    }
+                }
+                if (!hasPickaxe && wolf.level().getBlockEntity(bedPos) instanceof grill24.workingwolves.blockentity.DogBedBlockEntity bedBE2) {
+                    for (int i = 0; i < bedBE2.getContainerSize(); i++) {
+                        ItemStack bedStack = bedBE2.getItem(i);
+                        if (!bedStack.isEmpty() && bedStack.is(net.minecraft.tags.ItemTags.PICKAXES)) {
+                            hasPickaxe = true;
+                            break;
+                        }
+                    }
+                }
+                if (!hasPickaxe) {
+                    player.sendSystemMessage(
+                        Component.translatable("message.workingwolves.no_pickaxe"));
+                    return InteractionResult.FAIL;
+                }
+            }
+
             // Start departure
             Level level = wolf.level();
             BlockPos wolfPos = wolf.blockPosition();
