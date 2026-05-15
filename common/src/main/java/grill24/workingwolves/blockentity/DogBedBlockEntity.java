@@ -1096,7 +1096,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     private void addLogLine(String line) {
         expeditionLog.add(line);
         if (this.level != null) {
-            WorkingWolvesPackets.pushJournalLine(this.level, this.worldPosition, line);
+            WorkingWolvesPackets.pushJournalLine(this.level, this.worldPosition, line, simElapsedTicks, simTotalTicks);
         }
         setChanged();
     }
@@ -1138,6 +1138,13 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     public String getSimState() {
         return simState;
     }
+
+    public boolean isSimHasMining() { return simHasMining; }
+    public boolean isSimHasHunting() { return simHasHunting; }
+    public boolean isSimHasWoodcutting() { return simHasWoodcutting; }
+    public int getSimCollarTier() { return simCollarTier; }
+    public int getSimElapsedTicks() { return simElapsedTicks; }
+    public int getSimTotalTicks() { return simTotalTicks; }
 
     public List<String> getExpeditionLog() {
         return expeditionLog;

@@ -5,11 +5,13 @@ import grill24.workingwolves.ModBlocks;
 import grill24.workingwolves.ModCreativeTabs;
 import grill24.workingwolves.ModDataComponents;
 import grill24.workingwolves.ModItems;
+import grill24.workingwolves.ModMenuTypes;
 import grill24.workingwolves.ModSoundEvents;
 import grill24.workingwolves.WorkingWolves;
 import grill24.workingwolves.architectury.RegistrationApiSided;
 import grill24.workingwolves.chunk.WolfChunkManager;
 import grill24.workingwolves.command.DebugCommand;
+import grill24.workingwolves.network.BedPacketHandlers;
 import grill24.workingwolves.neoforge.NeoForgePacketRegistrar;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -61,8 +63,14 @@ public class WorkingWolvesNeoForge {
             DebugCommand.register(event.getDispatcher());
         });
 
+        // Register menu types
+        ModMenuTypes.DOG_BED_MENU_SUPPLIER = () -> WorkingWolvesRegistriesNeoForge.DOG_BED_MENU.value();
+        WorkingWolvesRegistriesNeoForge.MENU_TYPES.register(modEventBus);
+
         // Register networking
         NeoForgePacketRegistrar.init(modEventBus);
+        NeoForgePacketRegistrar.dispatchFromBedHandler = BedPacketHandlers::handleDispatch;
+        NeoForgePacketRegistrar.recallFromBedHandler = BedPacketHandlers::handleRecall;
 
         // Add items to the vanilla TOOLS_AND_UTILITIES tab
         modEventBus.addListener(this::addCreative);

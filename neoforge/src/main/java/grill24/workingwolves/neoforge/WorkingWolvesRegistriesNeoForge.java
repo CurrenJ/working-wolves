@@ -1,13 +1,17 @@
 package grill24.workingwolves.neoforge;
 
 import grill24.workingwolves.WorkingWolves;
+import grill24.workingwolves.inventory.DogBedMenu;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class WorkingWolvesRegistriesNeoForge {
@@ -17,4 +21,8 @@ public class WorkingWolvesRegistriesNeoForge {
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, WorkingWolves.MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, WorkingWolves.MODID);
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, WorkingWolves.MODID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, WorkingWolves.MODID);
+
+    public static final DeferredHolder<MenuType<?>, MenuType<DogBedMenu>> DOG_BED_MENU =
+        MENU_TYPES.register("dog_bed_menu", () -> new MenuType<>(DogBedMenu::new, FeatureFlags.VANILLA_SET));
 }

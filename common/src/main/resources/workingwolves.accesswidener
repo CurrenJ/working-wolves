@@ -8,3 +8,6 @@ accessible class net/minecraft/world/entity/animal/wolf/Wolf
 accessible method net/minecraft/world/entity/animal/wolf/Wolf setCollarColor (Lnet/minecraft/world/item/DyeColor;)V
 accessible field net/minecraft/world/entity/ai/navigation/PathNavigation pathFinder Lnet/minecraft/world/level/pathfinder/PathFinder;
 accessible field net/minecraft/world/entity/ai/navigation/PathNavigation requiredPathLength F
+
+# Needed to reference MenuScreens.ScreenConstructor when registering screens via gelatin-ui
+accessible class net/minecraft/client/gui/screens/MenuScreens$ScreenConstructor

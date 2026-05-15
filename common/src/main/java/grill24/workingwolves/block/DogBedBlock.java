@@ -7,12 +7,15 @@ import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.pairing.WolfBedPairing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import grill24.workingwolves.inventory.DogBedMenu;
+import grill24.workingwolves.network.BedStatePacket;
+import grill24.workingwolves.network.WorkingWolvesPackets;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -79,13 +82,18 @@ public class DogBedBlock extends BaseEntityBlock {
             }
 
             // Normal right-click: open GUI
-            String bedTitle = be.getAssignedWolfName() != null
-                ? be.getAssignedWolfName() + "'s Dog Bed"
-                : "Dog Bed";
-            player.openMenu(new SimpleMenuProvider(
-                    (containerId, inventory, p) -> ChestMenu.threeRows(containerId, inventory, be),
+            if (player instanceof ServerPlayer sp && level instanceof ServerLevel serverLevel) {
+                // Send bed state before opening menu so the client DogBedMenu constructor can read it
+                WorkingWolvesPackets.sendToPlayer.accept(sp, BedStatePacket.fromBE(be, serverLevel));
+
+                String bedTitle = be.getAssignedWolfName() != null
+                    ? be.getAssignedWolfName() + "'s Dog Bed"
+                    : "Dog Bed";
+                sp.openMenu(new SimpleMenuProvider(
+                    (containerId, inventory, p) -> new DogBedMenu(containerId, inventory, be),
                     Component.literal(bedTitle)
-            ));
+                ));
+            }
         }
         return InteractionResult.CONSUME;
     }

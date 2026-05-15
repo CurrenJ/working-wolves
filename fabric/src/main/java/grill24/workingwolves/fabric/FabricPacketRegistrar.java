@@ -1,8 +1,7 @@
 package grill24.workingwolves.fabric;
 
-import grill24.workingwolves.network.BedJournalUpdatePacket;
-import grill24.workingwolves.network.WolfDataSyncPacket;
-import grill24.workingwolves.network.WorkingWolvesPackets;
+import grill24.workingwolves.client.DogBedScreenData;
+import grill24.workingwolves.network.*;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -10,7 +9,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.function.BiConsumer;
+
 public class FabricPacketRegistrar {
+
+    // Set by server init (WorkingWolvesFabric)
+    public static BiConsumer<DispatchFromBedPacket, ServerPlayer> dispatchFromBedHandler = (p, player) -> {};
+    public static BiConsumer<RecallFromBedPacket, ServerPlayer> recallFromBedHandler = (p, player) -> {};
 
     public static void registerServer() {
         WorkingWolvesPackets.sendToPlayer = (player, payload) -> {
@@ -26,23 +31,33 @@ public class FabricPacketRegistrar {
                 }
             }
         };
+
+        // C → S
+        PayloadTypeRegistry.serverboundPlay().register(DispatchFromBedPacket.TYPE, DispatchFromBedPacket.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(RecallFromBedPacket.TYPE, RecallFromBedPacket.STREAM_CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(DispatchFromBedPacket.TYPE,
+            (packet, ctx) -> ctx.server().execute(() -> dispatchFromBedHandler.accept(packet, ctx.player())));
+        ServerPlayNetworking.registerGlobalReceiver(RecallFromBedPacket.TYPE,
+            (packet, ctx) -> ctx.server().execute(() -> recallFromBedHandler.accept(packet, ctx.player())));
     }
 
     public static void registerClient() {
+        // S → C
         PayloadTypeRegistry.clientboundPlay().register(WolfDataSyncPacket.TYPE, WolfDataSyncPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(BedStatePacket.TYPE, BedStatePacket.STREAM_CODEC);
         PayloadTypeRegistry.clientboundPlay().register(BedJournalUpdatePacket.TYPE, BedJournalUpdatePacket.STREAM_CODEC);
 
         ClientPlayNetworking.registerGlobalReceiver(WolfDataSyncPacket.TYPE,
-            (packet, ctx) -> ctx.client().execute(() -> applyClientData(packet)));
+            (packet, ctx) -> ctx.client().execute(() ->
+                WolfDataSyncPacket.applyToClient(Minecraft.getInstance().level, packet)));
+
+        ClientPlayNetworking.registerGlobalReceiver(BedStatePacket.TYPE,
+            (packet, ctx) -> ctx.client().execute(() -> DogBedScreenData.applyStatePacket(packet)));
 
         ClientPlayNetworking.registerGlobalReceiver(BedJournalUpdatePacket.TYPE,
-            (packet, ctx) -> {
-                // Client-side handler stub — GUI not yet implemented
-                // When bed journal GUI is added, handle the incoming line here
-            });
-    }
+            (packet, ctx) -> ctx.client().execute(() -> DogBedScreenData.applyJournalUpdate(packet)));
 
-    private static void applyClientData(WolfDataSyncPacket packet) {
-        WolfDataSyncPacket.applyToClient(Minecraft.getInstance().level, packet);
+        WorkingWolvesPackets.sendToServer = payload -> ClientPlayNetworking.send(payload);
     }
 }

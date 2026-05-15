@@ -10,21 +10,23 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class WorkingWolvesPackets {
-    // Set by platform init
+    // Set by platform server init
     public static BiConsumer<ServerPlayer, CustomPacketPayload> sendToPlayer = (p, payload) -> {};
     public static BiConsumer<Entity, CustomPacketPayload> sendToTracking = (e, payload) -> {};
 
-    // Sync wolf working data to all tracking clients
+    // Set by platform client init
+    public static Consumer<CustomPacketPayload> sendToServer = payload -> {};
+
     public static void syncWolfData(Wolf wolf) {
         sendToTracking.accept(wolf, WolfDataSyncPacket.fromWolf(wolf));
     }
 
-    // Push a journal line from a bed to all nearby players
-    public static void pushJournalLine(Level level, BlockPos pos, String line) {
+    public static void pushJournalLine(Level level, BlockPos pos, String line, int simElapsed, int simTotal) {
         if (!(level instanceof ServerLevel sl)) return;
-        BedJournalUpdatePacket packet = new BedJournalUpdatePacket(pos, line);
+        BedJournalUpdatePacket packet = new BedJournalUpdatePacket(pos, line, simElapsed, simTotal);
         Vec3 center = Vec3.atCenterOf(pos);
         for (ServerPlayer player : sl.players()) {
             if (player.distanceToSqr(center) < 128.0 * 128.0) {
