@@ -5,6 +5,7 @@ import grill24.workingwolves.network.BedJournalUpdatePacket;
 import grill24.workingwolves.network.BedStatePacket;
 import net.minecraft.core.BlockPos;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -23,7 +24,7 @@ public final class DogBedScreenData {
     public static boolean hasWoodcutting = false;
     public static int simElapsedTicks = 0;
     public static int simTotalTicks = 0;
-    public static List<String> journalLines = List.of();
+    public static List<String> journalLines = new ArrayList<>();
 
     // Callbacks set by DogBedScreen while it's open; cleared on screen close
     public static Consumer<BedJournalUpdatePacket> journalUpdateCallback = null;
@@ -40,7 +41,7 @@ public final class DogBedScreenData {
         simElapsedTicks = packet.simElapsedTicks();
         simTotalTicks = packet.simTotalTicks();
         String log = packet.expeditionLog();
-        journalLines = log.isEmpty() ? List.of() : Arrays.asList(log.split("\n", -1));
+        journalLines = log.isEmpty() ? new ArrayList<>() : new ArrayList<>(Arrays.asList(log.split("\n", -1)));
 
         // Also set the pending bed pos so the client-side menu constructor can read it
         ModMenuTypes.pendingBedPos = currentBedPos;
@@ -55,6 +56,7 @@ public final class DogBedScreenData {
         if (!packet.bedPos().equals(currentBedPos)) return;
         simElapsedTicks = packet.simElapsedTicks();
         simTotalTicks = packet.simTotalTicks();
+        journalLines.add(packet.line());
         if (journalUpdateCallback != null) {
             journalUpdateCallback.accept(packet);
         }
@@ -70,7 +72,7 @@ public final class DogBedScreenData {
         hasWoodcutting = false;
         simElapsedTicks = 0;
         simTotalTicks = 0;
-        journalLines = List.of();
+        journalLines = new ArrayList<>();
         journalUpdateCallback = null;
         stateUpdateCallback = null;
     }

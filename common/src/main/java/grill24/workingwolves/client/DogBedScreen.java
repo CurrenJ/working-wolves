@@ -105,7 +105,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         Label journalTitle = new Label("Expedition Journal", COLOR_TITLE);
         journalTitle.setSize(154, 9);
         // Center at top of journal area (above the panel)
-        root.addChildAt(journalTitle, lp + 8 + 77, tp + 1);
+        root.addChildAt(journalTitle, lp + 8 + 77, tp + 10);
 
         // ── Wolf header (right panel, above slots) ────────────────────────
         buildWolfHeader(root, lp, tp);
@@ -121,7 +121,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         String wolfName = DogBedScreenData.wolfName.isEmpty() ? "Unassigned" : DogBedScreenData.wolfName;
         Label nameLabel = new Label(wolfName + "'s Bed", COLOR_WOLF_NAME);
         nameLabel.setSize(162, 9);
-        root.addChildAt(nameLabel, lp + 178 + 81, tp + 10);
+        root.addChildAt(nameLabel, lp + 178 + 85, tp + 10);
 
         // Role icons row
         HBox roleBox = UI.hbox().spacing(2).alignment(HBox.Alignment.CENTER);
@@ -138,27 +138,27 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
             roleBox.addChild(new Label("[No tools]", COLOR_LABEL_DIM));
         }
         roleBox.setSize(162, 9);
-        root.addChildAt(roleBox, lp + 178 + 81, tp + 22);
+        root.addChildAt(roleBox, lp + 178 + 85, tp + 22);
 
         // Status label
         String statusText = statusText(simState);
         int statusColor = statusColor(simState);
         statusLabel = new Label(statusText, statusColor);
         statusLabel.setSize(162, 9);
-        root.addChildAt(statusLabel, lp + 178 + 81, tp + 34);
+        root.addChildAt(statusLabel, lp + 178 + 85, tp + 34);
 
         // Progress bar (hidden when not running)
         progressBar = UI.progressBar();
         progressBar.setSize(162, 10);
         progressBar.progress(progressFraction());
         progressBar.setVisible("running".equals(simState));
-        root.addChildAt(progressBar, lp + 178 + 81, tp + 48);
+        root.addChildAt(progressBar, lp + 178 + 85, tp + 48);
 
         // Timer label
         timerLabel = new Label(timerText(), COLOR_TIMER);
         timerLabel.setSize(162, 9);
         timerLabel.setVisible("running".equals(simState));
-        root.addChildAt(timerLabel, lp + 178 + 81, tp + 61);
+        root.addChildAt(timerLabel, lp + 178 + 85, tp + 61);
     }
 
     private void buildActionButton(ManualContainer root, int lp, int tp) {
@@ -169,7 +169,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         actionButton = UI.spriteButton(162, 20, btnColor).text(btnText, COLOR_BTN_TEXT);
         actionButton.onClick(e -> onActionButtonClick());
         // Center at (lp+178+81, tp+132+10)
-        root.addChildAt(actionButton, lp + 178 + 81, tp + 142);
+        root.addChildAt(actionButton, lp + 178 + 85, tp + 142);
     }
 
     private void onActionButtonClick() {
@@ -234,18 +234,17 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     }
 
     @Override
-    protected void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractTransparentBackground(GuiGraphicsExtractor graphics) {
+        super.extractTransparentBackground(graphics);
         int lp = this.leftPos;
         int tp = this.topPos;
-
-        // Journal panel background
         drawPanel(graphics, lp + 8, tp + 8, 154, 144);
-
-        // Right panel background (header + bed slots area)
         drawPanel(graphics, lp + 178, tp + 8, 170, 144);
+        drawPanel(graphics, lp + 178, tp + 160, 170, 74);
+    }
 
-        // Player inventory background
-        drawPanel(graphics, lp + 178, tp + 160, 170, 72);
+    @Override
+    protected void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
     }
 
     private static void drawPanel(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {

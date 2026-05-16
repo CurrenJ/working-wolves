@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 public class DogBedMenu extends GelatinMenu {
     // Layout constants (relative to leftPos/topPos in AbstractContainerScreen)
     public static final int IMAGE_WIDTH = 356;
-    public static final int IMAGE_HEIGHT = 240;
+    public static final int IMAGE_HEIGHT = 244;
 
     private static final int BED_SLOTS_X = 178;
     private static final int BED_SLOTS_Y = 74;
