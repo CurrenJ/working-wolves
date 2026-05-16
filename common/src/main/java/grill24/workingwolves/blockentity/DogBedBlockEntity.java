@@ -64,6 +64,8 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     private final List<ItemStack> simPendingLoot = new ArrayList<>();
     private final List<String> expeditionLog = new ArrayList<>();
 
+    private enum HazardLevel { LIGHT, MODERATE, SEVERE }
+
     public DogBedBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.DOG_BED.value(), pos, state);
     }
@@ -357,6 +359,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
             "Gone to work."
         };
         addLogLine(departureLines[this.level.getRandom().nextInt(departureLines.length)]);
+        WorkingWolvesPackets.pushBedState(this.level, this.worldPosition, this);
         setChanged();
     }
 
@@ -423,6 +426,15 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         if (simHasWoodcutting) { rollWoodcutterEvent(level, zone); }
     }
 
+    private HazardLevel pickHazardLevel(int zone, Random rng) {
+        int roll = rng.nextInt(100);
+        return switch (zone) {
+            case 0  -> roll < 75 ? HazardLevel.LIGHT : roll < 97 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
+            case 1  -> roll < 48 ? HazardLevel.LIGHT : roll < 88 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
+            default -> roll < 30 ? HazardLevel.LIGHT : roll < 75 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
+        };
+    }
+
     // ======== Hunter events ========
 
     private void rollHunterEvent(Level level, int zone) {
@@ -453,7 +465,8 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         } else if (roll < weights[0] + weights[1]) {
             rollHunterDiscovery(level, zone, rng);
         } else {
-            rollHunterHazard(level, rng);
+            HazardLevel hl = pickHazardLevel(zone, rng);
+            rollHunterHazard(level, rng, hl);
         }
     }
 
@@ -656,21 +669,32 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         };
     }
 
-    private void rollHunterHazard(Level level, Random rng) {
-        String[] hazardLines = {
-            "Three of them at once. Held on.",
-            "Took a hit. Kept moving.",
-            "Cornered briefly. Found a way out.",
-            "Lava nearby. Backed off.",
-            "Pack of them. Retreated and regrouped.",
-            "Something big. Chose not to engage.",
-            "Outnumbered. Fought anyway.",
-            "Got bit. Not badly. Kept going.",
-            "Wrong side of a ravine. Had to double back.",
-            "Ambushed. Recovered faster than expected."
+    private void rollHunterHazard(Level level, Random rng, HazardLevel hl) {
+        String[] lines = switch (hl) {
+            case LIGHT -> new String[]{
+                "Got bit. Not badly. Kept going.",
+                "Wrong side of a ravine. Had to double back.",
+                "Ambushed. Recovered faster than expected.",
+                "Something stirred in the brush. Moved on.",
+                "Lava nearby. Backed off."
+            };
+            case MODERATE -> new String[]{
+                "Three of them at once. Held on.",
+                "Cornered briefly. Found a way out.",
+                "Took a hit. Kept moving.",
+                "Outnumbered. Fought anyway.",
+                "Pack of them. Retreated and regrouped."
+            };
+            case SEVERE -> new String[]{
+                "Too many. Barely got clear.",
+                "Took the worst of it. Still here.",
+                "Nearly didn't make it out. Did.",
+                "The pack was bigger than it looked. Ran.",
+                "Something found me before I found it. Cost me."
+            };
         };
-        addLogLine(hazardLines[rng.nextInt(hazardLines.length)]);
-        applyHazardCost(level, rng);
+        addLogLine(lines[rng.nextInt(lines.length)]);
+        applyHazardCost(level, rng, hl);
     }
 
     // ======== Miner events ========
@@ -732,8 +756,10 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
                 completeSimulation(level, false, false);
             }
         } else {
-            rollMinerHazard(level, rng);
-            if (!applyMinerDurability(level, 1)) {
+            HazardLevel hl = pickHazardLevel(zone, rng);
+            rollMinerHazard(level, rng, hl);
+            int dmg = switch (hl) { case LIGHT -> 1; case MODERATE -> 2; case SEVERE -> 3; };
+            if (!applyMinerDurability(level, dmg)) {
                 completeSimulation(level, false, false);
             }
         }
@@ -882,34 +908,34 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         }
     }
 
-    private void rollMinerHazard(Level level, Random rng) {
-        String[] hazardLines = {
-            // Lava and heat
-            "Lava pocket opened up mid-swing. Retreated fast. Singed.",
-            "Heat rising through the floor. Magma below. Found a way around it.",
-            "Lava fall in the next chamber. The air ahead shimmered. Backed off.",
-            // Cave-in / structural
-            "Ceiling cracked. Held still. It held.",
-            "Cave-in above. Buried the passage. Had to dig back out.",
-            "Gravel pour from above. Moved before it filled the corridor.",
-            "Support pillar gone. The whole section leaned. Left quickly.",
-            // Mob sounds / darkness
-            "Clicking in the dark behind me. Picked up the pace.",
-            "Something moved in the chamber below. Did not go down.",
-            "Groaning in the walls. Zombie trapped in the stone somewhere.",
-            "Sound of many feet. Stayed still until it passed.",
-            "Breath in the dark that wasn't mine. Not going back that way.",
-            // Getting lost
-            "Passage looped. Spent time finding north again.",
-            "Marked the wall to find my way back. Took longer than expected.",
-            "Wrong tunnel for a while. Doubled back. Lost time.",
-            // Water / flooding
-            "Water flooded the lower corridor fast. Climbed out.",
-            "Deep water ahead, no bottom. Found another way around.",
-            "Aquifer burst through the wall. Cold and sudden."
+    private void rollMinerHazard(Level level, Random rng, HazardLevel hl) {
+        String[] lines = switch (hl) {
+            case LIGHT -> new String[]{
+                "Passage looped. Spent time finding north again.",
+                "Wrong tunnel for a while. Doubled back. Lost time.",
+                "Sound of many feet. Stayed still until it passed.",
+                "Groaning in the walls. Zombie trapped in the stone somewhere.",
+                "Something moved in the chamber below. Did not go down."
+            };
+            case MODERATE -> new String[]{
+                "Ceiling cracked. Held still. It held.",
+                "Gravel pour from above. Moved before it filled the corridor.",
+                "Water flooded the lower corridor fast. Climbed out.",
+                "Deep water ahead, no bottom. Found another way around.",
+                "Clicking in the dark behind me. Picked up the pace.",
+                "Breath in the dark that wasn't mine. Not going back that way.",
+                "Heat rising through the floor. Magma below. Found a way around it."
+            };
+            case SEVERE -> new String[]{
+                "Lava pocket opened up mid-swing. Retreated fast. Singed.",
+                "Cave-in above. Buried the passage. Had to dig back out.",
+                "Support pillar gone. The whole section leaned. Left quickly.",
+                "Aquifer burst through the wall. Cold and sudden. Lost the passage.",
+                "Something in the dark that wasn't afraid. Moved fast."
+            };
         };
-        addLogLine(hazardLines[rng.nextInt(hazardLines.length)]);
-        applyHazardCost(level, rng);
+        addLogLine(lines[rng.nextInt(lines.length)]);
+        applyHazardCost(level, rng, hl);
     }
 
     // ======== Woodcutter events ========
@@ -948,8 +974,10 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
                 completeSimulation(level, false, false);
             }
         } else {
-            rollWoodcutterHazard(level, rng);
-            if (!applyWoodcutterDurability(level, 1)) {
+            HazardLevel hl = pickHazardLevel(zone, rng);
+            rollWoodcutterHazard(level, rng, hl);
+            int dmg = switch (hl) { case LIGHT -> 1; case MODERATE -> 2; case SEVERE -> 3; };
+            if (!applyWoodcutterDurability(level, dmg)) {
                 completeSimulation(level, false, false);
             }
         }
@@ -1058,23 +1086,33 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         }
     }
 
-    private void rollWoodcutterHazard(Level level, Random rng) {
-        String[] hazardLines = {
-            "Tree fell the wrong way. Close call.",
-            "Beehive in the branches. Stings.",
-            "Hostile mob in the undergrowth.",
-            "Fog rolling in. Slowed down.",
-            "Thorns and thick brush.",
-            "Roots tangled the path. Lost time.",
-            "A root caught my back foot. Went down hard.",
-            "Disturbed a nest I did not see. Moved before counting.",
-            "The dry grass caught from a spark. Small fire. Controlled quickly.",
-            "Bear investigating my woodpile. Waited forty minutes. She left.",
-            "Something in the dark forest did not want me there.",
-            "The mud swallowed me to the hip. Took time to extract."
+    private void rollWoodcutterHazard(Level level, Random rng, HazardLevel hl) {
+        String[] lines = switch (hl) {
+            case LIGHT -> new String[]{
+                "Roots tangled the path. Lost time.",
+                "Fog rolling in. Slowed down.",
+                "Thorns and thick brush.",
+                "Rain made the bark slick. Careful work.",
+                "The path I marked was already grown over."
+            };
+            case MODERATE -> new String[]{
+                "Tree fell the wrong way. Close call.",
+                "Beehive in the branches. Stings.",
+                "Hostile mob in the undergrowth.",
+                "A root caught my back foot. Went down hard.",
+                "Something in the dark forest did not want me there.",
+                "Disturbed a nest I did not see. Moved before counting."
+            };
+            case SEVERE -> new String[]{
+                "Bear investigating my woodpile. Then investigating me.",
+                "The dry grass caught from a spark. Not so controlled.",
+                "Tree came down on top of me. Working out from under it.",
+                "The mud swallowed me to the hip. Took time to extract.",
+                "Something large, very close, very fast. Dropped everything and ran."
+            };
         };
-        addLogLine(hazardLines[rng.nextInt(hazardLines.length)]);
-        applyHazardCost(level, rng);
+        addLogLine(lines[rng.nextInt(lines.length)]);
+        applyHazardCost(level, rng, hl);
     }
 
     // ======== Rare and cross-role events ========
@@ -1091,7 +1129,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
                 addLogLine("Three hours of perfect silence.");
                 addLogLine("Emerged with mud on the paws and a look you don't ask about.");
                 simPendingLoot.add(new ItemStack(Items.ECHO_SHARD, 1 + rng.nextInt(2)));
-                if (rng.nextFloat() < 0.25f) applyHazardCost(level, rng);
+                if (rng.nextFloat() < 0.25f) applyHazardCost(level, rng, HazardLevel.MODERATE);
                 return true;
             }
         }
@@ -1239,10 +1277,10 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
                     addLogLine("Destroyed what was there. Took time.");
                     simPendingLoot.add(new ItemStack(Items.STRING, 2 + rng.nextInt(4) + simLooting));
                     if (rng.nextFloat() < 0.5f) simPendingLoot.add(new ItemStack(Items.SPIDER_EYE, rng.nextInt(3) + simLooting));
-                    applyHazardCost(level, rng);
+                    applyHazardCost(level, rng, HazardLevel.LIGHT);
                 } else {
                     addLogLine("Too many. Retreated.");
-                    applyHazardCost(level, rng);
+                    applyHazardCost(level, rng, HazardLevel.MODERATE);
                 }
                 return true;
             }
@@ -1313,8 +1351,30 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
 
     // ======== Shared hazard cost ========
 
-    private void applyHazardCost(Level level, Random rng) {
-        simSatiation -= 2;
+    private void applyHazardCost(Level level, Random rng, HazardLevel hl) {
+        simSatiation -= switch (hl) {
+            case LIGHT -> 2;
+            case MODERATE -> 4;
+            case SEVERE -> 3;
+        };
+
+        // Severe hazards always cause a direct injury; armor can absorb it
+        if (hl == HazardLevel.SEVERE) {
+            boolean armorAbsorbs = simArmorPoints >= 8 || (simArmorPoints >= 4 && rng.nextFloat() < 0.5f);
+            if (!armorAbsorbs) {
+                simInjuryCount++;
+                if (simInjuryCount >= 3) {
+                    boolean death = simArmorPoints < 4 && rng.nextFloat() < 0.12f;
+                    completeSimulation(level, true, death);
+                    return;
+                }
+            }
+            if (!simPendingLoot.isEmpty() && rng.nextFloat() < 0.25f) {
+                simPendingLoot.remove(rng.nextInt(simPendingLoot.size()));
+                addLogLine("Something fell. No time to go back for it.");
+            }
+        }
+
         if (simSatiation <= 0) {
             int nutrition = eatFoodFromWolfBag(level);
             if (nutrition > 0) {
@@ -1575,6 +1635,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
             triggerWolfArrival(level);
         }
 
+        WorkingWolvesPackets.pushBedState(level, this.worldPosition, this);
         setChanged();
     }
 
@@ -1595,6 +1656,7 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
         }
         simPendingLoot.clear();
         triggerWolfArrival(this.level);
+        WorkingWolvesPackets.pushBedState(this.level, this.worldPosition, this);
         setChanged();
         return true;
     }

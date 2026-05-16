@@ -7,10 +7,13 @@ import grill24.workingwolves.network.WorkingWolvesPackets;
 import io.github.currenj.gelatinui.GelatinUIScreen;
 import io.github.currenj.gelatinui.gui.UI;
 import io.github.currenj.gelatinui.gui.components.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -49,6 +52,8 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     @Override
     protected void init() {
         super.init(); // calls buildUI() which corrects leftPos/topPos and creates UI elements
+
+        Minecraft.getInstance().options.hideGui = true;
 
         // Register callbacks for live updates while this screen is open
         DogBedScreenData.journalUpdateCallback = packet -> {
@@ -147,10 +152,9 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         statusLabel.setSize(162, 9);
         root.addChildAt(statusLabel, lp + 178 + 85, tp + 34);
 
-        // Progress bar (hidden when not running)
+        // Progress bar (hidden when not running) — no setSize; renders at native 63×19 sprite dimensions
         progressBar = UI.progressBar();
-        progressBar.setSize(162, 10);
-        progressBar.progress(progressFraction());
+        progressBar.progressImmediate(progressFraction());
         progressBar.setVisible("running".equals(simState));
         root.addChildAt(progressBar, lp + 178 + 85, tp + 48);
 
@@ -175,8 +179,23 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     private void onActionButtonClick() {
         if ("running".equals(simState)) {
             WorkingWolvesPackets.sendToServer.accept(new RecallFromBedPacket(menu.getBedPos()));
+            simState = "returning";
         } else {
+            DogBedScreenData.journalLines.clear();
+            if (journalPanel != null) journalPanel.setLines(List.of());
             WorkingWolvesPackets.sendToServer.accept(new DispatchFromBedPacket(menu.getBedPos()));
+            simState = "departing";
+        }
+        refreshActionButton();
+        refreshProgressUI();
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        if ("running".equals(simState) && simTotal > 0 && simElapsed < simTotal) {
+            simElapsed++;
+            refreshProgressUI();
         }
     }
 
@@ -258,8 +277,25 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     }
 
     @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (journalPanel != null) {
+            var opts = Minecraft.getInstance().options;
+            if (opts.keyUp.matches(event) || event.key() == GLFW.GLFW_KEY_UP) {
+                journalPanel.scroll(-1);
+                return true;
+            }
+            if (opts.keyDown.matches(event) || event.key() == GLFW.GLFW_KEY_DOWN) {
+                journalPanel.scroll(1);
+                return true;
+            }
+        }
+        return super.keyPressed(event);
+    }
+
+    @Override
     public void removed() {
         super.removed();
+        Minecraft.getInstance().options.hideGui = false;
         DogBedScreenData.journalUpdateCallback = null;
         DogBedScreenData.stateUpdateCallback = null;
     }

@@ -1,5 +1,6 @@
 package grill24.workingwolves.network;
 
+import grill24.workingwolves.blockentity.DogBedBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
@@ -22,6 +23,17 @@ public class WorkingWolvesPackets {
 
     public static void syncWolfData(Wolf wolf) {
         sendToTracking.accept(wolf, WolfDataSyncPacket.fromWolf(wolf));
+    }
+
+    public static void pushBedState(Level level, BlockPos pos, DogBedBlockEntity be) {
+        if (!(level instanceof ServerLevel sl)) return;
+        BedStatePacket packet = BedStatePacket.fromBE(be, sl);
+        Vec3 center = Vec3.atCenterOf(pos);
+        for (ServerPlayer player : sl.players()) {
+            if (player.distanceToSqr(center) < 128.0 * 128.0) {
+                sendToPlayer.accept(player, packet);
+            }
+        }
     }
 
     public static void pushJournalLine(Level level, BlockPos pos, String line, int simElapsed, int simTotal) {
