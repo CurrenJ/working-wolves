@@ -1,0 +1,14 @@
+{
+  "conditions": {
+    "requires_mining": true,
+    "requires_woodcutting": true,
+    "excludes_hunting": true
+  },
+  "cross_role": true,
+  "weight": 10,
+  "journal_lines": [
+    "The woodcutter cleared the slope. The miner found what was underneath. Neither would have managed alone.",
+    "Roots had grown into the seam. Cut through to reach it. Took both of them.",
+    "Timber over ore. Cleared the one to reach the other. Long day, good result."
+  ]
+}

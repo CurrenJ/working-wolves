@@ -1,0 +1,13 @@
+{
+  "conditions": {
+    "biome_categories": ["cave", "mountain"],
+    "requires_mining": true
+  },
+  "weight": 10,
+  "loot_table": "workingwolves:expedition/rare/the_vein",
+  "journal_lines": [
+    "Copper. Then iron. Then something that wasn't either. Brought back what could be carried.",
+    "The vein changed color three times. Followed it as far as it went.",
+    "Mixed seam. Copper into iron into something older. Took all of it."
+  ]
+}

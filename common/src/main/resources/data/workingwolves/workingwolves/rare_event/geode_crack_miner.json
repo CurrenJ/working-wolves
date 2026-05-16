@@ -1,0 +1,13 @@
+{
+  "conditions": {
+    "biome_categories": ["cave", "mountain"],
+    "requires_mining": true
+  },
+  "weight": 30,
+  "loot_table": "workingwolves:expedition/rare/geode_crack_miner",
+  "journal_lines": [
+    "The stone rang like a bell when struck. Inside: violet. Still growing.",
+    "Hollow in the rock. The crystals were still forming. Took what was ready.",
+    "Geode. Cracked it open. Purple light from inside, better than expected."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "conditions": {
+    "biome_categories": ["forest", "cave"]
+  },
+  "weight": 20,
+  "loot_table": "workingwolves:expedition/rare/spider_nest",
+  "apply_hazard": "LIGHT",
+  "journal_lines": [
+    "The web was thick as rope. The eggs were not all hatched. Destroyed what was there. Took time.",
+    "Nest in the dark corner of the cave. Cleared it. String everywhere.",
+    "Spider colony under a fallen log. Dealt with it. Still picking silk out of the fur."
+  ]
+}

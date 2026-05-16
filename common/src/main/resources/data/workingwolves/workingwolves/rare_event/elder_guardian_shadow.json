@@ -1,0 +1,12 @@
+{
+  "conditions": {
+    "biome_categories": ["ocean"]
+  },
+  "weight": 15,
+  "loot_table": "workingwolves:expedition/rare/elder_guardian_shadow",
+  "journal_lines": [
+    "The water darkened beneath. Something vast passed. It did not stop.",
+    "Shadow below the hull. Too large. Kept moving. It did too.",
+    "Something old in the deep water. Stayed near the surface. It stayed deep. Agreement reached."
+  ]
+}

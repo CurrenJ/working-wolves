@@ -1,0 +1,12 @@
+{
+  "conditions": {
+    "min_collar_tier": 4
+  },
+  "weight": 5,
+  "loot_table": "workingwolves:expedition/rare/bone_crown",
+  "journal_lines": [
+    "Wedged in a root: a circlet of bone and river-iron. Old and deliberate. Brought it home.",
+    "Something made, not natural. Bone worked into a circle. Very old. Brought it anyway.",
+    "Found it half-buried at the base of an old tree. Bone and wire, shaped with intention."
+  ]
+}

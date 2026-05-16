@@ -1,0 +1,13 @@
+{
+  "conditions": {
+    "biome_categories": ["cave", "mountain"],
+    "excludes_mining": true
+  },
+  "weight": 10,
+  "loot_table": "workingwolves:expedition/rare/geode_crack_other",
+  "journal_lines": [
+    "Kicked something that rang. A geode. Small but real.",
+    "Hollow stone underfoot. Broke it open. Violet inside.",
+    "The cave had crystals in it. Broke some free."
+  ]
+}

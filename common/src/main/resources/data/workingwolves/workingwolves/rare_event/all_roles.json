@@ -1,0 +1,14 @@
+{
+  "conditions": {
+    "requires_hunting": true,
+    "requires_mining": true,
+    "requires_woodcutting": true
+  },
+  "cross_role": true,
+  "weight": 10,
+  "journal_lines": [
+    "All three at once. The forest, the rock, and the prey gave way together. A rare kind of day.",
+    "Prey flushed from the tree line into a cave seam. Took all three to sort it out. Worth it.",
+    "The hunt led through timber into stone. Everyone worked. Everything counted."
+  ]
+}

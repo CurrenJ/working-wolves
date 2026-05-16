@@ -1,0 +1,13 @@
+{
+  "conditions": {
+    "zones": [2],
+    "requires_mining": true
+  },
+  "weight": 10,
+  "remove_last_loot": true,
+  "journal_lines": [
+    "The silence changed quality. Came back without something. Won't say why.",
+    "Something down there. Left quickly. Left something behind.",
+    "The deep took something. Trade seems fair given what was not taken."
+  ]
+}

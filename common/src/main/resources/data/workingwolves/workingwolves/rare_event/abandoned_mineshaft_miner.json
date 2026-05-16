@@ -1,0 +1,12 @@
+{
+  "conditions": {
+    "requires_mining": true
+  },
+  "weight": 32,
+  "loot_table": "workingwolves:expedition/rare/abandoned_mineshaft_miner",
+  "journal_lines": [
+    "The shaft went deeper than it should have. Came back with mud on the paws and something extra.",
+    "Someone else's tunnel. Old supports, old cart tracks. Fresh ore behind the rot.",
+    "Mineshaft, abandoned. The tools were still there. The ore was still there too."
+  ]
+}

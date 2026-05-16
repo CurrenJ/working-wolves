@@ -1,0 +1,13 @@
+{
+  "conditions": {
+    "zones": [1, 2],
+    "min_collar_tier": 2
+  },
+  "weight": 16,
+  "loot_table": "workingwolves:expedition/rare/stronghold_library",
+  "journal_lines": [
+    "The passage opened into something vast and paper-smelling. Cannot read. Brought back a page anyway.",
+    "A library underground. Old shelves. Most of it rotted. Some of it wasn't.",
+    "Rows and rows of books in a sealed chamber. Took one that seemed different. Left the rest."
+  ]
+}

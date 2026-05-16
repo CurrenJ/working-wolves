@@ -1,0 +1,14 @@
+{
+  "conditions": {
+    "requires_hunting": true,
+    "requires_woodcutting": true,
+    "excludes_mining": true
+  },
+  "cross_role": true,
+  "weight": 10,
+  "journal_lines": [
+    "Chased prey through dense timber. The hunter and the woodcutter moved as one — one flushed, the other cut off the retreat.",
+    "Found a clearing mid-chase. The trees came down around the quarry. Efficient.",
+    "The forest worked for both of them today. Prey and timber, same ground, same hour."
+  ]
+}

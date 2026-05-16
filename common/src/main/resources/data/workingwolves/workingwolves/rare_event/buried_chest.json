@@ -1,0 +1,12 @@
+{
+  "conditions": {
+    "biome_categories": ["plains", "ocean"]
+  },
+  "weight": 15,
+  "loot_table": "workingwolves:expedition/rare/buried_chest",
+  "journal_lines": [
+    "Dug because of the smell of iron. Was right.",
+    "Something buried here. The soil was wrong over it. Investigated.",
+    "Old chest in the sand. Waterlogged. Still had things in it."
+  ]
+}

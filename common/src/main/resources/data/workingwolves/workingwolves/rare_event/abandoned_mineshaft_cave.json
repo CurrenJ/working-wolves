@@ -1,0 +1,13 @@
+{
+  "conditions": {
+    "biome_categories": ["cave"],
+    "excludes_mining": true
+  },
+  "weight": 20,
+  "loot_table": "workingwolves:expedition/rare/abandoned_mineshaft_cave",
+  "journal_lines": [
+    "Old tunnel in the cave wall. Followed it. Found what the miners left behind.",
+    "Someone dug here and stopped. Their ore stayed. Taking it now.",
+    "Abandoned shaft. Cobwebs on the tools. The stone underneath still had ore in it."
+  ]
+}

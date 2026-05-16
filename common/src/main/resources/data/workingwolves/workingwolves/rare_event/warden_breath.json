@@ -1,0 +1,14 @@
+{
+  "conditions": {
+    "zones": [2],
+    "biome_categories": ["cave"]
+  },
+  "weight": 5,
+  "loot_table": "workingwolves:expedition/rare/warden_breath",
+  "apply_hazard": "MODERATE",
+  "journal_lines": [
+    "Did not make a sound. Not one. Three hours of perfect silence. Emerged with mud on the paws and a look you don't ask about.",
+    "Something in the deep dark was listening. Moved very slowly. Very quietly. It was enough.",
+    "The sculk was everywhere. Stayed still until the heartbeat noise stopped. Came back."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "conditions": {
+    "requires_hunting": true,
+    "requires_mining": true,
+    "excludes_woodcutting": true
+  },
+  "cross_role": true,
+  "weight": 10,
+  "journal_lines": [
+    "Tracked quarry into the tunnels. The miner knew the passages. The hunter knew when to wait.",
+    "Prey went underground. Followed. The dark was less of a problem with two sets of instincts.",
+    "Cave hunt. The miner lit the way. The hunter finished it."
+  ]
+}

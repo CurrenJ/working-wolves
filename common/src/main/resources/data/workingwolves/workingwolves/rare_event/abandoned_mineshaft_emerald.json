@@ -1,0 +1,13 @@
+{
+  "conditions": {
+    "requires_mining": true,
+    "min_collar_tier": 3
+  },
+  "weight": 8,
+  "loot_table": "workingwolves:expedition/rare/abandoned_mineshaft_emerald",
+  "journal_lines": [
+    "Found something green in the old shaft. Not iron. Not copper. Something better.",
+    "The vein in the abandoned tunnel was not what anyone expected. Took it.",
+    "Deep in the old workings: green stone. Someone stopped digging too soon."
+  ]
+}

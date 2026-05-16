@@ -1,0 +1,12 @@
+{
+  "conditions": {
+    "min_collar_tier": 3
+  },
+  "weight": 10,
+  "satiation_delta": 4,
+  "journal_lines": [
+    "Paused at a moss-covered stone. Strange marks. Sat with it a long while before moving on.",
+    "Inscription on the rock face. Old enough that the stone had grown into it. Stayed and looked.",
+    "Found it in a clearing. Marks cut deep. Something meaningful about them. Rested here."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "conditions": {
+    "excluded_biome_categories": ["cave"]
+  },
+  "weight": 20,
+  "loot_table": "workingwolves:expedition/rare/wandering_trader_deal",
+  "satiation_delta": -2,
+  "journal_lines": [
+    "A man with two llamas. Offered something wrapped in cloth. Gave him a ration. He seemed satisfied.",
+    "Wandering trader on the road. Swapped a meal for something wrapped. Fair enough.",
+    "Strange merchant. His stock made no sense. Traded anyway. No regrets."
+  ]
+}

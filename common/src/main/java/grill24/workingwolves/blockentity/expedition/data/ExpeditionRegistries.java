@@ -14,4 +14,7 @@ public class ExpeditionRegistries {
 
     public static final ResourceKey<Registry<WoodDiscoveryEntry>> WOOD_DISCOVERY =
         ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("workingwolves", "wood_discovery"));
+
+    public static final ResourceKey<Registry<RareEventEntry>> RARE_EVENT =
+        ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("workingwolves", "rare_event"));
 }
