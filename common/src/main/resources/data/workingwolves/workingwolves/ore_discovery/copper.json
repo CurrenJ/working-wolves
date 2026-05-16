@@ -1,0 +1,12 @@
+{
+  "zones": [1],
+  "weight": 30,
+  "loot_table": "workingwolves:expedition/miner/copper",
+  "silk_touch_loot_table": "workingwolves:expedition/miner/copper_silk",
+  "journal_lines": [
+    "Green bloom in the rock. Copper.",
+    "Blue-green tinge in the wall. Good sign.",
+    "Malachite in the stone. Copper vein behind it.",
+    "Copper ore, chunky and blue-streaked."
+  ]
+}

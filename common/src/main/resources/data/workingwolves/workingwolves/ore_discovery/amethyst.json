@@ -1,0 +1,12 @@
+{
+  "zones": [2],
+  "weight": 15,
+  "loot_table": "workingwolves:expedition/miner/amethyst",
+  "silk_touch_loot_table": "workingwolves:expedition/miner/amethyst_silk",
+  "journal_lines": [
+    "Hollow in the rock, purple-lined. Geode.",
+    "Amethyst cluster. Chimed when I worked it.",
+    "Crystal lining in the geode. Careful work.",
+    "Purple light from inside the stone. Good find."
+  ]
+}

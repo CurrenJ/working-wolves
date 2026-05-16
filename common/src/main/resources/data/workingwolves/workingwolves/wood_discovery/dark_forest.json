@@ -1,0 +1,10 @@
+{
+  "wood_biome_id": "dark_forest",
+  "loot_table": "workingwolves:expedition/woodcutter/dark_forest",
+  "journal_lines": [
+    "Found a clearing. The trees lean inward around it.",
+    "Mushrooms growing up the trunks, not just the ground.",
+    "Long claw marks on the trunk. Higher than I wanted to think.",
+    "The inside of the dark oak was pale. Did not expect that."
+  ]
+}

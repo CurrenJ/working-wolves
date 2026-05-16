@@ -1,0 +1,17 @@
+package grill24.workingwolves.blockentity.expedition.data;
+
+import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+
+public class ExpeditionRegistries {
+
+    public static final ResourceKey<Registry<MobEncounterEntry>> MOB_ENCOUNTER =
+        ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("workingwolves", "mob_encounter"));
+
+    public static final ResourceKey<Registry<OreDiscoveryEntry>> ORE_DISCOVERY =
+        ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("workingwolves", "ore_discovery"));
+
+    public static final ResourceKey<Registry<WoodDiscoveryEntry>> WOOD_DISCOVERY =
+        ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("workingwolves", "wood_discovery"));
+}

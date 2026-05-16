@@ -1,0 +1,11 @@
+{
+  "zones": [0, 1, 2],
+  "weight": 20,
+  "loot_table": "workingwolves:expedition/hunter/creeper",
+  "journal_lines": [
+    "Creeper behind a tree. Backed up fast.",
+    "Spotted it before it spotted me. Barely.",
+    "Quiet and green. Made noise before it could.",
+    "Kept distance. Worked out."
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "wood_biome_id": "taiga",
+  "loot_table": "workingwolves:expedition/woodcutter/taiga",
+  "journal_lines": [
+    "Spruce stands. Cold air. Smells like winter stored inside wood.",
+    "Good straight grain. These trees grow slow and honest.",
+    "A cavity in the trunk. Old axe marks. Someone didn't finish.",
+    "Snow came down all at once when the trunk finally went."
+  ]
+}

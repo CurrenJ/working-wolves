@@ -297,6 +297,7 @@ public class ExpeditionSimulator {
     boolean isSilkTouch() { return simSilkTouch; }
     float getPickaxeSpeed() { return simPickaxeSpeed; }
     float getAxeSpeed() { return simAxeSpeed; }
+    BlockPos getBlockPos() { return bed.getBlockPos(); }
 
     void setPickaxeSpeed(float v) { simPickaxeSpeed = v; }
     void setFortune(int v) { simFortune = v; }

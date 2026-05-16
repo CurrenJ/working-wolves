@@ -1,0 +1,12 @@
+{
+  "zones": [2],
+  "weight": 10,
+  "required_biome_categories": ["mountain", "cave", "other"],
+  "loot_table": "workingwolves:expedition/hunter/blaze",
+  "journal_lines": [
+    "Blaze near the magma. Heat radiating.",
+    "Fire and spinning rods. Kept moving.",
+    "It found me first. That's fine.",
+    "Charged through the smoke. Worth it."
+  ]
+}

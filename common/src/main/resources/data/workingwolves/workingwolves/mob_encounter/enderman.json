@@ -1,0 +1,11 @@
+{
+  "zones": [1, 2],
+  "weight": 12,
+  "loot_table": "workingwolves:expedition/hunter/enderman",
+  "journal_lines": [
+    "Tall thing in the dark. Careful not to look directly.",
+    "Enderman. Made it look first.",
+    "Teleporting. Kept calm.",
+    "Purple eyes in the dark. Pearl for it."
+  ]
+}

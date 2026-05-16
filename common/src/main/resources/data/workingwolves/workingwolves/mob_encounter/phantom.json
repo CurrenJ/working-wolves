@@ -1,0 +1,11 @@
+{
+  "zones": [1, 2],
+  "weight": 10,
+  "loot_table": "workingwolves:expedition/hunter/phantom",
+  "journal_lines": [
+    "Phantom diving from above. Watched for the shadow.",
+    "Screech overhead. Looked up in time.",
+    "They come in pairs at this depth.",
+    "Swooping thing. Timed the strike."
+  ]
+}

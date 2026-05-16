@@ -1,0 +1,11 @@
+{
+  "zones": [0, 1, 2],
+  "weight": 20,
+  "loot_table": "workingwolves:expedition/hunter/spider",
+  "journal_lines": [
+    "Spider on the ceiling. Didn't give it a chance.",
+    "Web across the path. Spider behind it.",
+    "Fast, but not fast enough.",
+    "Two of them. Handled in order."
+  ]
+}

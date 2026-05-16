@@ -1,0 +1,11 @@
+{
+  "wood_biome_id": "forest",
+  "loot_table": "workingwolves:expedition/woodcutter/forest",
+  "journal_lines": [
+    "Good stand of oak. Clean work.",
+    "Birch grove, white bark. Quiet.",
+    "The oak at the center is old enough to matter.",
+    "Birch light is different. White bark scatters everything.",
+    "Clean, quick work. These trees have nothing to say about it."
+  ]
+}

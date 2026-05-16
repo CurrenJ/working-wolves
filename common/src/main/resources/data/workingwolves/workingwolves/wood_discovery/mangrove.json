@@ -1,0 +1,10 @@
+{
+  "wood_biome_id": "mangrove",
+  "loot_table": "workingwolves:expedition/woodcutter/mangrove",
+  "journal_lines": [
+    "Roots in the water first, then down to the mud.",
+    "A frog on the root arch I was about to step over. Stepped around it.",
+    "The aerial roots hang like curtains. Patience required.",
+    "Dense, uneven wood. A life lived half in water."
+  ]
+}

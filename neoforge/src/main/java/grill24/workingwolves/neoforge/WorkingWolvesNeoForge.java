@@ -67,6 +67,9 @@ public class WorkingWolvesNeoForge {
         ModMenuTypes.DOG_BED_MENU_SUPPLIER = () -> WorkingWolvesRegistriesNeoForge.DOG_BED_MENU.value();
         WorkingWolvesRegistriesNeoForge.MENU_TYPES.register(modEventBus);
 
+        // Register expedition datapack registries
+        ExpeditionRegistriesNeoForge.register(modEventBus);
+
         // Register networking
         NeoForgePacketRegistrar.init(modEventBus);
         NeoForgePacketRegistrar.dispatchFromBedHandler = BedPacketHandlers::handleDispatch;

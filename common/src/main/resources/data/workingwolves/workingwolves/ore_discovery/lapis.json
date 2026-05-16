@@ -1,0 +1,12 @@
+{
+  "zones": [1],
+  "weight": 15,
+  "loot_table": "workingwolves:expedition/miner/lapis",
+  "silk_touch_loot_table": "workingwolves:expedition/miner/lapis_silk",
+  "journal_lines": [
+    "Blue dust in the cracks. Lapis.",
+    "Deep blue vein. Rich and consistent.",
+    "Pigment in the stone. Took it carefully.",
+    "Lapis runs wide here. Good find."
+  ]
+}

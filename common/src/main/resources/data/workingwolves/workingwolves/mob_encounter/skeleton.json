@@ -1,0 +1,11 @@
+{
+  "zones": [0, 1, 2],
+  "weight": 25,
+  "loot_table": "workingwolves:expedition/hunter/skeleton",
+  "journal_lines": [
+    "Skeleton archer in the dark. Kept moving.",
+    "Rattling thing in the path. Dealt with it.",
+    "Three arrows stuck in the dirt. None in me.",
+    "Bones for the trouble."
+  ]
+}

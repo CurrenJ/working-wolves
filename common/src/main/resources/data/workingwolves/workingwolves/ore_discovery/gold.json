@@ -1,0 +1,14 @@
+{
+  "zones": [1, 2],
+  "weight": 20,
+  "loot_table": "workingwolves:expedition/miner/gold",
+  "silk_touch_loot_table": "workingwolves:expedition/miner/gold_silk",
+  "biome_bonus_categories": ["mountain", "cave"],
+  "biome_bonus_loot_table": "workingwolves:expedition/miner/gold_bonus",
+  "journal_lines": [
+    "Flash of yellow in the wall. Spent extra time here.",
+    "Gold vein. Thin, but real.",
+    "Dense rock, then yellow. Worth the work.",
+    "Glint in the torchlight. Took all of it."
+  ]
+}

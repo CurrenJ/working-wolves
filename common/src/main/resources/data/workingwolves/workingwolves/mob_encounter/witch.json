@@ -1,0 +1,11 @@
+{
+  "zones": [1, 2],
+  "weight": 10,
+  "loot_table": "workingwolves:expedition/hunter/witch",
+  "journal_lines": [
+    "Witch in the clearing. Moved fast.",
+    "Thrown potion. Shook it off.",
+    "Cackle in the dark. Found it before it found me.",
+    "Potions everywhere. Still here."
+  ]
+}

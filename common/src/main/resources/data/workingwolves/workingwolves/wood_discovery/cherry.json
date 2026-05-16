@@ -1,0 +1,10 @@
+{
+  "wood_biome_id": "cherry",
+  "loot_table": "workingwolves:expedition/woodcutter/cherry",
+  "journal_lines": [
+    "Petals drifting down without any wind.",
+    "Wood pale and close-grained. Smells faintly sweet.",
+    "This place makes time feel very long.",
+    "A family of rabbits under a fallen log. Worked around them."
+  ]
+}

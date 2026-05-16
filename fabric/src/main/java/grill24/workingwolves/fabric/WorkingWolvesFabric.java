@@ -58,6 +58,9 @@ public class WorkingWolvesFabric implements ModInitializer {
         ).value();
         ModMenuTypes.DOG_BED_MENU_SUPPLIER = () -> dogBedMenuType;
 
+        // Register expedition datapack registries
+        ExpeditionRegistriesFabric.register();
+
         // Register networking
         FabricPacketRegistrar.registerServer();
         FabricPacketRegistrar.dispatchFromBedHandler = BedPacketHandlers::handleDispatch;

@@ -1,0 +1,14 @@
+{
+  "zones": [0, 1],
+  "weight": 35,
+  "loot_table": "workingwolves:expedition/miner/iron",
+  "silk_touch_loot_table": "workingwolves:expedition/miner/iron_silk",
+  "biome_bonus_categories": ["mountain", "cave"],
+  "biome_bonus_loot_table": "workingwolves:expedition/miner/iron_bonus",
+  "journal_lines": [
+    "Good iron seam. Rust-orange in the wall.",
+    "Iron-bearing stone. Heavier than it looks.",
+    "Vein ran deeper than expected. Good.",
+    "Found the iron. Took the time to get it right."
+  ]
+}

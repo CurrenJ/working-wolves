@@ -1,0 +1,11 @@
+{
+  "zones": [0, 1, 2],
+  "weight": 25,
+  "loot_table": "workingwolves:expedition/hunter/zombie",
+  "journal_lines": [
+    "Zombie. Slow. Not a problem.",
+    "Heard it before I saw it. Put it down.",
+    "Shambling thing in the corridor. Gone.",
+    "Smelled it first. Dealt with it."
+  ]
+}

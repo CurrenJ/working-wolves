@@ -1,0 +1,10 @@
+{
+  "wood_biome_id": "jungle",
+  "loot_table": "workingwolves:expedition/woodcutter/jungle",
+  "journal_lines": [
+    "Dense jungle. Every trunk laced with vines.",
+    "Something large moved through the understory. Held still.",
+    "Orchids growing from a wound in the bark.",
+    "The trees here do not fall cleanly."
+  ]
+}

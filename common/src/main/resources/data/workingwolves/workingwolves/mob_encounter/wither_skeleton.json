@@ -1,0 +1,11 @@
+{
+  "zones": [2],
+  "weight": 12,
+  "loot_table": "workingwolves:expedition/hunter/wither_skeleton",
+  "journal_lines": [
+    "Wither skeleton. Black bones. Careful.",
+    "Sword made of something old. Didn't let it land.",
+    "Withering touch. Kept distance.",
+    "Deep place for a thing like this."
+  ]
+}

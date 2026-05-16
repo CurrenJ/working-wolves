@@ -1,0 +1,11 @@
+{
+  "zones": [1, 2],
+  "weight": 15,
+  "loot_table": "workingwolves:expedition/hunter/pillager",
+  "journal_lines": [
+    "Pillager patrol. Took the long way around. Then didn't.",
+    "Crossbow. Closed the distance fast.",
+    "Outpost nearby. Picked off the one that wandered.",
+    "Better armed than expected. Still manageable."
+  ]
+}

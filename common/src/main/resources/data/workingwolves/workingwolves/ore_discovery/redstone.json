@@ -1,0 +1,14 @@
+{
+  "zones": [2],
+  "weight": 25,
+  "loot_table": "workingwolves:expedition/miner/redstone",
+  "silk_touch_loot_table": "workingwolves:expedition/miner/redstone_silk",
+  "biome_bonus_categories": ["mountain", "cave"],
+  "biome_bonus_loot_table": "workingwolves:expedition/miner/redstone_bonus",
+  "journal_lines": [
+    "Red dust in the deepslate. Redstone.",
+    "Deep vein, crackling faintly. Took the lot.",
+    "Redstone runs in veins down here. Found a good one.",
+    "The deep rock glows red when you chip it."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "zones": [1, 2],
+  "weight": 15,
+  "loot_table": "workingwolves:expedition/hunter/drowned",
+  "journal_lines": [
+    "Drowned rising from the water. Put it back.",
+    "Waterlogged and slow on land.",
+    "Came up from the aquifer. Dealt with.",
+    "Wet and persistent. Eventually gone."
+  ]
+}

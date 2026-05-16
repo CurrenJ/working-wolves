@@ -1,0 +1,10 @@
+{
+  "wood_biome_id": "savanna",
+  "loot_table": "workingwolves:expedition/woodcutter/savanna",
+  "journal_lines": [
+    "Scattered acacia. Flat light.",
+    "Twisted trunks in the savanna heat.",
+    "Dead acacia still standing. Bark stripped clean by antlers.",
+    "The roots tore the ground when it went over."
+  ]
+}
