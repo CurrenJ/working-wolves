@@ -109,15 +109,27 @@ public class JournalPanel extends UIElement<JournalPanel> {
     }
 
     private int colorForLine(String line) {
-        if (line.startsWith("+") || line.contains("iron") || line.contains("gold") || line.contains("diamond")
-                || line.contains("coal") || line.contains("bone") || line.contains("arrow")
+        // Discovery: ore names, loot keywords
+        if (line.startsWith("+")
+                || line.contains("iron") || line.contains("gold") || line.contains("diamond")
+                || line.contains("coal") || line.contains("Coal") || line.contains("copper") || line.contains("Copper")
+                || line.contains("lapis") || line.contains("Lapis") || line.contains("redstone") || line.contains("Redstone")
+                || line.contains("amethyst") || line.contains("Amethyst") || line.contains("flint") || line.contains("Flint")
+                || line.contains("bone") || line.contains("arrow") || line.contains("geode") || line.contains("Geode")
+                || line.contains("crystal") || line.contains("vein") || line.contains("seam") || line.contains("ore")
                 || line.contains("wood") || line.contains("log") || line.contains("oak")
-                || line.contains("drops") || line.contains("ore")) {
+                || line.contains("drops") || line.contains("Gold") || line.contains("Diamond") || line.contains("Iron")) {
             return DISCOVERY_COLOR;
         }
-        if (line.contains("Lava") || line.contains("hit") || line.contains("injur")
-                || line.contains("bit") || line.contains("Took") || line.contains("Three")
-                || line.contains("starv") || line.contains("food")) {
+        // Hazard: danger, injury, threat keywords
+        if (line.contains("Lava") || line.contains("lava") || line.contains("Magma") || line.contains("magma")
+                || line.contains("hit") || line.contains("injur") || line.contains("bit") || line.contains("Singed")
+                || line.contains("Took") || line.contains("Three") || line.contains("starv") || line.contains("food")
+                || line.contains("Cave-in") || line.contains("cave-in") || line.contains("Ceiling cracked")
+                || line.contains("Gravel pour") || line.contains("clicking") || line.contains("Clicking")
+                || line.contains("flooded") || line.contains("Flooded") || line.contains("burst")
+                || line.contains("Something moved") || line.contains("Groaning") || line.contains("Breath in the dark")
+                || line.contains("Backed off") || line.contains("Retreated") || line.contains("pillar gone")) {
             return HAZARD_COLOR;
         }
         return TEXT_COLOR;
