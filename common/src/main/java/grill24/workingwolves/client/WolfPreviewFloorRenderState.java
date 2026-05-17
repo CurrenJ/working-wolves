@@ -21,7 +21,8 @@ public record WolfPreviewFloorRenderState(
         @Nullable ScreenRectangle bounds,
         List<BlockState> floorBlocks,
         float scrollOffsetZ, float scrollOffsetX,
-        int floorOriginX, int floorOriginZ
+        int floorOriginX, int floorOriginZ,
+        List<BlockState> sideObjects
 ) implements PictureInPictureRenderState {
 
     public WolfPreviewFloorRenderState(
@@ -34,12 +35,13 @@ public record WolfPreviewFloorRenderState(
             @Nullable ScreenRectangle scissorArea,
             List<BlockState> floorBlocks,
             float scrollOffsetZ, float scrollOffsetX,
-            int floorOriginX, int floorOriginZ
+            int floorOriginX, int floorOriginZ,
+            List<BlockState> sideObjects
     ) {
         this(entityRenderState, entityTranslation, entityRotation, overrideCameraAngle,
                 x0, y0, x1, y1, scale, scissorArea,
                 PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea),
                 floorBlocks, scrollOffsetZ, scrollOffsetX,
-                floorOriginX, floorOriginZ);
+                floorOriginX, floorOriginZ, sideObjects);
     }
 }

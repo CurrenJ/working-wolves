@@ -60,7 +60,7 @@ public class WolfPreviewFloorRenderer extends PictureInPictureRenderer<WolfPrevi
         poseStack.mulPose(state.entityRotation());
 
         // Render scrolling floor blocks first (entity renders on top via depth test)
-        renderFloor(state.floorBlocks(), state.scrollOffsetZ(), state.scrollOffsetX(),
+        renderFloor(state.floorBlocks(), state.sideObjects(), state.scrollOffsetZ(), state.scrollOffsetX(),
                 state.floorOriginX(), state.floorOriginZ(), poseStack, minecraft);
 
         // Render wolf entity
@@ -77,7 +77,8 @@ public class WolfPreviewFloorRenderer extends PictureInPictureRenderer<WolfPrevi
         featureRenderDispatcher.renderAllFeatures();
     }
 
-    private void renderFloor(List<BlockState> blocks, float scrollOffsetZ, float scrollOffsetX,
+    private void renderFloor(List<BlockState> blocks, List<BlockState> sideObjects,
+                             float scrollOffsetZ, float scrollOffsetX,
                              int floorOriginX, int floorOriginZ,
                              PoseStack poseStack, Minecraft minecraft) {
         if (blocks.isEmpty()) return;
@@ -135,6 +136,29 @@ public class WolfPreviewFloorRenderer extends PictureInPictureRenderer<WolfPrevi
                 blockRenderer.tesselateBlock(output, 0.0f, 0.0f, 0.0f,
                         fakeLevel, blockPos, blockState, model, blockState.getSeed(blockPos));
                 poseStack.popPose();
+            }
+        }
+
+        // Side objects: rendered one block above the floor, only in outer columns
+        if (!sideObjects.isEmpty()) {
+            for (int row = 0; row < FLOOR_ROWS; row++) {
+                for (int col = 0; col < FLOOR_COLS; col++) {
+                    int idx = row * FLOOR_COLS + col;
+                    BlockState objState = sideObjects.get(idx % sideObjects.size());
+                    if (objState.isAir()) continue;
+
+                    float bx = (col - FLOOR_COLS / 2.0f) * spacing + scrollX;
+                    float bz = (row - FLOOR_ROWS / 2.0f) * spacing + scrollZ;
+
+                    BlockStateModel model = modelSet.get(objState);
+                    BlockPos blockPos = new BlockPos(col + floorOriginX, 1, row + floorOriginZ);
+
+                    poseStack.pushPose();
+                    poseStack.translate(bx, 1.0f, bz);
+                    blockRenderer.tesselateBlock(output, 0.0f, 0.0f, 0.0f,
+                            fakeLevel, blockPos, objState, model, objState.getSeed(blockPos));
+                    poseStack.popPose();
+                }
             }
         }
 

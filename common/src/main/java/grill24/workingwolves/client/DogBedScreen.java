@@ -69,9 +69,14 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     private float walkAnimTime = 0f;
 
     // Floor scroll queue — procedurally generates blocks as they scroll into view
+    private static final int SIDE_LEFT_MAX_COL  = 2; // cols 0-2 are left-side eligible
+    private static final int SIDE_RIGHT_MIN_COL = 6; // cols 6-8 are right-side eligible
+    private static final float SIDE_OBJECT_CHANCE = 0.01f;
+
     private final Random floorRandom = new Random();
     private String lastFloorTheme = "";
     private BlockState[] floorGrid = null;          // WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS, row-major
+    private BlockState[] sideObjectGrid = null;     // parallel grid; AIR in center lane (cols 3-5)
     private float floorRemainderZ = 0f;             // fractional scroll [0, 1)
     private float floorRemainderX = 0f;
     private int floorOriginX = 0;                   // virtual X of grid cell (0,0) in infinite plane
@@ -365,7 +370,8 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
             floorRemainderZ,
             floorRemainderX,
             floorOriginX,
-            floorOriginZ
+            floorOriginZ,
+            getSideObjectGridAsList()
         ));
     }
 
@@ -376,6 +382,34 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         if (DogBedScreenData.hasMining) return "mine";
         if (DogBedScreenData.hasWoodcutting) return "wood";
         return "hunt";
+    }
+
+    /** Random scenery object for a side column, or AIR for center/blank cells. */
+    private BlockState newSideObjectForCol(int col) {
+        if (col > SIDE_LEFT_MAX_COL && col < SIDE_RIGHT_MIN_COL) return Blocks.AIR.defaultBlockState();
+        if (floorRandom.nextFloat() >= SIDE_OBJECT_CHANCE) return Blocks.AIR.defaultBlockState();
+        return switch (floorTheme()) {
+            case "mine" -> {
+                int r = floorRandom.nextInt(4);
+                if (r == 0) yield Blocks.CRAFTING_TABLE.defaultBlockState();
+                if (r == 1) yield Blocks.FURNACE.defaultBlockState();
+                if (r == 2) yield Blocks.COBBLESTONE_WALL.defaultBlockState();
+                yield Blocks.CAULDRON.defaultBlockState();
+            }
+            case "wood" -> {
+                int r = floorRandom.nextInt(3);
+                if (r == 0) yield Blocks.OAK_LOG.defaultBlockState();
+                if (r == 1) yield Blocks.SPRUCE_LOG.defaultBlockState();
+                yield Blocks.BIRCH_LOG.defaultBlockState();
+            }
+            default -> { // hunt
+                int r = floorRandom.nextInt(4);
+                if (r == 0) yield Blocks.OAK_FENCE.defaultBlockState();
+                if (r == 1) yield Blocks.DEAD_BUSH.defaultBlockState();
+                if (r == 2) yield Blocks.DANDELION.defaultBlockState();
+                yield Blocks.POPPY.defaultBlockState();
+            }
+        };
     }
 
     /** Weighted random block for the current expedition theme. */
@@ -414,9 +448,15 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         if (floorGrid != null && floorGrid.length == WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS && theme.equals(lastFloorTheme))
             return;
 
-        floorGrid = new BlockState[WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS];
-        for (int i = 0; i < floorGrid.length; i++) {
-            floorGrid[i] = randomFloorBlock();
+        int size = WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS;
+        floorGrid = new BlockState[size];
+        sideObjectGrid = new BlockState[size];
+        for (int row = 0; row < WolfPreviewFloorRenderer.FLOOR_ROWS; row++) {
+            for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
+                int i = row * WolfPreviewFloorRenderer.FLOOR_COLS + col;
+                floorGrid[i] = randomFloorBlock();
+                sideObjectGrid[i] = newSideObjectForCol(col);
+            }
         }
         floorRemainderZ = 0f;
         floorRemainderX = 0f;
@@ -454,11 +494,15 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     private void shiftRowsTowardFar() {
         for (int row = WolfPreviewFloorRenderer.FLOOR_ROWS - 1; row > 0; row--) {
             for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
-                floorGrid[row * WolfPreviewFloorRenderer.FLOOR_COLS + col] = floorGrid[(row - 1) * WolfPreviewFloorRenderer.FLOOR_COLS + col];
+                int i = row * WolfPreviewFloorRenderer.FLOOR_COLS + col;
+                int prev = (row - 1) * WolfPreviewFloorRenderer.FLOOR_COLS + col;
+                floorGrid[i] = floorGrid[prev];
+                sideObjectGrid[i] = sideObjectGrid[prev];
             }
         }
         for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
             floorGrid[col] = randomFloorBlock();
+            sideObjectGrid[col] = newSideObjectForCol(col);
         }
         floorOriginZ--;
     }
@@ -466,12 +510,16 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     private void shiftRowsTowardNear() {
         for (int row = 0; row < WolfPreviewFloorRenderer.FLOOR_ROWS - 1; row++) {
             for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
-                floorGrid[row * WolfPreviewFloorRenderer.FLOOR_COLS + col] = floorGrid[(row + 1) * WolfPreviewFloorRenderer.FLOOR_COLS + col];
+                int i = row * WolfPreviewFloorRenderer.FLOOR_COLS + col;
+                int next = (row + 1) * WolfPreviewFloorRenderer.FLOOR_COLS + col;
+                floorGrid[i] = floorGrid[next];
+                sideObjectGrid[i] = sideObjectGrid[next];
             }
         }
         int lastRow = (WolfPreviewFloorRenderer.FLOOR_ROWS - 1) * WolfPreviewFloorRenderer.FLOOR_COLS;
         for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
             floorGrid[lastRow + col] = randomFloorBlock();
+            sideObjectGrid[lastRow + col] = newSideObjectForCol(col);
         }
         floorOriginZ++;
     }
@@ -481,19 +529,24 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
             int base = row * WolfPreviewFloorRenderer.FLOOR_COLS;
             for (int col = WolfPreviewFloorRenderer.FLOOR_COLS - 1; col > 0; col--) {
                 floorGrid[base + col] = floorGrid[base + col - 1];
+                sideObjectGrid[base + col] = sideObjectGrid[base + col - 1];
             }
             floorGrid[base] = randomFloorBlock();
+            sideObjectGrid[base] = newSideObjectForCol(0);
         }
         floorOriginX--;
     }
 
     private void shiftColsTowardLeft() {
+        int lastCol = WolfPreviewFloorRenderer.FLOOR_COLS - 1;
         for (int row = 0; row < WolfPreviewFloorRenderer.FLOOR_ROWS; row++) {
             int base = row * WolfPreviewFloorRenderer.FLOOR_COLS;
-            for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS - 1; col++) {
+            for (int col = 0; col < lastCol; col++) {
                 floorGrid[base + col] = floorGrid[base + col + 1];
+                sideObjectGrid[base + col] = sideObjectGrid[base + col + 1];
             }
-            floorGrid[base + WolfPreviewFloorRenderer.FLOOR_COLS - 1] = randomFloorBlock();
+            floorGrid[base + lastCol] = randomFloorBlock();
+            sideObjectGrid[base + lastCol] = newSideObjectForCol(lastCol);
         }
         floorOriginX++;
     }
@@ -503,6 +556,13 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         ensureFloorGrid();
         var list = new ArrayList<BlockState>(floorGrid.length);
         for (BlockState bs : floorGrid) list.add(bs);
+        return list;
+    }
+
+    private List<BlockState> getSideObjectGridAsList() {
+        ensureFloorGrid();
+        var list = new ArrayList<BlockState>(sideObjectGrid.length);
+        for (BlockState bs : sideObjectGrid) list.add(bs);
         return list;
     }
 
