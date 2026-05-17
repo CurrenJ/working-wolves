@@ -36,9 +36,9 @@ public class WorkingWolvesPackets {
         }
     }
 
-    public static void pushJournalLine(Level level, BlockPos pos, String line, int simElapsed, int simTotal) {
+    public static void pushJournalLine(Level level, BlockPos pos, String line, int simElapsed, int simTotal, net.minecraft.world.item.ItemStack lastLoot) {
         if (!(level instanceof ServerLevel sl)) return;
-        BedJournalUpdatePacket packet = new BedJournalUpdatePacket(pos, line, simElapsed, simTotal);
+        BedJournalUpdatePacket packet = new BedJournalUpdatePacket(pos, line, simElapsed, simTotal, lastLoot);
         Vec3 center = Vec3.atCenterOf(pos);
         for (ServerPlayer player : sl.players()) {
             if (player.distanceToSqr(center) < 128.0 * 128.0) {

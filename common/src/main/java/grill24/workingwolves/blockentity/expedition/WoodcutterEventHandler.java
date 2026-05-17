@@ -64,7 +64,7 @@ class WoodcutterEventHandler {
             .findFirst();
 
         entry.ifPresent(e -> {
-            sim.getPendingLoot().addAll(ExpeditionLootHelper.roll(sl, e.lootTable(), sim.getBlockPos()));
+            sim.addPendingLoot(ExpeditionLootHelper.roll(sl, e.lootTable(), sim.getBlockPos()));
             sim.addLogLine(e.journalLines().get(rng.nextInt(e.journalLines().size())));
         });
     }

@@ -23,4 +23,11 @@ public class Config {
     public static float mouthRotX = -90.0F;
     public static float mouthRotY = 0.0F;
     public static float mouthRotZ = 45.0F;
+
+    // Wolf preview GUI render tuning (runtime, not persisted to config files)
+    public static float previewBodyRot = 220f;    // living.bodyRot  — spins body around vertical axis
+    public static float previewYRot = 15f;        // living.yRot     — head horizontal yaw
+    public static float previewXRot = 0f;         // living.xRot     — head vertical pitch
+    public static float previewPitch = -20f;      // quaternion X    — tilts whole entity toward/away from viewer
+    public static int previewSize = 45;
 }

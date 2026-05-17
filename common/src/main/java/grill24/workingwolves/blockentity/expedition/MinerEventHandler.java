@@ -109,14 +109,14 @@ class MinerEventHandler {
             : chosen.lootTable();
 
         List<ItemStack> drops = ExpeditionLootHelper.roll(sl, tableKey, sim.getBlockPos());
-        sim.getPendingLoot().addAll(drops);
+        sim.addPendingLoot(drops);
 
         // Biome bonus rolls
         boolean biomeBonusApplies = chosen.biomeBonusCategories()
             .map(cats -> cats.contains(sim.getBiomeCategory()))
             .orElse(false);
         if (biomeBonusApplies && chosen.biomeBonusLootTable().isPresent()) {
-            sim.getPendingLoot().addAll(ExpeditionLootHelper.roll(sl, chosen.biomeBonusLootTable().get(), sim.getBlockPos()));
+            sim.addPendingLoot(ExpeditionLootHelper.roll(sl, chosen.biomeBonusLootTable().get(), sim.getBlockPos()));
         }
 
         sim.addLogLine(chosen.journalLines().get(rng.nextInt(chosen.journalLines().size())));

@@ -76,7 +76,7 @@ class HunterEventHandler {
         }
 
         List<ItemStack> drops = ExpeditionLootHelper.roll(sl, chosen.lootTable(), sl.getServer() != null ? sim.getBlockPos() : sim.getBlockPos());
-        sim.getPendingLoot().addAll(drops);
+        sim.addPendingLoot(drops);
         sim.addLogLine(chosen.journalLines().get(rng.nextInt(chosen.journalLines().size())));
     }
 

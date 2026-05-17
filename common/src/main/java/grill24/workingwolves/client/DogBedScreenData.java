@@ -4,6 +4,7 @@ import grill24.workingwolves.ModMenuTypes;
 import grill24.workingwolves.network.BedJournalUpdatePacket;
 import grill24.workingwolves.network.BedStatePacket;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ public final class DogBedScreenData {
     public static int simElapsedTicks = 0;
     public static int simTotalTicks = 0;
     public static List<String> journalLines = new ArrayList<>();
+    public static ItemStack lastLootItem = ItemStack.EMPTY;
 
     // Callbacks set by DogBedScreen while it's open; cleared on screen close
     public static Consumer<BedJournalUpdatePacket> journalUpdateCallback = null;
@@ -57,6 +59,9 @@ public final class DogBedScreenData {
         simElapsedTicks = packet.simElapsedTicks();
         simTotalTicks = packet.simTotalTicks();
         journalLines.add(packet.line());
+        if (!packet.lastLootItem().isEmpty()) {
+            lastLootItem = packet.lastLootItem();
+        }
         if (journalUpdateCallback != null) {
             journalUpdateCallback.accept(packet);
         }
@@ -73,6 +78,7 @@ public final class DogBedScreenData {
         simElapsedTicks = 0;
         simTotalTicks = 0;
         journalLines = new ArrayList<>();
+        lastLootItem = ItemStack.EMPTY;
         journalUpdateCallback = null;
         stateUpdateCallback = null;
     }

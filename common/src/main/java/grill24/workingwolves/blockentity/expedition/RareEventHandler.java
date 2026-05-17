@@ -69,7 +69,7 @@ class RareEventHandler {
     private static void applyEvent(ServerLevel sl, Random rng, ExpeditionSimulator sim, RareEventEntry e) {
         sim.addLogLine(e.journalLines().get(rng.nextInt(e.journalLines().size())));
         e.lootTable().ifPresent(key ->
-            sim.getPendingLoot().addAll(ExpeditionLootHelper.roll(sl, key, sim.getBlockPos())));
+            sim.addPendingLoot(ExpeditionLootHelper.roll(sl, key, sim.getBlockPos())));
         e.satiationDelta().ifPresent(sim::adjustSatiation);
         e.applyHazard().ifPresent(h ->
             sim.applyHazardCost(sl, rng, ExpeditionSimulator.HazardLevel.valueOf(h)));

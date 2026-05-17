@@ -6,8 +6,9 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.item.ItemStack;
 
-public record BedJournalUpdatePacket(BlockPos bedPos, String line, int simElapsedTicks, int simTotalTicks)
+public record BedJournalUpdatePacket(BlockPos bedPos, String line, int simElapsedTicks, int simTotalTicks, ItemStack lastLootItem)
         implements CustomPacketPayload {
 
     public static final Type<BedJournalUpdatePacket> TYPE = new Type<>(WorkingWolves.id("bed_journal_update"));
@@ -17,6 +18,7 @@ public record BedJournalUpdatePacket(BlockPos bedPos, String line, int simElapse
         ByteBufCodecs.STRING_UTF8, BedJournalUpdatePacket::line,
         ByteBufCodecs.VAR_INT, BedJournalUpdatePacket::simElapsedTicks,
         ByteBufCodecs.VAR_INT, BedJournalUpdatePacket::simTotalTicks,
+        ItemStack.OPTIONAL_STREAM_CODEC, BedJournalUpdatePacket::lastLootItem,
         BedJournalUpdatePacket::new
     );
 

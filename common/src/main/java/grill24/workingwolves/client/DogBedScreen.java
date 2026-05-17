@@ -1,6 +1,9 @@
 package grill24.workingwolves.client;
 
+import grill24.workingwolves.Config;
+import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.inventory.DogBedMenu;
+import grill24.workingwolves.item.CollarItem;
 import grill24.workingwolves.network.DispatchFromBedPacket;
 import grill24.workingwolves.network.RecallFromBedPacket;
 import grill24.workingwolves.network.WorkingWolvesPackets;
@@ -10,9 +13,21 @@ import io.github.currenj.gelatinui.gui.components.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.entity.state.WolfRenderState;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import org.joml.Quaternionf;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -44,6 +59,10 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     private int simElapsed;
     private int simTotal;
     private String simState;
+
+    // Wolf preview rendering
+    private Wolf fakeWolf = null;
+    private float walkAnimTime = 0f;
 
     public DogBedScreen(DogBedMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
@@ -197,6 +216,9 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
             simElapsed++;
             refreshProgressUI();
         }
+        if ("running".equals(simState) || "departing".equals(simState) || "returning".equals(simState)) {
+            walkAnimTime += 0.4f;
+        }
     }
 
     private void refreshProgressUI() {
@@ -258,12 +280,71 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         int lp = this.leftPos;
         int tp = this.topPos;
         drawPanel(graphics, lp + 8, tp + 8, 154, 144);
+        drawPanel(graphics, lp + 8, tp + 160, 154, 74);
         drawPanel(graphics, lp + 178, tp + 8, 170, 144);
         drawPanel(graphics, lp + 178, tp + 160, 170, 74);
     }
 
     @Override
     protected void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        renderWolfPreview(graphics, partialTick);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void renderWolfPreview(GuiGraphicsExtractor graphics, float partialTick) {
+        if (DogBedScreenData.wolfName.isEmpty()) return;
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        if (fakeWolf == null) {
+            fakeWolf = EntityType.WOLF.create(level, EntitySpawnReason.LOAD);
+            if (fakeWolf == null) return;
+        }
+
+        // Apply collar color from tier
+        if (DogBedScreenData.collarTier > 0) {
+            fakeWolf.setTame(true, false);
+            fakeWolf.setCollarColor(CollarItem.getCollarColorForTier(DogBedScreenData.collarTier));
+        }
+
+        // Show the most recently found loot item in the wolf's mouth during expedition
+        boolean isMoving = "running".equals(simState) || "departing".equals(simState) || "returning".equals(simState);
+        ItemStack mouthItem = isMoving ? DogBedScreenData.lastLootItem : ItemStack.EMPTY;
+        ((IWorkingWolf) (Object) fakeWolf).workingwolves$setMouthItem(mouthItem);
+
+        // Extract render state via the registered WolfRenderer (which runs our WolfRendererMixin for mouth items)
+        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        EntityRenderer<Wolf, ?> renderer = (EntityRenderer<Wolf, ?>) dispatcher.getRenderer(fakeWolf);
+        EntityRenderState state = renderer.createRenderState(fakeWolf, partialTick);
+        state.shadowPieces.clear();
+        state.outlineColor = 0;
+
+        // Drive walk animation from our counter; override body/head rotation for a nice 3/4 view
+        if (state instanceof LivingEntityRenderState living) {
+            living.walkAnimationPos = walkAnimTime;
+            living.walkAnimationSpeed = isMoving ? 0.4f : 0.0f;
+            living.bodyRot = Config.previewBodyRot;
+            living.yRot = Config.previewYRot;
+            living.xRot = Config.previewXRot;
+            if (state instanceof WolfRenderState wolfState) {
+                wolfState.isSitting = !isMoving && !"complete".equals(simState);
+                wolfState.tailAngle = isMoving ? (float) (Math.PI * 0.6) : (float) (Math.PI / 5);
+            }
+        }
+
+        // Render centered in the panel below the expedition journal
+        int x0 = this.leftPos + 8;
+        int y0 = this.topPos + 160;
+        int x1 = this.leftPos + 162;
+        int y1 = this.topPos + 234;
+
+        Vector3f translation = new Vector3f(0.0F, state.boundingBoxHeight / 2.0F, 0.0F);
+        Quaternionf rotation = new Quaternionf()
+            .rotateZ((float) Math.PI)
+            .rotateX(Config.previewPitch * (float) (Math.PI / 180.0));
+        Quaternionf xRotation = new Quaternionf();
+
+        graphics.entity(state, Config.previewSize, translation, rotation, xRotation, x0, y0, x1, y1);
     }
 
     private static void drawPanel(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
@@ -298,6 +379,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         Minecraft.getInstance().options.hideGui = false;
         DogBedScreenData.journalUpdateCallback = null;
         DogBedScreenData.stateUpdateCallback = null;
+        fakeWolf = null;
     }
 
     @Override

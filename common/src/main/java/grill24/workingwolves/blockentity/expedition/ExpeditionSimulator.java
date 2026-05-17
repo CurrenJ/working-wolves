@@ -52,6 +52,7 @@ public class ExpeditionSimulator {
     private String simBiomeCategory = "other";
     private String simWoodBiome = "forest";
     private final List<ItemStack> simPendingLoot = new ArrayList<>();
+    private ItemStack simLastFoundLootItem = ItemStack.EMPTY;
     private final List<String> expeditionLog = new ArrayList<>();
 
     public ExpeditionSimulator(DogBedBlockEntity bed) {
@@ -280,13 +281,24 @@ public class ExpeditionSimulator {
         expeditionLog.add(line);
         Level level = bed.getLevel();
         if (level != null) {
-            WorkingWolvesPackets.pushJournalLine(level, bed.getBlockPos(), line, simElapsedTicks, simTotalTicks);
+            WorkingWolvesPackets.pushJournalLine(level, bed.getBlockPos(), line, simElapsedTicks, simTotalTicks, simLastFoundLootItem);
         }
         bed.setChanged();
     }
 
     List<ItemStack> getPendingLoot() { return simPendingLoot; }
-    void addPendingLoot(ItemStack stack) { simPendingLoot.add(stack); }
+
+    void addPendingLoot(ItemStack stack) {
+        simPendingLoot.add(stack);
+        if (!stack.isEmpty()) simLastFoundLootItem = stack.copy();
+    }
+
+    void addPendingLoot(List<ItemStack> drops) {
+        for (ItemStack stack : drops) {
+            if (!stack.isEmpty()) simLastFoundLootItem = stack.copy();
+        }
+        simPendingLoot.addAll(drops);
+    }
 
     void adjustSatiation(int delta) { simSatiation += delta; }
     int getSatiation() { return simSatiation; }

@@ -49,6 +49,25 @@ public class DebugCommand {
                     .then(Commands.literal("show")
                         .executes(DebugCommand::showTuning))
                 )
+                .then(Commands.literal("tuneWolfPreview")
+                    .then(Commands.literal("bodyRot")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tunePreview(ctx, "bodyRot", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("yRot")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tunePreview(ctx, "yRot", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("xRot")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tunePreview(ctx, "xRot", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("pitch")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tunePreview(ctx, "pitch", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("size")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(1f, 200f))
+                            .executes(ctx -> tunePreview(ctx, "size", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("show")
+                        .executes(DebugCommand::showPreviewTuning))
+                )
         );
     }
 
@@ -71,6 +90,26 @@ public class DebugCommand {
             "Mouth item: pos(%.3f, %.3f, %.3f) rot(%.1f, %.1f, %.1f)",
             Config.mouthOffsetX, Config.mouthOffsetY, Config.mouthOffsetZ,
             Config.mouthRotX, Config.mouthRotY, Config.mouthRotZ)), false);
+        return 1;
+    }
+
+    private static int tunePreview(CommandContext<CommandSourceStack> ctx, String field, float value) {
+        switch (field) {
+            case "bodyRot" -> Config.previewBodyRot = value;
+            case "yRot"    -> Config.previewYRot = value;
+            case "xRot"    -> Config.previewXRot = value;
+            case "pitch"   -> Config.previewPitch = value;
+            case "size"    -> Config.previewSize = (int) value;
+        }
+        ctx.getSource().sendSuccess(() -> Component.literal(
+            String.format("Wolf preview %s = %.1f", field, value)), true);
+        return 1;
+    }
+
+    private static int showPreviewTuning(CommandContext<CommandSourceStack> ctx) {
+        ctx.getSource().sendSuccess(() -> Component.literal(String.format(
+            "Wolf preview: bodyRot=%.1f  yRot=%.1f  xRot=%.1f  pitch=%.1f  size=%d",
+            Config.previewBodyRot, Config.previewYRot, Config.previewXRot, Config.previewPitch, Config.previewSize)), false);
         return 1;
     }
 
