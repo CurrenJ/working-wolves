@@ -11,3 +11,8 @@ accessible field net/minecraft/world/entity/ai/navigation/PathNavigation require
 
 # Needed to reference MenuScreens.ScreenConstructor when registering screens via gelatin-ui
 accessible class net/minecraft/client/gui/screens/MenuScreens$ScreenConstructor
+
+# GuiGraphicsExtractor fields needed for custom PictureInPicture state submission
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor guiRenderState Lnet/minecraft/client/renderer/state/gui/GuiRenderState;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor scissorStack Lnet/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack;
+accessible class net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack

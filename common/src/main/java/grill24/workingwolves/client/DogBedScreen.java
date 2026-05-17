@@ -25,12 +25,16 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
 
@@ -63,6 +67,15 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     // Wolf preview rendering
     private Wolf fakeWolf = null;
     private float walkAnimTime = 0f;
+
+    // Floor scroll queue — procedurally generates blocks as they scroll into view
+    private final Random floorRandom = new Random();
+    private String lastFloorTheme = "";
+    private BlockState[] floorGrid = null;          // WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS, row-major
+    private float floorRemainderZ = 0f;             // fractional scroll [0, 1)
+    private float floorRemainderX = 0f;
+    private int floorOriginX = 0;                   // virtual X of grid cell (0,0) in infinite plane
+    private int floorOriginZ = 0;
 
     public DogBedScreen(DogBedMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
@@ -218,6 +231,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         }
         if ("running".equals(simState) || "departing".equals(simState) || "returning".equals(simState)) {
             walkAnimTime += 0.4f;
+            advanceFloorScroll();
         }
     }
 
@@ -332,7 +346,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
             }
         }
 
-        // Render centered in the panel below the expedition journal
+        // Panel bounds
         int x0 = this.leftPos + 8;
         int y0 = this.topPos + 160;
         int x1 = this.leftPos + 162;
@@ -342,9 +356,154 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         Quaternionf rotation = new Quaternionf()
             .rotateZ((float) Math.PI)
             .rotateX(Config.previewPitch * (float) (Math.PI / 180.0));
-        Quaternionf xRotation = new Quaternionf();
 
-        graphics.entity(state, Config.previewSize, translation, rotation, xRotation, x0, y0, x1, y1);
+        graphics.guiRenderState.addPicturesInPictureState(new WolfPreviewFloorRenderState(
+            state, translation, rotation, null,
+            x0, y0, x1, y1, Config.previewSize,
+            graphics.scissorStack.peek(),
+            getFloorGridAsList(),
+            floorRemainderZ,
+            floorRemainderX,
+            floorOriginX,
+            floorOriginZ
+        ));
+    }
+
+    // ── Floor scroll queue ────────────────────────────────────────────────
+
+    /** Current floor theme string, used to detect theme changes. */
+    private String floorTheme() {
+        if (DogBedScreenData.hasMining) return "mine";
+        if (DogBedScreenData.hasWoodcutting) return "wood";
+        return "hunt";
+    }
+
+    /** Weighted random block for the current expedition theme. */
+    private BlockState randomFloorBlock() {
+        return switch (floorTheme()) {
+            case "mine" -> {
+                int r = floorRandom.nextInt(14);
+                if (r < 5) yield Blocks.STONE.defaultBlockState();
+                if (r < 8) yield Blocks.COBBLED_DEEPSLATE.defaultBlockState();
+                if (r < 10) yield Blocks.GRAVEL.defaultBlockState();
+                if (r < 12) yield Blocks.ANDESITE.defaultBlockState();
+                if (r < 13) yield Blocks.COBBLESTONE.defaultBlockState();
+                yield Blocks.DEEPSLATE.defaultBlockState();
+            }
+            case "wood" -> {
+                int r = floorRandom.nextInt(13);
+                if (r < 5) yield Blocks.PODZOL.defaultBlockState();
+                if (r < 8) yield Blocks.COARSE_DIRT.defaultBlockState();
+                if (r < 10) yield Blocks.DIRT.defaultBlockState();
+                if (r < 12) yield Blocks.ROOTED_DIRT.defaultBlockState();
+                yield Blocks.MOSS_BLOCK.defaultBlockState();
+            }
+            default -> { // hunt / idle
+                int r = floorRandom.nextInt(11);
+                if (r < 6) yield Blocks.GRASS_BLOCK.defaultBlockState();
+                if (r < 8) yield Blocks.DIRT.defaultBlockState();
+                if (r < 10) yield Blocks.COARSE_DIRT.defaultBlockState();
+                yield Blocks.PODZOL.defaultBlockState();
+            }
+        };
+    }
+
+    /** Ensure the floor grid is initialized for the current theme. */
+    private void ensureFloorGrid() {
+        String theme = floorTheme();
+        if (floorGrid != null && floorGrid.length == WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS && theme.equals(lastFloorTheme))
+            return;
+
+        floorGrid = new BlockState[WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS];
+        for (int i = 0; i < floorGrid.length; i++) {
+            floorGrid[i] = randomFloorBlock();
+        }
+        floorRemainderZ = 0f;
+        floorRemainderX = 0f;
+        floorOriginX = 0;
+        floorOriginZ = 0;
+        lastFloorTheme = theme;
+    }
+
+    /** Advance scroll, shifting the queue when a block boundary is crossed. */
+    private void advanceFloorScroll() {
+        ensureFloorGrid();
+
+        floorRemainderZ += Config.previewFloorScrollSpeed;
+        while (floorRemainderZ >= 1.0f) {
+            floorRemainderZ -= 1.0f;
+            shiftRowsTowardFar();
+        }
+        while (floorRemainderZ < 0f) {
+            floorRemainderZ += 1.0f;
+            shiftRowsTowardNear();
+        }
+
+        floorRemainderX += Config.previewFloorScrollSpeedX;
+        while (floorRemainderX >= 1.0f) {
+            floorRemainderX -= 1.0f;
+            shiftColsTowardRight();
+        }
+        while (floorRemainderX < 0f) {
+            floorRemainderX += 1.0f;
+            shiftColsTowardLeft();
+        }
+    }
+
+    /** Row 0 is near (closest to camera), row ROWS-1 is far. Positive Z scroll moves blocks toward camera, so the far row scrolls off and a new near row is needed. */
+    private void shiftRowsTowardFar() {
+        for (int row = WolfPreviewFloorRenderer.FLOOR_ROWS - 1; row > 0; row--) {
+            for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
+                floorGrid[row * WolfPreviewFloorRenderer.FLOOR_COLS + col] = floorGrid[(row - 1) * WolfPreviewFloorRenderer.FLOOR_COLS + col];
+            }
+        }
+        for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
+            floorGrid[col] = randomFloorBlock();
+        }
+        floorOriginZ--;
+    }
+
+    private void shiftRowsTowardNear() {
+        for (int row = 0; row < WolfPreviewFloorRenderer.FLOOR_ROWS - 1; row++) {
+            for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
+                floorGrid[row * WolfPreviewFloorRenderer.FLOOR_COLS + col] = floorGrid[(row + 1) * WolfPreviewFloorRenderer.FLOOR_COLS + col];
+            }
+        }
+        int lastRow = (WolfPreviewFloorRenderer.FLOOR_ROWS - 1) * WolfPreviewFloorRenderer.FLOOR_COLS;
+        for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
+            floorGrid[lastRow + col] = randomFloorBlock();
+        }
+        floorOriginZ++;
+    }
+
+    private void shiftColsTowardRight() {
+        for (int row = 0; row < WolfPreviewFloorRenderer.FLOOR_ROWS; row++) {
+            int base = row * WolfPreviewFloorRenderer.FLOOR_COLS;
+            for (int col = WolfPreviewFloorRenderer.FLOOR_COLS - 1; col > 0; col--) {
+                floorGrid[base + col] = floorGrid[base + col - 1];
+            }
+            floorGrid[base] = randomFloorBlock();
+        }
+        floorOriginX--;
+    }
+
+    private void shiftColsTowardLeft() {
+        for (int row = 0; row < WolfPreviewFloorRenderer.FLOOR_ROWS; row++) {
+            int base = row * WolfPreviewFloorRenderer.FLOOR_COLS;
+            for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS - 1; col++) {
+                floorGrid[base + col] = floorGrid[base + col + 1];
+            }
+            floorGrid[base + WolfPreviewFloorRenderer.FLOOR_COLS - 1] = randomFloorBlock();
+        }
+        floorOriginX++;
+    }
+
+    /** Flatten the current grid into a list for the render state. */
+    private List<BlockState> getFloorGridAsList() {
+        ensureFloorGrid();
+        var list = new ArrayList<BlockState>(floorGrid.length);
+        for (BlockState bs : floorGrid) list.add(bs);
+        return list;
     }
 
     private static void drawPanel(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
@@ -380,6 +539,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         DogBedScreenData.journalUpdateCallback = null;
         DogBedScreenData.stateUpdateCallback = null;
         fakeWolf = null;
+        floorGrid = null;
     }
 
     @Override

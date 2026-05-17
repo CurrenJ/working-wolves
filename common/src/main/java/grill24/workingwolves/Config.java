@@ -30,4 +30,16 @@ public class Config {
     public static float previewXRot = 0f;         // living.xRot     — head vertical pitch
     public static float previewPitch = -20f;      // quaternion X    — tilts whole entity toward/away from viewer
     public static int previewSize = 45;
+    public static float previewFloorScrollSpeed = 0f;    // Z-axis scroll rate (0 = no Z scroll)
+    public static float previewFloorY = -1.0f;           // Y of floor block bottom (top face at Y+1 = entity feet level)
+
+    // Floor block render tuning — rotation, scale, grid offset, scroll direction
+    public static float previewFloorRotX = 0f;
+    public static float previewFloorRotY = 45f;
+    public static float previewFloorRotZ = 0f;
+    public static float previewFloorScale = 1.0f;
+    public static float previewFloorOffsetX = 0f;
+    public static float previewFloorOffsetZ = 1f;
+    public static float previewFloorScrollSpeedX = -0.05f;  // X-axis scroll rate (negative = scroll left)
+    public static float previewFloorSpacing = 1.0f;        // grid cell size in blocks (1.0 = adjacent, >1 = gaps, <1 = overlap)
 }

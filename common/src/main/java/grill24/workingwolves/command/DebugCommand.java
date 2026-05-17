@@ -68,6 +68,40 @@ public class DebugCommand {
                     .then(Commands.literal("show")
                         .executes(DebugCommand::showPreviewTuning))
                 )
+                .then(Commands.literal("tuneFloor")
+                    .then(Commands.literal("rotX")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tuneFloor(ctx, "rotX", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("rotY")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tuneFloor(ctx, "rotY", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("rotZ")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-360f, 360f))
+                            .executes(ctx -> tuneFloor(ctx, "rotZ", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("scale")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(0.1f, 5f))
+                            .executes(ctx -> tuneFloor(ctx, "scale", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("offsetX")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-10f, 10f))
+                            .executes(ctx -> tuneFloor(ctx, "offsetX", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("offsetZ")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-10f, 10f))
+                            .executes(ctx -> tuneFloor(ctx, "offsetZ", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("y")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-10f, 10f))
+                            .executes(ctx -> tuneFloor(ctx, "y", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("scrollSpeed")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-1f, 1f))
+                            .executes(ctx -> tuneFloor(ctx, "scrollSpeed", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("scrollSpeedX")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(-1f, 1f))
+                            .executes(ctx -> tuneFloor(ctx, "scrollSpeedX", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("spacing")
+                        .then(Commands.argument("value", FloatArgumentType.floatArg(0.5f, 3f))
+                            .executes(ctx -> tuneFloor(ctx, "spacing", FloatArgumentType.getFloat(ctx, "value")))))
+                    .then(Commands.literal("show")
+                        .executes(DebugCommand::showFloorTuning))
+                )
         );
     }
 
@@ -110,6 +144,34 @@ public class DebugCommand {
         ctx.getSource().sendSuccess(() -> Component.literal(String.format(
             "Wolf preview: bodyRot=%.1f  yRot=%.1f  xRot=%.1f  pitch=%.1f  size=%d",
             Config.previewBodyRot, Config.previewYRot, Config.previewXRot, Config.previewPitch, Config.previewSize)), false);
+        return 1;
+    }
+
+    private static int tuneFloor(CommandContext<CommandSourceStack> ctx, String field, float value) {
+        switch (field) {
+            case "rotX"        -> Config.previewFloorRotX = value;
+            case "rotY"        -> Config.previewFloorRotY = value;
+            case "rotZ"        -> Config.previewFloorRotZ = value;
+            case "scale"       -> Config.previewFloorScale = value;
+            case "offsetX"     -> Config.previewFloorOffsetX = value;
+            case "offsetZ"     -> Config.previewFloorOffsetZ = value;
+            case "y"           -> Config.previewFloorY = value;
+            case "scrollSpeed" -> Config.previewFloorScrollSpeed = value;
+            case "scrollSpeedX"-> Config.previewFloorScrollSpeedX = value;
+            case "spacing"     -> Config.previewFloorSpacing = value;
+        }
+        ctx.getSource().sendSuccess(() -> Component.literal(
+            String.format("Floor %s = %.3f", field, value)), true);
+        return 1;
+    }
+
+    private static int showFloorTuning(CommandContext<CommandSourceStack> ctx) {
+        ctx.getSource().sendSuccess(() -> Component.literal(String.format(
+            "Floor: rot(%.1f, %.1f, %.1f)  scale=%.2f  offset(%.2f, %.2f)  y=%.2f  scrollZ=%.3f  scrollX=%.3f  spacing=%.3f",
+            Config.previewFloorRotX, Config.previewFloorRotY, Config.previewFloorRotZ,
+            Config.previewFloorScale, Config.previewFloorOffsetX, Config.previewFloorOffsetZ,
+            Config.previewFloorY, Config.previewFloorScrollSpeed, Config.previewFloorScrollSpeedX,
+            Config.previewFloorSpacing)), false);
         return 1;
     }
 
