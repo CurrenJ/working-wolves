@@ -223,6 +223,9 @@ public class ExpeditionSimulator {
         output.putString("sim_biome_category", simBiomeCategory);
         output.putString("sim_wood_biome", simWoodBiome);
         output.putString("expedition_log", String.join("\n", expeditionLog));
+        if (!simPendingLoot.isEmpty()) {
+            output.store("sim_pending_loot", ItemStack.OPTIONAL_CODEC.listOf(), simPendingLoot);
+        }
     }
 
     public void load(ValueInput input) {
@@ -254,6 +257,9 @@ public class ExpeditionSimulator {
                 expeditionLog.add(line);
             }
         }
+
+        simPendingLoot.clear();
+        input.read("sim_pending_loot", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(simPendingLoot::addAll);
     }
 
     // ======== Public accessors ========

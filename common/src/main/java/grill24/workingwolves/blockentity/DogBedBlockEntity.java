@@ -166,9 +166,11 @@ public class DogBedBlockEntity extends BlockEntity implements Container {
     }
 
     @Override
-    public void setRemoved() {
+    public void preRemoveSideEffects(BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
+        // Called only on actual block destruction (not chunk unloading), so this is
+        // the correct place to rescue the wolf — setRemoved() fires on both.
         simulator.abandonIfRunning();
-        super.setRemoved();
+        super.preRemoveSideEffects(pos, state);
     }
 
     // ======== Simulation delegation ========
