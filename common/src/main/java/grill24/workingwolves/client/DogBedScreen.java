@@ -69,14 +69,28 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     private float walkAnimTime = 0f;
 
     // Floor scroll queue — procedurally generates blocks as they scroll into view
-    private static final int SIDE_LEFT_MAX_COL  = 2; // cols 0-2 are left-side eligible
-    private static final int SIDE_RIGHT_MIN_COL = 6; // cols 6-8 are right-side eligible
+    // Row 1 is the only row the wolf visually overlaps (determined via debug color mapping).
     private static final float SIDE_OBJECT_CHANCE = 0.01f;
+
+    // ── Debug: set to true to identify which (col, row) cells the wolf overlaps.
+    // Each row renders as a unique concrete color; scrolling is frozen.
+    private static final boolean DEBUG_SIDE_OBJECT_COORDS = false;
+    private static final BlockState[] DEBUG_COL_BLOCKS = {
+        Blocks.WHITE_CONCRETE.defaultBlockState(),
+        Blocks.ORANGE_CONCRETE.defaultBlockState(),
+        Blocks.MAGENTA_CONCRETE.defaultBlockState(),
+        Blocks.LIGHT_BLUE_CONCRETE.defaultBlockState(),
+        Blocks.YELLOW_CONCRETE.defaultBlockState(),
+        Blocks.LIME_CONCRETE.defaultBlockState(),
+        Blocks.PINK_CONCRETE.defaultBlockState(),
+        Blocks.GRAY_CONCRETE.defaultBlockState(),
+        Blocks.CYAN_CONCRETE.defaultBlockState(),
+    };
 
     private final Random floorRandom = new Random();
     private String lastFloorTheme = "";
     private BlockState[] floorGrid = null;          // WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS, row-major
-    private BlockState[] sideObjectGrid = null;     // parallel grid; AIR in center lane (cols 3-5)
+    private BlockState[] sideObjectGrid = null;     // parallel grid; AIR along wolf's diagonal path
     private float floorRemainderZ = 0f;             // fractional scroll [0, 1)
     private float floorRemainderX = 0f;
     private int floorOriginX = 0;                   // virtual X of grid cell (0,0) in infinite plane
@@ -210,7 +224,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         actionButton = UI.spriteButton(162, 20, btnColor).text(btnText, COLOR_BTN_TEXT);
         actionButton.onClick(e -> onActionButtonClick());
         // Center at (lp+178+81, tp+132+10)
-        root.addChildAt(actionButton, lp + 178 + 85, tp + 142);
+        root.addChildAt(actionButton, lp + 178 + 85, tp + 141);
     }
 
     private void onActionButtonClick() {
@@ -234,10 +248,8 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
             simElapsed++;
             refreshProgressUI();
         }
-        if ("running".equals(simState) || "departing".equals(simState) || "returning".equals(simState)) {
-            walkAnimTime += 0.4f;
-            advanceFloorScroll();
-        }
+        // Animation is advanced per render frame in renderWolfPreview() using the frame delta,
+        // so nothing to advance here.
     }
 
     private void refreshProgressUI() {
@@ -298,15 +310,22 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         super.extractTransparentBackground(graphics);
         int lp = this.leftPos;
         int tp = this.topPos;
-        drawPanel(graphics, lp + 8, tp + 8, 154, 144);
-        drawPanel(graphics, lp + 8, tp + 160, 154, 74);
-        drawPanel(graphics, lp + 178, tp + 8, 170, 144);
-        drawPanel(graphics, lp + 178, tp + 160, 170, 74);
+        drawPanelBg(graphics, lp + 8, tp + 8, 154, 144);
+        drawPanelBg(graphics, lp + 8, tp + 160, 154, 74);
+        drawPanelBg(graphics, lp + 178, tp + 8, 170, 144);
+        drawPanelBg(graphics, lp + 178, tp + 160, 170, 74);
     }
 
     @Override
     protected void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         renderWolfPreview(graphics, partialTick);
+        // Redraw borders on top of the wolf preview so they aren't buried under it
+        int lp = this.leftPos;
+        int tp = this.topPos;
+        drawPanelBorder(graphics, lp + 8, tp + 8, 154, 144);
+        drawPanelBorder(graphics, lp + 8, tp + 160, 154, 74);
+        drawPanelBorder(graphics, lp + 178, tp + 8, 170, 144);
+        drawPanelBorder(graphics, lp + 178, tp + 160, 170, 74);
     }
 
     @SuppressWarnings("unchecked")
@@ -337,6 +356,13 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         EntityRenderState state = renderer.createRenderState(fakeWolf, partialTick);
         state.shadowPieces.clear();
         state.outlineColor = 0;
+
+        // Advance animation per render frame (partialTick = getGameTimeDeltaTicks(), the per-frame
+        // delta in tick units — not a 0→1 interpolation position — so we accumulate directly).
+        if (isMoving) {
+            walkAnimTime += 0.4f * partialTick;
+            advanceFloorScroll(partialTick);
+        }
 
         // Drive walk animation from our counter; override body/head rotation for a nice 3/4 view
         if (state instanceof LivingEntityRenderState living) {
@@ -379,17 +405,28 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
 
     /** Current floor theme string, used to detect theme changes. */
     private String floorTheme() {
-        if (DogBedScreenData.hasMining) return "mine";
+        if (DogBedScreenData.hasMining) return "mine_" + miningZone();
         if (DogBedScreenData.hasWoodcutting) return "wood";
         return "hunt";
     }
 
-    /** Random scenery object for a side column, or AIR for center/blank cells. */
-    private BlockState newSideObjectForCol(int col) {
-        if (col > SIDE_LEFT_MAX_COL && col < SIDE_RIGHT_MIN_COL) return Blocks.AIR.defaultBlockState();
+    /** Maps expedition progress to a 1-3 mining zone (surface → cave → deep cave). */
+    private int miningZone() {
+        int total = DogBedScreenData.simTotalTicks;
+        if (total <= 0) return 1;
+        float progress = (float) DogBedScreenData.simElapsedTicks / total;
+        if (progress >= 0.67f) return 3;
+        if (progress >= 0.33f) return 2;
+        return 1;
+    }
+
+    /** Random scenery object for a side cell, or AIR on the row the wolf visually overlaps. */
+    private BlockState newSideObjectForCol(int col, int row) {
+        if (DEBUG_SIDE_OBJECT_COORDS) return DEBUG_COL_BLOCKS[row % DEBUG_COL_BLOCKS.length];
+        if (row == 1) return Blocks.AIR.defaultBlockState();
         if (floorRandom.nextFloat() >= SIDE_OBJECT_CHANCE) return Blocks.AIR.defaultBlockState();
         return switch (floorTheme()) {
-            case "mine" -> {
+            case "mine_1", "mine_2", "mine_3" -> {
                 int r = floorRandom.nextInt(4);
                 if (r == 0) yield Blocks.CRAFTING_TABLE.defaultBlockState();
                 if (r == 1) yield Blocks.FURNACE.defaultBlockState();
@@ -415,15 +452,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     /** Weighted random block for the current expedition theme. */
     private BlockState randomFloorBlock() {
         return switch (floorTheme()) {
-            case "mine" -> {
-                int r = floorRandom.nextInt(14);
-                if (r < 5) yield Blocks.STONE.defaultBlockState();
-                if (r < 8) yield Blocks.COBBLED_DEEPSLATE.defaultBlockState();
-                if (r < 10) yield Blocks.GRAVEL.defaultBlockState();
-                if (r < 12) yield Blocks.ANDESITE.defaultBlockState();
-                if (r < 13) yield Blocks.COBBLESTONE.defaultBlockState();
-                yield Blocks.DEEPSLATE.defaultBlockState();
-            }
+            case "mine_1", "mine_2", "mine_3" -> randomMineFloorBlock();
             case "wood" -> {
                 int r = floorRandom.nextInt(13);
                 if (r < 5) yield Blocks.PODZOL.defaultBlockState();
@@ -442,6 +471,38 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         };
     }
 
+    /** Zone-specific weighted floor block for the mining theme. */
+    private BlockState randomMineFloorBlock() {
+        return switch (miningZone()) {
+            case 2 -> { // mid-depth: stone/deepslate mix, ~5% ore
+                int r = floorRandom.nextInt(20);
+                if (r < 5)  yield Blocks.STONE.defaultBlockState();
+                if (r < 10) yield Blocks.COBBLED_DEEPSLATE.defaultBlockState();
+                if (r < 17) yield Blocks.DEEPSLATE.defaultBlockState();
+                if (r < 19) yield Blocks.GRAVEL.defaultBlockState();
+                yield Blocks.DEEPSLATE_IRON_ORE.defaultBlockState();
+            }
+            case 3 -> { // deep: mostly deepslate, ~2% each for 5 rare ores (~10% total)
+                int r = floorRandom.nextInt(50);
+                if (r < 25) yield Blocks.DEEPSLATE.defaultBlockState();
+                if (r < 45) yield Blocks.COBBLED_DEEPSLATE.defaultBlockState();
+                if (r < 46) yield Blocks.DEEPSLATE_GOLD_ORE.defaultBlockState();
+                if (r < 47) yield Blocks.DEEPSLATE_REDSTONE_ORE.defaultBlockState();
+                if (r < 48) yield Blocks.DEEPSLATE_LAPIS_ORE.defaultBlockState();
+                if (r < 49) yield Blocks.DEEPSLATE_DIAMOND_ORE.defaultBlockState();
+                yield Blocks.DEEPSLATE_EMERALD_ORE.defaultBlockState();
+            }
+            default -> { // zone 1: shallow — mostly stone, ~5% coal ore
+                int r = floorRandom.nextInt(20);
+                if (r < 10) yield Blocks.STONE.defaultBlockState();
+                if (r < 14) yield Blocks.COBBLESTONE.defaultBlockState();
+                if (r < 17) yield Blocks.GRAVEL.defaultBlockState();
+                if (r < 19) yield Blocks.ANDESITE.defaultBlockState();
+                yield Blocks.COAL_ORE.defaultBlockState();
+            }
+        };
+    }
+
     /** Ensure the floor grid is initialized for the current theme. */
     private void ensureFloorGrid() {
         String theme = floorTheme();
@@ -455,7 +516,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
             for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
                 int i = row * WolfPreviewFloorRenderer.FLOOR_COLS + col;
                 floorGrid[i] = randomFloorBlock();
-                sideObjectGrid[i] = newSideObjectForCol(col);
+                sideObjectGrid[i] = newSideObjectForCol(col, row);
             }
         }
         floorRemainderZ = 0f;
@@ -465,11 +526,12 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         lastFloorTheme = theme;
     }
 
-    /** Advance scroll, shifting the queue when a block boundary is crossed. */
-    private void advanceFloorScroll() {
+    /** Advance scroll by a frame delta (in tick units), shifting the queue when a block boundary is crossed. */
+    private void advanceFloorScroll(float delta) {
+        if (DEBUG_SIDE_OBJECT_COORDS) { ensureFloorGrid(); return; }
         ensureFloorGrid();
 
-        floorRemainderZ += Config.previewFloorScrollSpeed;
+        floorRemainderZ += Config.previewFloorScrollSpeed * delta;
         while (floorRemainderZ >= 1.0f) {
             floorRemainderZ -= 1.0f;
             shiftRowsTowardFar();
@@ -479,7 +541,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
             shiftRowsTowardNear();
         }
 
-        floorRemainderX += Config.previewFloorScrollSpeedX;
+        floorRemainderX += Config.previewFloorScrollSpeedX * delta;
         while (floorRemainderX >= 1.0f) {
             floorRemainderX -= 1.0f;
             shiftColsTowardRight();
@@ -502,7 +564,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         }
         for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
             floorGrid[col] = randomFloorBlock();
-            sideObjectGrid[col] = newSideObjectForCol(col);
+            sideObjectGrid[col] = newSideObjectForCol(col, 0);
         }
         floorOriginZ--;
     }
@@ -519,7 +581,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         int lastRow = (WolfPreviewFloorRenderer.FLOOR_ROWS - 1) * WolfPreviewFloorRenderer.FLOOR_COLS;
         for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
             floorGrid[lastRow + col] = randomFloorBlock();
-            sideObjectGrid[lastRow + col] = newSideObjectForCol(col);
+            sideObjectGrid[lastRow + col] = newSideObjectForCol(col, WolfPreviewFloorRenderer.FLOOR_ROWS - 1);
         }
         floorOriginZ++;
     }
@@ -532,7 +594,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
                 sideObjectGrid[base + col] = sideObjectGrid[base + col - 1];
             }
             floorGrid[base] = randomFloorBlock();
-            sideObjectGrid[base] = newSideObjectForCol(0);
+            sideObjectGrid[base] = newSideObjectForCol(0, row);
         }
         floorOriginX--;
     }
@@ -546,7 +608,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
                 sideObjectGrid[base + col] = sideObjectGrid[base + col + 1];
             }
             floorGrid[base + lastCol] = randomFloorBlock();
-            sideObjectGrid[base + lastCol] = newSideObjectForCol(lastCol);
+            sideObjectGrid[base + lastCol] = newSideObjectForCol(lastCol, row);
         }
         floorOriginX++;
     }
@@ -566,10 +628,11 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         return list;
     }
 
-    private static void drawPanel(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
-        // Fill
+    private static void drawPanelBg(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
         graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, COLOR_PANEL_BG);
-        // Border
+    }
+
+    private static void drawPanelBorder(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
         graphics.fill(x, y, x + w, y + 1, COLOR_PANEL_BORDER);
         graphics.fill(x, y + h - 1, x + w, y + h, COLOR_PANEL_BORDER);
         graphics.fill(x, y, x + 1, y + h, COLOR_PANEL_BORDER);

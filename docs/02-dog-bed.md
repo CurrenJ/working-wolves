@@ -138,6 +138,68 @@ The BE runs a simulated expedition when a hunter or miner wolf is dispatched. Th
 | `sim_filter_item` | `ItemStack.OPTIONAL_CODEC` |
 | `expedition_log` | String (newline-joined) |
 
+## Dog Bed GUI — Wolf Preview Panel
+
+`DogBedScreen` renders a fake wolf entity and a procedurally scrolling block floor inside a PiP (picture-in-picture) texture via `WolfPreviewFloorRenderer`.
+
+### Coordinate system
+
+The PiP scene shares a single `PoseStack`. Entity transforms are applied first (translate Y by `boundingBoxHeight/2`, then `rotateZ(π) * rotateX(previewPitch)`), after which both the wolf and the floor group operate in the same transformed space. The wolf is submitted at `(0, 0, 0)` in that space.
+
+The floor group is then positioned by:
+1. `translate(previewFloorOffsetX, previewFloorY, previewFloorOffsetZ)` — currently `(0, -1, 1)`
+2. `scale(previewFloorScale)` — currently `1.0`
+3. `rotateY(previewFloorRotY)` — currently `45°`
+
+A grid cell at `(col, row)` is placed at floor-local coordinates:
+```
+bx = (col − 4.5) × spacing
+bz = (row − 3.0) × spacing
+```
+
+After the `rotateY(45°)`, its X position in entity-transform space is:
+```
+entity_x = (bx − bz) / √2  =  [(col − 4.5) − (row − 3.0)] / √2
+                             =  (col − row − 1.5) / √2
+```
+
+Because the wolf sits at `entity_x = 0`, its visual **centerline in the grid satisfies `col = row + 1.5`**. This diagonal runs from the front-left corner of the grid (row 0, col ~1.5) to the back-right corner (row 5, col ~6.5).
+
+### Consequence for side objects
+
+Side objects (furnaces, crafting tables, etc.) must not spawn on the wolf's path. The clear zone is therefore a diagonal band, not a fixed column range:
+
+```java
+// clear if: Math.abs(col - row - 1.5f) < SIDE_CLEAR_HALF_WIDTH  (currently 2.0)
+```
+
+Per row this clears:
+
+| Row | Cleared cols | Eligible (side objects) |
+|-----|-------------|------------------------|
+| 0 | 0–3 | 4–8 (right flank) |
+| 1 | 1–4 | 0, 5–8 |
+| 2 | 2–5 | 0–1, 6–8 |
+| 3 | 3–6 | 0–2, 7–8 |
+| 4 | 4–7 | 0–3, 8 |
+| 5 | 5–8 | 0–4 (left flank) |
+
+### Mining zone progression
+
+`randomMineFloorBlock()` picks a block distribution based on `miningZone()`, which maps expedition progress (not collar tier) to zones 1–3:
+
+| Zone | Progress | Floor feel |
+|------|----------|------------|
+| 1 | 0–33 % | Mostly stone, ~5 % coal ore |
+| 2 | 33–67 % | Stone/deepslate mix, ~5 % deepslate iron |
+| 3 | 67–100 % | Mostly deepslate, ~2 % each of 5 rare ores |
+
+```java
+float progress = (float) DogBedScreenData.simElapsedTicks / DogBedScreenData.simTotalTicks;
+```
+
+Zone changes cause `floorTheme()` to return a different string (`"mine_1/2/3"`), which `ensureFloorGrid()` detects and resets the grid.
+
 ## Return-to-base deposit
 
 `ReturnToBaseGoal.handleArrival()`:
