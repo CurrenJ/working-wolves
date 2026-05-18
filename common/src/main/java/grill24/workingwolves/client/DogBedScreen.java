@@ -423,7 +423,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     /** Random scenery object for a side cell, or AIR on the row the wolf visually overlaps. */
     private BlockState newSideObjectForCol(int col, int row) {
         if (DEBUG_SIDE_OBJECT_COORDS) return DEBUG_COL_BLOCKS[row % DEBUG_COL_BLOCKS.length];
-        if (row == 1) return Blocks.AIR.defaultBlockState();
+        if (row == 2) return Blocks.AIR.defaultBlockState(); // Wolf overlaps row 2, so no side objects there
         if (floorRandom.nextFloat() >= SIDE_OBJECT_CHANCE) return Blocks.AIR.defaultBlockState();
         return switch (floorTheme()) {
             case "mine_1", "mine_2", "mine_3" -> {
