@@ -129,7 +129,19 @@ public class ExpeditionSimulator {
             "Left the warmth of the bed.",
             "Out before dawn.",
             "Set out. The work won't find itself.",
-            "Gone to work."
+            "Gone to work.",
+            "Up while it was still dark. The way ahead, not behind.",
+            "Cold nose. Warm trail. Gone.",
+            "No ceremony. Just left.",
+            "The bed will be here when I get back.",
+            "Early. Good.",
+            "Everything in the bag. Ready.",
+            "First light barely. Already moving.",
+            "The world smells different before anyone else is in it.",
+            "Out. The rest follows.",
+            "Marked the direction. Started walking.",
+            "Back before dark, if things go well.",
+            "Didn't wake anyone. Good."
         };
         addLogLine(departureLines[level.getRandom().nextInt(departureLines.length)]);
         WorkingWolvesPackets.pushBedState(level, pos, bed);
@@ -159,7 +171,20 @@ public class ExpeditionSimulator {
         if (!isRunning() || level == null) return false;
 
         simState = "complete";
-        String[] recallLines = {"Called back early.", "Recalled. Not finished. Going home.", "Whistle from home. Turning back."};
+        String[] recallLines = {
+            "Called back early.",
+            "Recalled. Not finished. Going home.",
+            "Whistle from home. Turning back.",
+            "Signal came through. Heading back.",
+            "Pulled before the work was done.",
+            "Not finished. Going back anyway.",
+            "The call came. Turning around.",
+            "Left what I couldn't carry. Going back now.",
+            "Home early. Not my choice.",
+            "The whistle carries farther than expected. Heading in.",
+            "Cut short. Not ideal. Moving.",
+            "Half done. Good enough for now."
+        };
         addLogLine(recallLines[new Random().nextInt(recallLines.length)]);
 
         BlockPos pos = bed.getBlockPos();
@@ -328,7 +353,20 @@ public class ExpeditionSimulator {
 
         BlockPos pos = bed.getBlockPos();
         if (death) {
-            String[] deathLines = {"Didn't come back.", "Gone.", "The expedition ended."};
+            String[] deathLines = {
+                "Didn't come back.",
+                "Gone.",
+                "The expedition ended.",
+                "The last entry.",
+                "No further log.",
+                "Everything left behind.",
+                "Stopped here.",
+                "The bag was found. Not the wolf.",
+                "Returned to the earth somewhere out there.",
+                "Some expeditions end this way.",
+                "The work was not finished.",
+                "Went further than came back from."
+            };
             addLogLine(deathLines[level.getRandom().nextInt(deathLines.length)]);
             if (level instanceof ServerLevel sl) {
                 Entity entity = sl.getEntity(simWolfUuid);
@@ -347,7 +385,16 @@ public class ExpeditionSimulator {
             String[] failLines = {
                 "Came back with nothing. Sat by the bed for a long time.",
                 "Came back empty. Did not explain.",
-                "Nothing to show. Nothing to say."
+                "Nothing to show. Nothing to say.",
+                "Empty bag. Full of questions.",
+                "Came back early. Won't say more.",
+                "The trip gave nothing. Gave it back and came home.",
+                "Lost it all somewhere out there. Not going back.",
+                "The trail ran cold and so did everything else.",
+                "Came back. That's something.",
+                "Everything accounted for except the haul.",
+                "No finds. No excuses.",
+                "Didn't get what I went for. Got back. That's the priority."
             };
             addLogLine(failLines[level.getRandom().nextInt(failLines.length)]);
             simPendingLoot.clear();
@@ -357,7 +404,19 @@ public class ExpeditionSimulator {
                 "Home. Bag heavy.",
                 "Came back slower than expected. Came back.",
                 "Long way. Worth it.",
-                "The familiar smell of home."
+                "The familiar smell of home.",
+                "Made it back. Bag tells the story.",
+                "The work is done.",
+                "Back before the bed went cold.",
+                "Everything found. Everything carried. Home.",
+                "Good day. Long day. Same day.",
+                "Tired. Loaded. Done.",
+                "The bed. Finally.",
+                "Packed it all in. Came home.",
+                "Every find accounted for.",
+                "Better haul than expected.",
+                "Came back with more than I left with.",
+                "The bag made it harder going home. That's fine."
             };
             addLogLine(successLines[level.getRandom().nextInt(successLines.length)]);
             for (ItemStack stack : simPendingLoot) {
@@ -417,7 +476,22 @@ public class ExpeditionSimulator {
                     "Leg hurts. Has hurt before.",
                     "Supplies thin. The work is not.",
                     "Worse shape than yesterday. Yesterday is not today.",
-                    "Something went wrong back there. Not dwelling on it."
+                    "Something went wrong back there. Not dwelling on it.",
+                    "Hungry. Kept moving.",
+                    "Provisions gone. The trail isn't.",
+                    "Last of the food. Still a long way back.",
+                    "Not in good shape. Not stopping.",
+                    "The work doesn't care how tired I am.",
+                    "Rations out. Pride isn't.",
+                    "Slower now. Not stopped.",
+                    "Running on fumes. Fumes are enough.",
+                    "The pain is background noise by now.",
+                    "Down to nothing. Making do.",
+                    "Bag heavier than I am fed.",
+                    "Cold and short on food. Both have been worse.",
+                    "Not ideal conditions. Continuing.",
+                    "The body complains. Ignored it.",
+                    "Something to deal with later."
                 };
                 addLogLine(lowLines[level.getRandom().nextInt(lowLines.length)]);
             }
@@ -488,7 +562,20 @@ public class ExpeditionSimulator {
         wolf.setOrderedToSit(false);
         mixin.workingwolves$syncData();
 
-        String[] arrivalLines = {"Back at the bed.", "Home.", "Found the way back."};
+        String[] arrivalLines = {
+            "Back at the bed.",
+            "Home.",
+            "Found the way back.",
+            "Arrived.",
+            "Back.",
+            "The bed.",
+            "Made it.",
+            "Here.",
+            "Long road. End of it.",
+            "Smells like home.",
+            "Didn't get lost.",
+            "Home again."
+        };
         addLogLine(arrivalLines[new Random(level.getGameTime()).nextInt(arrivalLines.length)]);
     }
 
