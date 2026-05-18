@@ -25,8 +25,14 @@ public class FabricConfig {
                 if (obj.has("detectionRange")) {
                     Config.detectionRange = obj.get("detectionRange").getAsInt();
                 }
-                if (obj.has("expeditionDurationMinutes")) {
-                    Config.expeditionDurationMinutes = obj.get("expeditionDurationMinutes").getAsInt();
+                if (obj.has("expeditionDurationMinutesTier1")) {
+                    Config.expeditionDurationMinutesTier1 = obj.get("expeditionDurationMinutesTier1").getAsInt();
+                }
+                if (obj.has("expeditionDurationMinutesTier2")) {
+                    Config.expeditionDurationMinutesTier2 = obj.get("expeditionDurationMinutesTier2").getAsInt();
+                }
+                if (obj.has("expeditionDurationMinutesTier3")) {
+                    Config.expeditionDurationMinutesTier3 = obj.get("expeditionDurationMinutesTier3").getAsInt();
                 }
                 if (obj.has("hunterScanRange")) {
                     Config.hunterScanRange = obj.get("hunterScanRange").getAsInt();
@@ -46,7 +52,9 @@ public class FabricConfig {
         JsonObject obj = new JsonObject();
         obj.addProperty("maxWolvesPerPlayer", Config.maxWolvesPerPlayer);
         obj.addProperty("detectionRange", Config.detectionRange);
-        obj.addProperty("expeditionDurationMinutes", Config.expeditionDurationMinutes);
+        obj.addProperty("expeditionDurationMinutesTier1", Config.expeditionDurationMinutesTier1);
+        obj.addProperty("expeditionDurationMinutesTier2", Config.expeditionDurationMinutesTier2);
+        obj.addProperty("expeditionDurationMinutesTier3", Config.expeditionDurationMinutesTier3);
         obj.addProperty("hunterScanRange", Config.hunterScanRange);
         try {
             Files.createDirectories(CONFIG_PATH.getParent());

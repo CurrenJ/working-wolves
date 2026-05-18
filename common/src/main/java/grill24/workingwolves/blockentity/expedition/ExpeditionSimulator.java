@@ -73,7 +73,6 @@ public class ExpeditionSimulator {
         moveToBag(bag, s -> s.is(ItemTags.AXES));
         moveToBag(bag, WolfBagHelper::isHuntingWeapon);
 
-        simSatiation = 0;
         simHasMining = false;
         simHasHunting = false;
         simHasWoodcutting = false;
@@ -83,8 +82,10 @@ public class ExpeditionSimulator {
         simLooting = 0;
         simAxeSpeed = 1.0f;
 
+        int foodCount = 0;
         for (ItemStack stack : bag) {
             if (stack.isEmpty()) continue;
+            if (stack.has(DataComponents.FOOD)) foodCount += stack.getCount();
             if (stack.is(ItemTags.PICKAXES)) {
                 simHasMining = true;
                 float speed = stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
@@ -106,6 +107,8 @@ public class ExpeditionSimulator {
                 if (speed > simAxeSpeed) simAxeSpeed = speed;
             }
         }
+
+        simSatiation = 10 + foodCount * 4;
 
         Wolf wolf = (Wolf) (Object) mixin;
         simArmorPoints = (int) wolf.getAttributeValue(Attributes.ARMOR);
@@ -382,7 +385,7 @@ public class ExpeditionSimulator {
         simSatiation -= switch (hl) {
             case LIGHT -> 2;
             case MODERATE -> 4;
-            case SEVERE -> 3;
+            case SEVERE -> 6;
         };
 
         if (hl == HazardLevel.SEVERE) {
@@ -395,7 +398,7 @@ public class ExpeditionSimulator {
                     return;
                 }
             }
-            if (!simPendingLoot.isEmpty() && rng.nextFloat() < 0.25f) {
+            if (!simPendingLoot.isEmpty() && simSatiation <= 0 && simArmorPoints == 0 && rng.nextFloat() < 0.25f) {
                 simPendingLoot.remove(rng.nextInt(simPendingLoot.size()));
                 addLogLine("Something fell. No time to go back for it.");
             }
@@ -431,16 +434,23 @@ public class ExpeditionSimulator {
         return switch (zone) {
             case 0  -> roll < 75 ? HazardLevel.LIGHT : roll < 97 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
             case 1  -> roll < 48 ? HazardLevel.LIGHT : roll < 88 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
-            default -> roll < 30 ? HazardLevel.LIGHT : roll < 75 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
+            default -> roll < 35 ? HazardLevel.LIGHT : roll < 85 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
         };
+    }
+
+    Random newRng(Level level) {
+        long seed = level.getGameTime() + simElapsedTicks;
+        if (simWolfUuid != null) seed ^= simWolfUuid.getLeastSignificantBits();
+        return new Random(seed);
     }
 
     // ======== Private helpers ========
 
     private void rollEvent(Level level) {
         float progress = (float) simElapsedTicks / Math.max(simTotalTicks, 1);
-        int zone = progress < 0.25f ? 0 : progress < 0.75f ? 1 : 2;
-        Random rng = new Random(level.getGameTime() + simElapsedTicks);
+        int maxZone = simCollarTier >= 2 ? 2 : 1;
+        int zone = Math.min(progress < 0.25f ? 0 : progress < 0.75f ? 1 : 2, maxZone);
+        Random rng = newRng(level);
 
         if (rng.nextFloat() < 0.025f && RareEventHandler.roll(level, zone, rng, this)) return;
 

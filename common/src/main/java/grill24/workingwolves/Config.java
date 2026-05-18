@@ -10,8 +10,10 @@ public class Config {
     /** Range (in blocks) within which hunter wolves scan for hostile mobs. */
     public static int hunterScanRange = 32;
 
-    /** Expedition duration in minutes. 0 = unlimited. */
-    public static int expeditionDurationMinutes = 15;
+    /** Per-tier expedition durations in minutes. */
+    public static int expeditionDurationMinutesTier1 = 10;
+    public static int expeditionDurationMinutesTier2 = 18;
+    public static int expeditionDurationMinutesTier3 = 25;
 
     /** When true, creepers will not prime or explode when targeted by working wolves. */
     public static boolean hunterCreeperSafe = true;

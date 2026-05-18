@@ -20,18 +20,14 @@ public class ModItems {
     public static void registerItems() {
         var api = RegistrationApiSided.getInstance();
 
-        int durationTicks = Config.expeditionDurationMinutes > 0
-            ? Config.expeditionDurationMinutes * 60 * 20
-            : Integer.MAX_VALUE;
-
         LEATHER_COLLAR = api.registerItem("leather_collar", loc ->
-                new CollarItem(props(loc).stacksTo(1), 1, 5, durationTicks));
+                new CollarItem(props(loc).stacksTo(1), 1, 5, Config.expeditionDurationMinutesTier1 * 60 * 20));
 
         IRON_STUDDED_COLLAR = api.registerItem("iron_studded_collar", loc ->
-                new CollarItem(props(loc).stacksTo(1), 2, 9, durationTicks));
+                new CollarItem(props(loc).stacksTo(1), 2, 9, Config.expeditionDurationMinutesTier2 * 60 * 20));
 
         GOLD_TRIMMED_COLLAR = api.registerItem("gold_trimmed_collar", loc ->
-                new CollarItem(props(loc).stacksTo(1), 3, 15, durationTicks));
+                new CollarItem(props(loc).stacksTo(1), 3, 15, Config.expeditionDurationMinutesTier3 * 60 * 20));
 
         DISPATCH_WHISTLE = api.registerItem("dispatch_whistle", loc ->
                 new DispatchWhistleItem(props(loc).stacksTo(1)));

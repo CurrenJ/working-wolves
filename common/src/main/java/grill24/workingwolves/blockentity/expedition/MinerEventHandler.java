@@ -14,11 +14,11 @@ import java.util.Random;
 class MinerEventHandler {
 
     static void rollEvent(Level level, int zone, ExpeditionSimulator sim) {
-        Random rng = new Random(level.getGameTime() + sim.getElapsedTicks() + 2);
+        Random rng = sim.newRng(level);
         int[] weights = switch (zone) {
             case 0 -> new int[]{50, 40, 10};
             case 1 -> new int[]{30, 45, 25};
-            default -> new int[]{20, 35, 45};
+            default -> new int[]{25, 45, 30};
         };
         int roll = rng.nextInt(100);
 
