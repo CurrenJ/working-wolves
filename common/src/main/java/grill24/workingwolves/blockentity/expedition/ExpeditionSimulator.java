@@ -1,5 +1,6 @@
 package grill24.workingwolves.blockentity.expedition;
 
+import grill24.workingwolves.Config;
 import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.blockentity.DogBedBlockEntity;
 import grill24.workingwolves.inventory.WolfBagHelper;
@@ -123,7 +124,8 @@ public class ExpeditionSimulator {
 
         simState = "running";
         simElapsedTicks = 0;
-        simEventTimer = 60 + (level != null ? level.getRandom().nextInt(40) : 20);
+        int variance = Math.max(1, Config.expeditionEventIntervalMaxTicks - Config.expeditionEventIntervalMinTicks);
+        simEventTimer = Config.expeditionEventIntervalMinTicks + (level != null ? level.getRandom().nextInt(variance) : variance / 2);
         simInjuryCount = 0;
         simPendingLoot.clear();
         expeditionLog.clear();
@@ -152,7 +154,8 @@ public class ExpeditionSimulator {
         simEventTimer--;
         if (simEventTimer <= 0) {
             rollEvent(level);
-            simEventTimer = 60 + level.getRandom().nextInt(40);
+            int variance = Math.max(1, Config.expeditionEventIntervalMaxTicks - Config.expeditionEventIntervalMinTicks);
+            simEventTimer = Config.expeditionEventIntervalMinTicks + level.getRandom().nextInt(variance);
             bed.setChanged();
         }
     }
@@ -452,10 +455,10 @@ public class ExpeditionSimulator {
         int zone = Math.min(progress < 0.25f ? 0 : progress < 0.75f ? 1 : 2, maxZone);
         Random rng = newRng(level);
 
-        if (rng.nextFloat() < 0.025f && RareEventHandler.roll(level, zone, rng, this)) return;
+        if (rng.nextFloat() < Config.rareEventChance && RareEventHandler.roll(level, zone, rng, this)) return;
 
         int roleCount = (simHasMining ? 1 : 0) + (simHasHunting ? 1 : 0) + (simHasWoodcutting ? 1 : 0);
-        if (roleCount >= 2 && rng.nextFloat() < 0.12f && RareEventHandler.rollCrossRole(level, rng, this)) return;
+        if (roleCount >= 2 && rng.nextFloat() < Config.rareEventCrossRoleChance && RareEventHandler.rollCrossRole(level, rng, this)) return;
 
         if (roleCount == 0) return;
         int roll = rng.nextInt(roleCount);

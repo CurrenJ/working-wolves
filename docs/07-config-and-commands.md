@@ -9,7 +9,9 @@
 | `maxWolvesPerPlayer` | 5 | `WolfChunkManager` tick + `countWorkingWolves`, `CollarItem` cap check |
 | `detectionRange` | 64 | `MinerGoal` ore scan + explore step range |
 | `hunterScanRange` | 32 | `HunterGoal` mob detection scan AABB |
-| `expeditionDurationMinutes` | 15 | `ModItems` collar constructor (multiplied to ticks) |
+| `expeditionDurationMinutesTier1/2/3` | 10/18/25 | `ModItems` collar constructor (multiplied to ticks) |
+| `rareEventChance` | 0.025 | `ExpeditionSimulator.rollEvent` — per-roll probability of a single-role rare event |
+| `rareEventCrossRoleChance` | 0.12 | `ExpeditionSimulator.rollEvent` — per-roll probability of a cross-role rare event (2+ roles only) |
 
 Pathfinding boost (`WolfMixin`) uses `max(detectionRange, hunterScanRange)` to set `maxVisitedNodes` and `requiredPathLength`, ensuring the navigation budget covers whichever goal is active.
 

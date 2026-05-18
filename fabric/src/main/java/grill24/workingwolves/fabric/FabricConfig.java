@@ -37,6 +37,18 @@ public class FabricConfig {
                 if (obj.has("hunterScanRange")) {
                     Config.hunterScanRange = obj.get("hunterScanRange").getAsInt();
                 }
+                if (obj.has("expeditionEventIntervalMinTicks")) {
+                    Config.expeditionEventIntervalMinTicks = obj.get("expeditionEventIntervalMinTicks").getAsInt();
+                }
+                if (obj.has("expeditionEventIntervalMaxTicks")) {
+                    Config.expeditionEventIntervalMaxTicks = obj.get("expeditionEventIntervalMaxTicks").getAsInt();
+                }
+                if (obj.has("rareEventChance")) {
+                    Config.rareEventChance = obj.get("rareEventChance").getAsFloat();
+                }
+                if (obj.has("rareEventCrossRoleChance")) {
+                    Config.rareEventCrossRoleChance = obj.get("rareEventCrossRoleChance").getAsFloat();
+                }
 
                 WorkingWolves.LOGGER.info("Loaded config from {}", CONFIG_PATH);
             } catch (IOException e) {
@@ -56,6 +68,10 @@ public class FabricConfig {
         obj.addProperty("expeditionDurationMinutesTier2", Config.expeditionDurationMinutesTier2);
         obj.addProperty("expeditionDurationMinutesTier3", Config.expeditionDurationMinutesTier3);
         obj.addProperty("hunterScanRange", Config.hunterScanRange);
+        obj.addProperty("expeditionEventIntervalMinTicks", Config.expeditionEventIntervalMinTicks);
+        obj.addProperty("expeditionEventIntervalMaxTicks", Config.expeditionEventIntervalMaxTicks);
+        obj.addProperty("rareEventChance", Config.rareEventChance);
+        obj.addProperty("rareEventCrossRoleChance", Config.rareEventCrossRoleChance);
         try {
             Files.createDirectories(CONFIG_PATH.getParent());
             Files.writeString(CONFIG_PATH, new GsonBuilder().setPrettyPrinting().create().toJson(obj));

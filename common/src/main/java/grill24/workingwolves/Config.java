@@ -15,6 +15,18 @@ public class Config {
     public static int expeditionDurationMinutesTier2 = 18;
     public static int expeditionDurationMinutesTier3 = 25;
 
+    /** Minimum ticks between expedition event rolls. */
+    public static int expeditionEventIntervalMinTicks = 160;
+
+    /** Maximum ticks between expedition event rolls (exclusive upper bound). Must be > expeditionEventIntervalMinTicks. */
+    public static int expeditionEventIntervalMaxTicks = 600;
+
+    /** Probability (0–1) that a rare event fires on each expedition event roll. */
+    public static float rareEventChance = 0.025f;
+
+    /** Probability (0–1) that a cross-role rCan yare event fires when the wolf has 2+ roles. */
+    public static float rareEventCrossRoleChance = 0.12f;
+
     /** When true, creepers will not prime or explode when targeted by working wolves. */
     public static boolean hunterCreeperSafe = true;
 

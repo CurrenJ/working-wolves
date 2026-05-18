@@ -13,6 +13,10 @@ public class NeoForgeConfig {
     public static final ModConfigSpec.IntValue EXPEDITION_DURATION_MINUTES_TIER2;
     public static final ModConfigSpec.IntValue EXPEDITION_DURATION_MINUTES_TIER3;
     public static final ModConfigSpec.IntValue HUNTER_SCAN_RANGE;
+    public static final ModConfigSpec.IntValue EXPEDITION_EVENT_INTERVAL_MIN_TICKS;
+    public static final ModConfigSpec.IntValue EXPEDITION_EVENT_INTERVAL_MAX_TICKS;
+    public static final ModConfigSpec.DoubleValue RARE_EVENT_CHANCE;
+    public static final ModConfigSpec.DoubleValue RARE_EVENT_CROSS_ROLE_CHANCE;
 
     public static final ModConfigSpec SPEC;
 
@@ -41,6 +45,22 @@ public class NeoForgeConfig {
                 .comment("Range (blocks) within which hunter wolves scan for hostile mobs.")
                 .defineInRange("hunterScanRange", 32, 8, 128);
 
+        EXPEDITION_EVENT_INTERVAL_MIN_TICKS = BUILDER
+                .comment("Minimum ticks between expedition event rolls (default 160 = 8 seconds).")
+                .defineInRange("expeditionEventIntervalMinTicks", 160, 1, 72000);
+
+        EXPEDITION_EVENT_INTERVAL_MAX_TICKS = BUILDER
+                .comment("Maximum ticks between expedition event rolls, exclusive (default 600 = 30 seconds). Must be greater than min.")
+                .defineInRange("expeditionEventIntervalMaxTicks", 600, 2, 72000);
+
+        RARE_EVENT_CHANCE = BUILDER
+                .comment("Probability (0.0–1.0) that a rare event fires on each expedition event roll.")
+                .defineInRange("rareEventChance", 0.025, 0.0, 1.0);
+
+        RARE_EVENT_CROSS_ROLE_CHANCE = BUILDER
+                .comment("Probability (0.0–1.0) that a cross-role rare event fires when the wolf has 2+ roles.")
+                .defineInRange("rareEventCrossRoleChance", 0.12, 0.0, 1.0);
+
         SPEC = BUILDER.build();
     }
 
@@ -51,6 +71,10 @@ public class NeoForgeConfig {
         Config.expeditionDurationMinutesTier2 = EXPEDITION_DURATION_MINUTES_TIER2.get();
         Config.expeditionDurationMinutesTier3 = EXPEDITION_DURATION_MINUTES_TIER3.get();
         Config.hunterScanRange = HUNTER_SCAN_RANGE.get();
+        Config.expeditionEventIntervalMinTicks = EXPEDITION_EVENT_INTERVAL_MIN_TICKS.get();
+        Config.expeditionEventIntervalMaxTicks = EXPEDITION_EVENT_INTERVAL_MAX_TICKS.get();
+        Config.rareEventChance = RARE_EVENT_CHANCE.get().floatValue();
+        Config.rareEventCrossRoleChance = RARE_EVENT_CROSS_ROLE_CHANCE.get().floatValue();
     }
 
     public static void onReload(ModConfigEvent.Reloading event) {
@@ -60,5 +84,9 @@ public class NeoForgeConfig {
         Config.expeditionDurationMinutesTier2 = EXPEDITION_DURATION_MINUTES_TIER2.get();
         Config.expeditionDurationMinutesTier3 = EXPEDITION_DURATION_MINUTES_TIER3.get();
         Config.hunterScanRange = HUNTER_SCAN_RANGE.get();
+        Config.expeditionEventIntervalMinTicks = EXPEDITION_EVENT_INTERVAL_MIN_TICKS.get();
+        Config.expeditionEventIntervalMaxTicks = EXPEDITION_EVENT_INTERVAL_MAX_TICKS.get();
+        Config.rareEventChance = RARE_EVENT_CHANCE.get().floatValue();
+        Config.rareEventCrossRoleChance = RARE_EVENT_CROSS_ROLE_CHANCE.get().floatValue();
     }
 }

@@ -151,7 +151,7 @@ public class JournalPanel extends UIElement<JournalPanel> {
         }
 
         int textX = x + PADDING;
-        int textY = y + PADDING;
+        int textY = y + PADDING + 3;
         for (int i = from; i < to; i++) {
             DisplayLine dl = displayLines.get(i);
             context.drawString(dl.text(), textX, textY + (i - from) * LINE_HEIGHT, dl.color());
