@@ -1,48 +1,35 @@
 package grill24.workingwolves.blockentity.expedition;
 
 import grill24.workingwolves.api.IWorkingWolf;
+import grill24.workingwolves.blockentity.expedition.data.RoleEntry;
 import net.minecraft.core.NonNullList;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.registries.Registries;
 
 class ToolDurabilityHelper {
 
     private static final int TOOL_LOW_THRESHOLD = 5;
 
-    static boolean applyMinerDurability(Level level, int baseDamage, ExpeditionSimulator sim) {
-        return applyToolDurability(level, baseDamage, ItemTags.PICKAXES,
-            "No pickaxe left. Heading back.",
-            "Pickaxe too precious to break. Heading back.",
-            "Pickaxe shattered.",
-            "Last pickaxe gone. Heading back.",
-            "Switched to spare pickaxe.",
-            "Pickaxe nearly done. Heading back.",
-            true, sim);
+    static boolean apply(Level level, int baseDamage, String toolTagId, RoleEntry.ToolMessages messages, ExpeditionSimulator sim) {
+        String[] parts = toolTagId.split(":", 2);
+        String ns = parts.length == 2 ? parts[0] : "minecraft";
+        String path = parts.length == 2 ? parts[1] : parts[0];
+        TagKey<Item> toolTag = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(ns, path));
+        return applyToolDurability(level, baseDamage, toolTag, messages, sim);
     }
 
-    static boolean applyWoodcutterDurability(Level level, int baseDamage, ExpeditionSimulator sim) {
-        return applyToolDurability(level, baseDamage, ItemTags.AXES,
-            "No axe left. Heading back.",
-            "Axe too precious to break. Heading back.",
-            "Axe handle shattered.",
-            "Last axe gone. Heading back.",
-            "Switched to spare axe.",
-            "Axe nearly done. Heading back.",
-            false, sim);
-    }
-
-    private static boolean applyToolDurability(Level level, int baseDamage,
-            net.minecraft.tags.TagKey<net.minecraft.world.item.Item> toolTag,
-            String noToolMsg, String enchantedProtectMsg, String brokeMsg,
-            String lastGoneMsg, String switchedMsg, String lowMsg,
-            boolean updatePickaxeStats, ExpeditionSimulator sim) {
+    private static boolean applyToolDurability(Level level, int baseDamage, TagKey<Item> toolTag,
+            RoleEntry.ToolMessages messages, ExpeditionSimulator sim) {
 
         if (!(level instanceof ServerLevel sl)) return true;
         Entity entity = sl.getEntity(sim.getWolfUuid());
@@ -50,14 +37,14 @@ class ToolDurabilityHelper {
         IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
         NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
 
-        BlockState testBlock = toolTag == ItemTags.PICKAXES
+        BlockState testBlock = messages.updateMiningStats()
             ? Blocks.STONE.defaultBlockState()
             : Blocks.OAK_LOG.defaultBlockState();
 
         int bestSlot = findBestToolSlot(bag, toolTag, testBlock, -1);
 
         if (bestSlot < 0) {
-            sim.addLogLine(noToolMsg);
+            sim.addLogLine(messages.noTool());
             return false;
         }
 
@@ -76,11 +63,11 @@ class ToolDurabilityHelper {
 
         if (isEnchanted && remainingBefore <= 1) {
             if (hasSpare(bag, bestSlot, toolTag)) {
-                switchToNextTool(bag, bestSlot, toolTag, testBlock, updatePickaxeStats, sim);
-                sim.addLogLine(switchedMsg);
+                switchToNextTool(bag, bestSlot, toolTag, testBlock, messages.updateMiningStats(), sim);
+                sim.addLogLine(messages.switchedSpare());
                 return true;
             }
-            sim.addLogLine(enchantedProtectMsg);
+            sim.addLogLine(messages.preciousBreak());
             return false;
         }
 
@@ -97,19 +84,19 @@ class ToolDurabilityHelper {
         if (isEnchanted && newDamage >= maxDurability) {
             tool.setDamageValue(maxDurability - 1);
             if (hasSpare(bag, bestSlot, toolTag)) {
-                switchToNextTool(bag, bestSlot, toolTag, testBlock, updatePickaxeStats, sim);
-                sim.addLogLine(switchedMsg);
+                switchToNextTool(bag, bestSlot, toolTag, testBlock, messages.updateMiningStats(), sim);
+                sim.addLogLine(messages.switchedSpare());
                 return true;
             }
-            sim.addLogLine(enchantedProtectMsg);
+            sim.addLogLine(messages.preciousBreak());
             return false;
         }
 
         if (newDamage >= maxDurability) {
             bag.set(bestSlot, ItemStack.EMPTY);
-            sim.addLogLine(brokeMsg);
-            if (!switchToNextTool(bag, -1, toolTag, testBlock, updatePickaxeStats, sim)) {
-                sim.addLogLine(lastGoneMsg);
+            sim.addLogLine(messages.broken());
+            if (!switchToNextTool(bag, -1, toolTag, testBlock, messages.updateMiningStats(), sim)) {
+                sim.addLogLine(messages.lastGone());
                 return false;
             }
             return true;
@@ -119,15 +106,14 @@ class ToolDurabilityHelper {
 
         int remainingAfter = maxDurability - newDamage;
         if (remainingAfter < TOOL_LOW_THRESHOLD && !hasSpare(bag, bestSlot, toolTag)) {
-            sim.addLogLine(lowMsg);
+            sim.addLogLine(messages.nearlyDone());
             return false;
         }
 
         return true;
     }
 
-    static boolean hasSpare(NonNullList<ItemStack> bag, int excludeSlot,
-            net.minecraft.tags.TagKey<net.minecraft.world.item.Item> toolTag) {
+    static boolean hasSpare(NonNullList<ItemStack> bag, int excludeSlot, TagKey<Item> toolTag) {
         for (int i = 0; i < bag.size(); i++) {
             if (i == excludeSlot) continue;
             if (!bag.get(i).isEmpty() && bag.get(i).is(toolTag)) return true;
@@ -136,12 +122,11 @@ class ToolDurabilityHelper {
     }
 
     private static boolean switchToNextTool(NonNullList<ItemStack> bag, int excludeSlot,
-            net.minecraft.tags.TagKey<net.minecraft.world.item.Item> toolTag,
-            BlockState testBlock, boolean updatePickaxeStats, ExpeditionSimulator sim) {
+            TagKey<Item> toolTag, BlockState testBlock, boolean updateMiningStats, ExpeditionSimulator sim) {
         int bestSlot = findBestToolSlot(bag, toolTag, testBlock, excludeSlot);
         if (bestSlot < 0) return false;
 
-        if (updatePickaxeStats) {
+        if (updateMiningStats) {
             ItemStack tool = bag.get(bestSlot);
             sim.setPickaxeSpeed(tool.getDestroySpeed(testBlock));
             sim.setFortune(0);
@@ -156,8 +141,7 @@ class ToolDurabilityHelper {
         return true;
     }
 
-    private static int findBestToolSlot(NonNullList<ItemStack> bag,
-            net.minecraft.tags.TagKey<net.minecraft.world.item.Item> toolTag,
+    private static int findBestToolSlot(NonNullList<ItemStack> bag, TagKey<Item> toolTag,
             BlockState testBlock, int excludeSlot) {
         int bestSlot = -1;
         float bestSpeed = 0;

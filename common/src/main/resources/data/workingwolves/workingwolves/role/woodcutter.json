@@ -1,0 +1,72 @@
+{
+  "name": "Woodcutter",
+  "icon": "minecraft:iron_axe",
+  "role_type": "woodcutting",
+  "required_tool_tag": "minecraft:axes",
+  "zone_event_weights": [
+    { "travel": 50, "discovery": 40, "hazard": 10 },
+    { "travel": 30, "discovery": 45, "hazard": 25 },
+    { "travel": 25, "discovery": 45, "hazard": 30 }
+  ],
+  "hazard_level_weights": [
+    { "light": 75, "moderate": 22, "severe": 3 },
+    { "light": 48, "moderate": 40, "severe": 12 },
+    { "light": 35, "moderate": 50, "severe": 15 }
+  ],
+  "durability_damage": {
+    "travel": 1,
+    "discovery": 3,
+    "light_hazard": 1,
+    "moderate_hazard": 2,
+    "severe_hazard": 3
+  },
+  "travel_journal_lines": {
+    "0": [
+      "Deep into the trees.",
+      "Bark and pine needles underfoot.",
+      "A clearing, then more forest.",
+      "Old growth. Roots everywhere.",
+      "Light through the branches.",
+      "Sound of wind through the canopy.",
+      "The path I marked is already closing.",
+      "Something moved through the understory. Held still.",
+      "Following a deer path. Goes exactly where I needed.",
+      "Rain started. The canopy is holding most of it.",
+      "The fern layer is thick. Good soil under it.",
+      "Something ahead went quiet. Waited. Kept moving."
+    ]
+  },
+  "hazard_journal_lines": {
+    "light": [
+      "Roots tangled the path. Lost time.",
+      "Fog rolling in. Slowed down.",
+      "Thorns and thick brush.",
+      "Rain made the bark slick. Careful work.",
+      "The path I marked was already grown over."
+    ],
+    "moderate": [
+      "Tree fell the wrong way. Close call.",
+      "Beehive in the branches. Stings.",
+      "Hostile mob in the undergrowth.",
+      "A root caught my back foot. Went down hard.",
+      "Something in the dark forest did not want me there.",
+      "Disturbed a nest I did not see. Moved before counting."
+    ],
+    "severe": [
+      "Bear investigating my woodpile. Then investigating me.",
+      "The dry grass caught from a spark. Not so controlled.",
+      "Tree came down on top of me. Working out from under it.",
+      "The mud swallowed me to the hip. Took time to extract.",
+      "Something large, very close, very fast. Dropped everything and ran."
+    ]
+  },
+  "tool_messages": {
+    "update_mining_stats": false,
+    "no_tool": "No axe left. Heading back.",
+    "precious_break": "Axe too precious to break. Heading back.",
+    "broken": "Axe handle shattered.",
+    "last_gone": "Last axe gone. Heading back.",
+    "switched_spare": "Switched to spare axe.",
+    "nearly_done": "Axe nearly done. Heading back."
+  }
+}

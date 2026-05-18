@@ -17,4 +17,10 @@ public class ExpeditionRegistries {
 
     public static final ResourceKey<Registry<RareEventEntry>> RARE_EVENT =
         ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("workingwolves", "rare_event"));
+
+    public static final ResourceKey<Registry<RoleEntry>> ROLE =
+        ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("workingwolves", "role"));
+
+    public static final ResourceKey<Registry<ExpeditionLifecycleEntry>> EXPEDITION_LIFECYCLE =
+        ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("workingwolves", "expedition_lifecycle"));
 }

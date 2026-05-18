@@ -3,10 +3,14 @@ package grill24.workingwolves.blockentity.expedition;
 import grill24.workingwolves.Config;
 import grill24.workingwolves.api.IWorkingWolf;
 import grill24.workingwolves.blockentity.DogBedBlockEntity;
+import grill24.workingwolves.blockentity.expedition.data.ExpeditionLifecycleEntry;
+import grill24.workingwolves.blockentity.expedition.data.ExpeditionRegistries;
+import grill24.workingwolves.blockentity.expedition.data.RoleEntry;
 import grill24.workingwolves.inventory.WolfBagHelper;
 import grill24.workingwolves.network.WorkingWolvesPackets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -130,14 +134,10 @@ public class ExpeditionSimulator {
         simPendingLoot.clear();
         expeditionLog.clear();
 
-        String[] departureLines = {
-            "Left the warmth of the bed.",
-            "Out before dawn.",
-            "Set out. The work won't find itself.",
-            "Gone to work."
-        };
-        addLogLine(departureLines[level.getRandom().nextInt(departureLines.length)]);
-        WorkingWolvesPackets.pushBedState(level, pos, bed);
+        if (level != null) {
+            addLifecycleLine(level, ExpeditionLifecycleEntry::departureLines);
+            WorkingWolvesPackets.pushBedState(level, pos, bed);
+        }
         bed.setChanged();
     }
 
@@ -165,8 +165,7 @@ public class ExpeditionSimulator {
         if (!isRunning() || level == null) return false;
 
         simState = "complete";
-        String[] recallLines = {"Called back early.", "Recalled. Not finished. Going home.", "Whistle from home. Turning back."};
-        addLogLine(recallLines[new Random().nextInt(recallLines.length)]);
+        addLifecycleLine(level, ExpeditionLifecycleEntry::recallLines);
 
         BlockPos pos = bed.getBlockPos();
         for (ItemStack stack : simPendingLoot) {
@@ -205,7 +204,7 @@ public class ExpeditionSimulator {
             }
             simPendingLoot.clear();
             simState = "inactive";
-            addLogLine("Bed destroyed. Expedition abandoned.");
+            addLifecycleLine(level, ExpeditionLifecycleEntry::abandonedLines);
         }
     }
 
@@ -334,8 +333,7 @@ public class ExpeditionSimulator {
 
         BlockPos pos = bed.getBlockPos();
         if (death) {
-            String[] deathLines = {"Didn't come back.", "Gone.", "The expedition ended."};
-            addLogLine(deathLines[level.getRandom().nextInt(deathLines.length)]);
+            addLifecycleLine(level, ExpeditionLifecycleEntry::deathLines);
             if (level instanceof ServerLevel sl) {
                 Entity entity = sl.getEntity(simWolfUuid);
                 if (entity instanceof Wolf wolf) {
@@ -350,22 +348,11 @@ public class ExpeditionSimulator {
             }
             simPendingLoot.clear();
         } else if (failed) {
-            String[] failLines = {
-                "Came back with nothing. Sat by the bed for a long time.",
-                "Came back empty. Did not explain.",
-                "Nothing to show. Nothing to say."
-            };
-            addLogLine(failLines[level.getRandom().nextInt(failLines.length)]);
+            addLifecycleLine(level, ExpeditionLifecycleEntry::failureLines);
             simPendingLoot.clear();
             triggerWolfArrival(level);
         } else {
-            String[] successLines = {
-                "Home. Bag heavy.",
-                "Came back slower than expected. Came back.",
-                "Long way. Worth it.",
-                "The familiar smell of home."
-            };
-            addLogLine(successLines[level.getRandom().nextInt(successLines.length)]);
+            addLifecycleLine(level, ExpeditionLifecycleEntry::successLines);
             for (ItemStack stack : simPendingLoot) {
                 ItemStack remaining = bed.tryInsert(stack);
                 if (!remaining.isEmpty()) {
@@ -403,7 +390,7 @@ public class ExpeditionSimulator {
             }
             if (!simPendingLoot.isEmpty() && simSatiation <= 0 && simArmorPoints == 0 && rng.nextFloat() < 0.25f) {
                 simPendingLoot.remove(rng.nextInt(simPendingLoot.size()));
-                addLogLine("Something fell. No time to go back for it.");
+                addLifecycleLine(level, ExpeditionLifecycleEntry::lootLossLines);
             }
         }
 
@@ -418,27 +405,9 @@ public class ExpeditionSimulator {
                     complete(level, true, death);
                     return;
                 }
-                String[] lowLines = {
-                    "Running low. Pushing on.",
-                    "Leg hurts. Has hurt before.",
-                    "Supplies thin. The work is not.",
-                    "Worse shape than yesterday. Yesterday is not today.",
-                    "Something went wrong back there. Not dwelling on it."
-                };
-                addLogLine(lowLines[level.getRandom().nextInt(lowLines.length)]);
+                addLifecycleLine(level, ExpeditionLifecycleEntry::lowResourcesLines);
             }
         }
-    }
-
-    // ======== Package-private static helpers ========
-
-    static HazardLevel pickHazardLevel(int zone, Random rng) {
-        int roll = rng.nextInt(100);
-        return switch (zone) {
-            case 0  -> roll < 75 ? HazardLevel.LIGHT : roll < 97 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
-            case 1  -> roll < 48 ? HazardLevel.LIGHT : roll < 88 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
-            default -> roll < 35 ? HazardLevel.LIGHT : roll < 85 ? HazardLevel.MODERATE : HazardLevel.SEVERE;
-        };
     }
 
     Random newRng(Level level) {
@@ -460,12 +429,50 @@ public class ExpeditionSimulator {
         int roleCount = (simHasMining ? 1 : 0) + (simHasHunting ? 1 : 0) + (simHasWoodcutting ? 1 : 0);
         if (roleCount >= 2 && rng.nextFloat() < Config.rareEventCrossRoleChance && RareEventHandler.rollCrossRole(level, rng, this)) return;
 
-        if (roleCount == 0) return;
-        int roll = rng.nextInt(roleCount);
-        int idx = 0;
-        if (simHasHunting && idx++ == roll) { HunterEventHandler.rollEvent(level, zone, this); return; }
-        if (simHasMining && idx++ == roll) { MinerEventHandler.rollEvent(level, zone, this); return; }
-        if (simHasWoodcutting) { WoodcutterEventHandler.rollEvent(level, zone, this); }
+        if (roleCount == 0 || !(level instanceof ServerLevel sl)) return;
+
+        Registry<RoleEntry> roleReg = sl.registryAccess().lookupOrThrow(ExpeditionRegistries.ROLE);
+
+        List<RoleEntry> active = new ArrayList<>();
+        for (RoleEntry entry : roleReg) {
+            if (entry.requiresRoles().isPresent()) continue;
+            String rt = entry.roleType().orElse("");
+            if (("mining".equals(rt) && simHasMining)
+                    || ("hunting".equals(rt) && simHasHunting)
+                    || ("woodcutting".equals(rt) && simHasWoodcutting)) {
+                active.add(entry);
+            }
+        }
+
+        RoleEntry chosen = null;
+        if (roleCount >= 2) chosen = findCrossRoleEntry(roleReg, rng);
+        if (chosen == null && !active.isEmpty()) chosen = active.get(rng.nextInt(active.size()));
+        if (chosen != null) RoleEventHandler.rollEvent(level, zone, chosen, this);
+    }
+
+    private RoleEntry findCrossRoleEntry(Registry<RoleEntry> reg, Random rng) {
+        List<String> activeTypes = new ArrayList<>();
+        if (simHasMining) activeTypes.add("mining");
+        if (simHasHunting) activeTypes.add("hunting");
+        if (simHasWoodcutting) activeTypes.add("woodcutting");
+
+        List<RoleEntry> candidates = new ArrayList<>();
+        for (RoleEntry entry : reg) {
+            if (entry.requiresRoles().isEmpty()) continue;
+            List<String> req = entry.requiresRoles().get();
+            if (req.size() == activeTypes.size() && activeTypes.containsAll(req)) {
+                candidates.add(entry);
+            }
+        }
+        return candidates.isEmpty() ? null : candidates.get(rng.nextInt(candidates.size()));
+    }
+
+    private void addLifecycleLine(Level level, java.util.function.Function<ExpeditionLifecycleEntry, List<String>> getter) {
+        if (!(level instanceof ServerLevel sl)) return;
+        ExpeditionLifecycleEntry.getDefault(sl).ifPresent(lc -> {
+            List<String> lines = getter.apply(lc);
+            if (!lines.isEmpty()) addLogLine(lines.get(level.getRandom().nextInt(lines.size())));
+        });
     }
 
     private void triggerWolfArrival(Level level) {
@@ -501,8 +508,7 @@ public class ExpeditionSimulator {
         wolf.setOrderedToSit(false);
         mixin.workingwolves$syncData();
 
-        String[] arrivalLines = {"Back at the bed.", "Home.", "Found the way back."};
-        addLogLine(arrivalLines[new Random(level.getGameTime()).nextInt(arrivalLines.length)]);
+        addLifecycleLine(level, ExpeditionLifecycleEntry::arrivalLines);
     }
 
     private int eatFoodFromWolfBag(Level level) {

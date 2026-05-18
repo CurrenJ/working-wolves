@@ -1,0 +1,54 @@
+{
+  "name": "Hunter",
+  "icon": "minecraft:iron_sword",
+  "role_type": "hunting",
+  "zone_event_weights": [
+    { "travel": 50, "discovery": 40, "hazard": 10 },
+    { "travel": 30, "discovery": 45, "hazard": 25 },
+    { "travel": 25, "discovery": 45, "hazard": 30 }
+  ],
+  "hazard_level_weights": [
+    { "light": 75, "moderate": 22, "severe": 3 },
+    { "light": 48, "moderate": 40, "severe": 12 },
+    { "light": 35, "moderate": 50, "severe": 15 }
+  ],
+  "travel_journal_lines": {
+    "0": [
+      "Followed a scent through the trees.",
+      "Something watched from the ridge. Did not follow.",
+      "Tracks in the dirt. Recent.",
+      "The forest grew quiet.",
+      "Distant howl. Not ours.",
+      "Old campfire. Cold for weeks. Someone was here.",
+      "Wind shifted. Catalogued seven new smells.",
+      "Fog sat low. Walked through it anyway.",
+      "A sound like digging, far off. Not me.",
+      "The trees here grow wrong. Filed for later.",
+      "Crossed the creek twice. Lost count after that.",
+      "Scent of iron in the air. Getting closer."
+    ]
+  },
+  "hazard_journal_lines": {
+    "light": [
+      "Got bit. Not badly. Kept going.",
+      "Wrong side of a ravine. Had to double back.",
+      "Ambushed. Recovered faster than expected.",
+      "Something stirred in the brush. Moved on.",
+      "Lava nearby. Backed off."
+    ],
+    "moderate": [
+      "Three of them at once. Held on.",
+      "Cornered briefly. Found a way out.",
+      "Took a hit. Kept moving.",
+      "Outnumbered. Fought anyway.",
+      "Pack of them. Retreated and regrouped."
+    ],
+    "severe": [
+      "Too many. Barely got clear.",
+      "Took the worst of it. Still here.",
+      "Nearly didn't make it out. Did.",
+      "The pack was bigger than it looked. Ran.",
+      "Something found me before I found it. Cost me."
+    ]
+  }
+}

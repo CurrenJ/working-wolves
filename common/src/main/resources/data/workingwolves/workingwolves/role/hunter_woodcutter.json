@@ -1,0 +1,41 @@
+{
+  "name": "Hunter-Woodcutter",
+  "icon": "minecraft:feather",
+  "requires_roles": ["hunting", "woodcutting"],
+  "zone_event_weights": [
+    { "travel": 43, "discovery": 45, "hazard": 12 },
+    { "travel": 27, "discovery": 46, "hazard": 27 },
+    { "travel": 22, "discovery": 45, "hazard": 33 }
+  ],
+  "hazard_level_weights": [
+    { "light": 75, "moderate": 22, "severe": 3 },
+    { "light": 48, "moderate": 40, "severe": 12 },
+    { "light": 35, "moderate": 50, "severe": 15 }
+  ],
+  "travel_journal_lines": {
+    "0": [
+      "Tracked prey through old growth. Took the timber on the way.",
+      "The forest here is both dense and loud.",
+      "Cleared a path. Something followed the noise.",
+      "Scent trail and wood grain both pointing the same direction.",
+      "Canopy thick enough to swallow sound. Worked quietly."
+    ]
+  },
+  "hazard_journal_lines": {
+    "light": [
+      "Axe swing flushed something out. Not what I wanted.",
+      "The quarry circled while I was working the tree.",
+      "Tangled branches and pursuit. Sorted it out."
+    ],
+    "moderate": [
+      "Interrupted mid-log by something territorial.",
+      "Prey doubled back through the work site.",
+      "Pack found me while I had my back to the trees."
+    ],
+    "severe": [
+      "Mob and prey converged at once. Ran.",
+      "The falling tree scattered both of us.",
+      "Too much happening in the same clearing. Got out."
+    ]
+  }
+}

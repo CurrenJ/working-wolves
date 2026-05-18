@@ -1,0 +1,41 @@
+{
+  "name": "All-Rounder",
+  "icon": "minecraft:compass",
+  "requires_roles": ["mining", "hunting", "woodcutting"],
+  "zone_event_weights": [
+    { "travel": 38, "discovery": 48, "hazard": 14 },
+    { "travel": 23, "discovery": 50, "hazard": 27 },
+    { "travel": 18, "discovery": 50, "hazard": 32 }
+  ],
+  "hazard_level_weights": [
+    { "light": 75, "moderate": 22, "severe": 3 },
+    { "light": 48, "moderate": 40, "severe": 12 },
+    { "light": 35, "moderate": 50, "severe": 15 }
+  ],
+  "travel_journal_lines": {
+    "0": [
+      "Ore and timber and prey. A full day.",
+      "The bag is not big enough for all of this.",
+      "Started underground. Finished in the canopy. Or the reverse.",
+      "No time to specialize. No need to.",
+      "Did three things at once. Got away with it."
+    ]
+  },
+  "hazard_journal_lines": {
+    "light": [
+      "Something for everyone today, including the hazards.",
+      "The forest, the stone, and the mob all had opinions.",
+      "Spread too thin. Adapted."
+    ],
+    "moderate": [
+      "Three problems. One paw at a time.",
+      "The stone, the tree, and the mob disagreed about who went first.",
+      "Overextended. Pulled back. Reassessed."
+    ],
+    "severe": [
+      "Everything happened at once. Still here.",
+      "The world had strong opinions. Argued back.",
+      "Survived by refusing to specialize in dying."
+    ]
+  }
+}

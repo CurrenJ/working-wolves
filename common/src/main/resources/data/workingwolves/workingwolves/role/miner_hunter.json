@@ -1,0 +1,41 @@
+{
+  "name": "Miner-Hunter",
+  "icon": "minecraft:bone",
+  "requires_roles": ["mining", "hunting"],
+  "zone_event_weights": [
+    { "travel": 40, "discovery": 47, "hazard": 13 },
+    { "travel": 25, "discovery": 48, "hazard": 27 },
+    { "travel": 20, "discovery": 47, "hazard": 33 }
+  ],
+  "hazard_level_weights": [
+    { "light": 75, "moderate": 22, "severe": 3 },
+    { "light": 48, "moderate": 40, "severe": 12 },
+    { "light": 35, "moderate": 50, "severe": 15 }
+  ],
+  "travel_journal_lines": {
+    "0": [
+      "Stone underfoot. Scent on the air. Both, at once.",
+      "Followed fresh tracks into a mine entrance.",
+      "Dig site and old bones together. Someone was here before.",
+      "The cave had teeth marks on the walls. Not from tools.",
+      "Something living down here. Also ore. Not unrelated."
+    ]
+  },
+  "hazard_journal_lines": {
+    "light": [
+      "Pickaxe in one paw, eye on the dark. Difficult.",
+      "Interrupted mid-dig by something that disagreed.",
+      "The scent changed. Stopped digging. Waited."
+    ],
+    "moderate": [
+      "Mob cornered me mid-seam. Had to stop the work.",
+      "Swung at stone, hit something else instead.",
+      "Too deep to run. Had to fight instead."
+    ],
+    "severe": [
+      "Everything at once. Stone, mob, darkness. Got through it.",
+      "The tunnel filled with them. Left fast.",
+      "Cornered in the deep. Dug another way out."
+    ]
+  }
+}

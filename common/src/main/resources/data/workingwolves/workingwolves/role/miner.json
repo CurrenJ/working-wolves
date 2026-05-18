@@ -1,0 +1,95 @@
+{
+  "name": "Miner",
+  "icon": "minecraft:iron_pickaxe",
+  "role_type": "mining",
+  "required_tool_tag": "minecraft:pickaxes",
+  "zone_event_weights": [
+    { "travel": 50, "discovery": 40, "hazard": 10 },
+    { "travel": 30, "discovery": 45, "hazard": 25 },
+    { "travel": 25, "discovery": 45, "hazard": 30 }
+  ],
+  "hazard_level_weights": [
+    { "light": 75, "moderate": 22, "severe": 3 },
+    { "light": 48, "moderate": 40, "severe": 12 },
+    { "light": 35, "moderate": 50, "severe": 15 }
+  ],
+  "durability_damage": {
+    "travel": 1,
+    "discovery": 3,
+    "light_hazard": 1,
+    "moderate_hazard": 2,
+    "severe_hazard": 3
+  },
+  "travel_journal_lines": {
+    "0": [
+      "Entrance shaft. Air still tastes of surface.",
+      "Thin seam of chalk in the wall. No ore, but promising.",
+      "Old torch stub in the stone. Someone dug here before.",
+      "Rootlets pushing through the ceiling. Still near the surface.",
+      "Pebbles underfoot. Smooth, water-worn. Ancient stream bed.",
+      "Low ceiling. Had to press close to the wall.",
+      "Patch of moss on the north face. Moisture in the rock.",
+      "Faint dripping somewhere ahead. Getting deeper.",
+      "Gravel chute. Held still until it settled.",
+      "Soil giving way to true stone. The real work starts here."
+    ],
+    "1": [
+      "Aquifer seeping through a crack. Floor slick with it.",
+      "Gallery opens up. Ceiling lost in the dark above.",
+      "Calcite formations on the wall. Smoother than the stone beside them.",
+      "Smell of sulfur. Distant, but real.",
+      "Bones of something in a side passage. Old. Very old.",
+      "Fossil half-emerged from the limestone. Strange fish-shape.",
+      "Dripstone columns ahead, floor to ceiling. Navigated through carefully.",
+      "Sound of water under the floor. A buried river.",
+      "The rock changed color here. Banded layers. Thousands of years of quiet.",
+      "Wind from somewhere. No way to know which direction."
+    ],
+    "2": [
+      "Absolute darkness below the ledge. Dropped a stone. Did not hear it land.",
+      "The walls are warm here. Not from the stone.",
+      "Ancient city brickwork in the distance. Did not go closer.",
+      "Magma block underfoot. Backed off and found another way.",
+      "Ceiling dripping slowly, one drop every few seconds. Counted them.",
+      "No wind. No sound. The rock absorbs everything.",
+      "Sculk patches on the floor. Stepped around each one.",
+      "Vein of deepslate running floor-to-ceiling. Millions of years compressed into a seam.",
+      "Glow of magma through a crack in the wall. Held paw to it. Warm.",
+      "Passage narrowed to nothing. Backtracked. Found another way down."
+    ]
+  },
+  "hazard_journal_lines": {
+    "light": [
+      "Passage looped. Spent time finding north again.",
+      "Wrong tunnel for a while. Doubled back. Lost time.",
+      "Sound of many feet. Stayed still until it passed.",
+      "Groaning in the walls. Zombie trapped in the stone somewhere.",
+      "Something moved in the chamber below. Did not go down."
+    ],
+    "moderate": [
+      "Ceiling cracked. Held still. It held.",
+      "Gravel pour from above. Moved before it filled the corridor.",
+      "Water flooded the lower corridor fast. Climbed out.",
+      "Deep water ahead, no bottom. Found another way around.",
+      "Clicking in the dark behind me. Picked up the pace.",
+      "Breath in the dark that wasn't mine. Not going back that way.",
+      "Heat rising through the floor. Magma below. Found a way around it."
+    ],
+    "severe": [
+      "Lava pocket opened up mid-swing. Retreated fast. Singed.",
+      "Cave-in above. Buried the passage. Had to dig back out.",
+      "Support pillar gone. The whole section leaned. Left quickly.",
+      "Aquifer burst through the wall. Cold and sudden. Lost the passage.",
+      "Something in the dark that wasn't afraid. Moved fast."
+    ]
+  },
+  "tool_messages": {
+    "update_mining_stats": true,
+    "no_tool": "No pickaxe left. Heading back.",
+    "precious_break": "Pickaxe too precious to break. Heading back.",
+    "broken": "Pickaxe shattered.",
+    "last_gone": "Last pickaxe gone. Heading back.",
+    "switched_spare": "Switched to spare pickaxe.",
+    "nearly_done": "Pickaxe nearly done. Heading back."
+  }
+}

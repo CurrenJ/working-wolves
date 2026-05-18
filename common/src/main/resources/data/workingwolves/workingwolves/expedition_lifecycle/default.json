@@ -1,0 +1,47 @@
+{
+  "departure_lines": [
+    "Left the warmth of the bed.",
+    "Out before dawn.",
+    "Set out. The work won't find itself.",
+    "Gone to work."
+  ],
+  "recall_lines": [
+    "Called back early.",
+    "Recalled. Not finished. Going home.",
+    "Whistle from home. Turning back."
+  ],
+  "abandoned_lines": [
+    "Bed destroyed. Expedition abandoned."
+  ],
+  "death_lines": [
+    "Didn't come back.",
+    "Gone.",
+    "The expedition ended."
+  ],
+  "failure_lines": [
+    "Came back with nothing. Sat by the bed for a long time.",
+    "Came back empty. Did not explain.",
+    "Nothing to show. Nothing to say."
+  ],
+  "success_lines": [
+    "Home. Bag heavy.",
+    "Came back slower than expected. Came back.",
+    "Long way. Worth it.",
+    "The familiar smell of home."
+  ],
+  "arrival_lines": [
+    "Back at the bed.",
+    "Home.",
+    "Found the way back."
+  ],
+  "low_resources_lines": [
+    "Running low. Pushing on.",
+    "Leg hurts. Has hurt before.",
+    "Supplies thin. The work is not.",
+    "Worse shape than yesterday. Yesterday is not today.",
+    "Something went wrong back there. Not dwelling on it."
+  ],
+  "loot_loss_lines": [
+    "Something fell. No time to go back for it."
+  ]
+}

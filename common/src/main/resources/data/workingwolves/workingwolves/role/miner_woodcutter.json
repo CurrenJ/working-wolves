@@ -1,0 +1,41 @@
+{
+  "name": "Miner-Woodcutter",
+  "icon": "minecraft:oak_log",
+  "requires_roles": ["mining", "woodcutting"],
+  "zone_event_weights": [
+    { "travel": 43, "discovery": 45, "hazard": 12 },
+    { "travel": 27, "discovery": 46, "hazard": 27 },
+    { "travel": 22, "discovery": 46, "hazard": 32 }
+  ],
+  "hazard_level_weights": [
+    { "light": 75, "moderate": 22, "severe": 3 },
+    { "light": 48, "moderate": 40, "severe": 12 },
+    { "light": 35, "moderate": 50, "severe": 15 }
+  ],
+  "travel_journal_lines": {
+    "0": [
+      "Roots growing into the stone. Started in the trees, ended underground.",
+      "Forest gives way to hillside. Hillside gives way to shaft.",
+      "Logged the edge of the grove first, then went under it.",
+      "Timber and ore in the same day. Efficient.",
+      "The cave mouth was behind the big oak. Easy to miss."
+    ]
+  },
+  "hazard_journal_lines": {
+    "light": [
+      "Wrong tool for the job, right paw for the situation.",
+      "Swapped pickaxe for axe and back again. Lost some time.",
+      "Roots and rock together. Slower than expected."
+    ],
+    "moderate": [
+      "Collapse above, overgrowth below. Nowhere clean to move.",
+      "Axe stuck in the tree. Mob arrived while freeing it.",
+      "Both tasks fighting each other today."
+    ],
+    "severe": [
+      "The hillside shifted. Wood and stone together, falling.",
+      "Buried under roots and rubble both. Dug out.",
+      "Forest fire above. Mine flooding below. Left both."
+    ]
+  }
+}
