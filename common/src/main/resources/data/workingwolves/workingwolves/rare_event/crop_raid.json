@@ -1,0 +1,16 @@
+{
+  "conditions": {
+    "biome_categories": ["plains"],
+    "requires_hunting": true,
+    "requires_woodcutting": true
+  },
+  "cross_role": true,
+  "weight": 25,
+  "loot_table": "workingwolves:expedition/rare/crop_raid",
+  "journal_lines": [
+    "Fields at the edge of the plains. Someone's crop, untended. We cleared the animals and took what was left.",
+    "Abandoned farm. The harvest was still standing. Not for long.",
+    "Chased off whatever was eating the field. Took the rest ourselves.",
+    "Overgrown field on the plains. Animals in the crop, crop in the field. Sorted both."
+  ]
+}

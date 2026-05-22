@@ -13,6 +13,7 @@ public record MobEncounterEntry(
         List<Integer> zones,
         int weight,
         Optional<List<String>> requiredBiomeCategories,
+        Optional<List<String>> excludedBiomeCategories,
         Optional<Integer> minCollarTier,
         ResourceKey<LootTable> lootTable,
         List<String> journalLines
@@ -22,6 +23,7 @@ public record MobEncounterEntry(
             Codec.INT.listOf().fieldOf("zones").forGetter(MobEncounterEntry::zones),
             Codec.INT.optionalFieldOf("weight", 1).forGetter(MobEncounterEntry::weight),
             Codec.STRING.listOf().optionalFieldOf("required_biome_categories").forGetter(MobEncounterEntry::requiredBiomeCategories),
+            Codec.STRING.listOf().optionalFieldOf("excluded_biome_categories").forGetter(MobEncounterEntry::excludedBiomeCategories),
             Codec.INT.optionalFieldOf("min_collar_tier").forGetter(MobEncounterEntry::minCollarTier),
             ResourceKey.codec(Registries.LOOT_TABLE).fieldOf("loot_table").forGetter(MobEncounterEntry::lootTable),
             Codec.STRING.listOf().fieldOf("journal_lines").forGetter(MobEncounterEntry::journalLines)

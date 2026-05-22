@@ -3,7 +3,7 @@
   "weight": 40,
   "loot_table": "workingwolves:expedition/miner/coal",
   "silk_touch_loot_table": "workingwolves:expedition/miner/coal_silk",
-  "biome_bonus_categories": ["mountain", "cave"],
+  "biome_bonus_categories": ["mountain", "cave", "forest"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/coal_bonus",
   "journal_lines": [
     "Black seam in the stone. Wide and consistent.",

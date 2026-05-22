@@ -1,0 +1,14 @@
+{
+  "conditions": {
+    "biome_categories": ["plains"],
+    "requires_hunting": true
+  },
+  "weight": 30,
+  "loot_table": "workingwolves:expedition/rare/migrating_herd",
+  "journal_lines": [
+    "Herd moving through the open ground. Large. Patient work, good return.",
+    "Migration through the plains. Took what we needed from the stragglers.",
+    "The whole valley moving at once. Picked carefully. Plenty to choose from.",
+    "Seasonal herd. Right place, right time. Good hunt."
+  ]
+}

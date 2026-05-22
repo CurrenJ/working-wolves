@@ -1,6 +1,7 @@
 {
   "zones": [1, 2],
   "weight": 15,
+  "required_biome_categories": ["ocean", "cave"],
   "loot_table": "workingwolves:expedition/hunter/drowned",
   "journal_lines": [
     "Drowned rising from the water. Put it back.",

@@ -1,6 +1,7 @@
 {
   "zones": [0, 1],
   "weight": 15,
+  "required_biome_categories": ["cave", "plains", "forest"],
   "loot_table": "workingwolves:expedition/hunter/slime",
   "journal_lines": [
     "Slimes in the low ground. Messy.",

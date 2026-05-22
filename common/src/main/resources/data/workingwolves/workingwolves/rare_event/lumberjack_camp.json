@@ -1,0 +1,16 @@
+{
+  "conditions": {
+    "biome_categories": ["forest"],
+    "requires_mining": true,
+    "requires_woodcutting": true
+  },
+  "cross_role": true,
+  "weight": 20,
+  "loot_table": "workingwolves:expedition/rare/lumberjack_camp",
+  "journal_lines": [
+    "Old logging camp. Whoever left it behind didn't come back. We did the math.",
+    "Abandoned camp in the timber. Tools still there. Took what was useful.",
+    "Woodcutter's camp. Long since empty. The iron and the logs were still worth having.",
+    "Found the camp where the big trees were felled. No one around. Helped ourselves."
+  ]
+}

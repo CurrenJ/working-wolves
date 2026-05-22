@@ -2,6 +2,8 @@
   "zones": [0],
   "weight": 25,
   "loot_table": "workingwolves:expedition/miner/flint",
+  "biome_bonus_categories": ["plains", "mountain"],
+  "biome_bonus_loot_table": "workingwolves:expedition/miner/flint_bonus",
   "journal_lines": [
     "Gravel pocket. Worked it through.",
     "Good flint among the gravel.",

@@ -4,7 +4,7 @@
   "min_collar_tier": 3,
   "loot_table": "workingwolves:expedition/miner/diamond",
   "silk_touch_loot_table": "workingwolves:expedition/miner/diamond_silk",
-  "biome_bonus_categories": ["mountain", "cave"],
+  "biome_bonus_categories": ["cave"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/diamond_bonus",
   "journal_lines": [
     "Blue-white flash in the deepslate. Stopped everything.",

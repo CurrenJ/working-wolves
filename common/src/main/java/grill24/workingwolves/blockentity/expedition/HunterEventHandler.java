@@ -26,6 +26,8 @@ class HunterEventHandler {
             if (!entry.zones().contains(zone)) continue;
             if (entry.requiredBiomeCategories().isPresent()
                     && !entry.requiredBiomeCategories().get().contains(sim.getBiomeCategory())) continue;
+            if (entry.excludedBiomeCategories().isPresent()
+                    && entry.excludedBiomeCategories().get().contains(sim.getBiomeCategory())) continue;
             if (entry.minCollarTier().isPresent() && sim.getCollarTier() < entry.minCollarTier().get()) continue;
             pool.add(entry);
             poolWeights.add(entry.weight());

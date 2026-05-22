@@ -1,0 +1,16 @@
+{
+  "conditions": {
+    "biome_categories": ["forest"],
+    "requires_hunting": true,
+    "requires_woodcutting": true
+  },
+  "cross_role": true,
+  "weight": 25,
+  "loot_table": "workingwolves:expedition/rare/poacher_blind",
+  "journal_lines": [
+    "Found a blind in the trees. Not ours. Whoever built it isn't coming back for it.",
+    "Poacher's hide. Abandoned in a hurry. Left the gear.",
+    "Set up in the same wood as someone else. They left. We stayed. Good find.",
+    "Hunting blind in the deep timber. Someone else's work. Our gain."
+  ]
+}

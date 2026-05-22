@@ -3,7 +3,7 @@
   "weight": 20,
   "loot_table": "workingwolves:expedition/miner/gold",
   "silk_touch_loot_table": "workingwolves:expedition/miner/gold_silk",
-  "biome_bonus_categories": ["mountain", "cave"],
+  "biome_bonus_categories": ["mountain", "other"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/gold_bonus",
   "journal_lines": [
     "Flash of yellow in the wall. Spent extra time here.",

@@ -3,6 +3,8 @@
   "weight": 30,
   "loot_table": "workingwolves:expedition/miner/copper",
   "silk_touch_loot_table": "workingwolves:expedition/miner/copper_silk",
+  "biome_bonus_categories": ["ocean", "mountain"],
+  "biome_bonus_loot_table": "workingwolves:expedition/miner/copper_bonus",
   "journal_lines": [
     "Green bloom in the rock. Copper.",
     "Blue-green tinge in the wall. Good sign.",

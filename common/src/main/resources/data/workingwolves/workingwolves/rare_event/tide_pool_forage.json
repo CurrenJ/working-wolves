@@ -1,0 +1,16 @@
+{
+  "conditions": {
+    "biome_categories": ["ocean"],
+    "requires_hunting": true,
+    "requires_mining": true
+  },
+  "cross_role": true,
+  "weight": 20,
+  "loot_table": "workingwolves:expedition/rare/tide_pool_forage",
+  "journal_lines": [
+    "Tide pools at the base of the cliffs. The hunter took what swam. The miner took what the water left behind.",
+    "Low tide exposed the rock shelf. Copper-tinged stone and small fish. Both worth taking.",
+    "Rocky shoreline. Good place for two roles that know what they're looking at.",
+    "The water pulls back and shows you everything. Ore and fish. Took both."
+  ]
+}
