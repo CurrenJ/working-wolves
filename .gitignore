@@ -1,5 +1,9 @@
 local.properties
 
+### Python ###
+__pycache__/
+*.pyc
+
 ### Gradle ###
 .gradle
 build/
