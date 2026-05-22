@@ -26,6 +26,30 @@
       "The trees here grow wrong. Filed for later.",
       "Crossed the creek twice. Lost count after that.",
       "Scent of iron in the air. Getting closer."
+    ],
+    "1": [
+      "Trail led into country I had never walked. The country was patient about it.",
+      "Old bones in a clearing. Big bones. Walked around them.",
+      "Found a stream the wolves of some other pack had marked. Did not add to the marks.",
+      "Hills the trail had not warned about. Climbed them anyway.",
+      "Scent of something larger than usual. Stayed downwind.",
+      "Found tracks of three things, going the same way. Followed the freshest set.",
+      "An old kill in a hollow. Picked clean. The forest is thorough.",
+      "Walked through a clearing where the grass had been laid flat. Did not stop walking.",
+      "Heard a stag bell, far off. The forest answered with something I did not recognize.",
+      "Deeper now. The trees know they have not been visited recently."
+    ],
+    "2": [
+      "The far country. No paths. Made one.",
+      "Trees here older than language. The hunt is what it is anyway.",
+      "Found a print larger than my whole paw. Did not follow.",
+      "The wind here carries scents I do not have names for.",
+      "Walked a ridge where the sky and the forest met without a horizon.",
+      "Spoor of things that are not in any wolf's lessons. Worked around them.",
+      "Heard a voice in the timber that was not a voice. Did not approach.",
+      "Came on an old shrine the forest had grown back into. Did not disturb it.",
+      "The trees keep score. I am still ahead.",
+      "Some country a wolf walks through, not in. Walked through this country."
     ]
   },
   "hazard_journal_lines": {
@@ -34,21 +58,36 @@
       "Wrong side of a ravine. Had to double back.",
       "Ambushed. Recovered faster than expected.",
       "Something stirred in the brush. Moved on.",
-      "Lava nearby. Backed off."
+      "Lava nearby. Backed off.",
+      "Brambles thick as fence. Got through. Got scratched.",
+      "Bee swarm near the trail. Took a different trail.",
+      "Quarry doubled back on me. Smart prey. Caught up eventually.",
+      "Snare set in the path. Sprung it from a distance. Not mine.",
+      "Slipped down a bank, came up muddy. The mud washed off, mostly."
     ],
     "moderate": [
       "Three of them at once. Held on.",
       "Cornered briefly. Found a way out.",
       "Took a hit. Kept moving.",
       "Outnumbered. Fought anyway.",
-      "Pack of them. Retreated and regrouped."
+      "Pack of them. Retreated and regrouped.",
+      "Caught between two scents. Both wanted me. Neither got me.",
+      "Bear in the path. Convinced it I was not worth the trouble.",
+      "Quarry larger than I had read. Worked harder.",
+      "Got the tooth in deep. Pulled it out. Kept the tooth.",
+      "Outpaced. Outflanked. Came home anyway."
     ],
     "severe": [
       "Too many. Barely got clear.",
       "Took the worst of it. Still here.",
       "Nearly didn't make it out. Did.",
       "The pack was bigger than it looked. Ran.",
-      "Something found me before I found it. Cost me."
+      "Something found me before I found it. Cost me.",
+      "Hit the ground hard, got up harder.",
+      "The forest was not on my side today. Came home with proof.",
+      "A wound that wanted to stay open. Convinced it.",
+      "Out of cover and out of options. Made one.",
+      "Should not have made it back. Did not ask why I did."
     ]
   }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 public class JournalPanel extends UIElement<JournalPanel> {
     private static final int LINE_HEIGHT = 9;
     private static final int PADDING = 4;
-    private static final float TEXT_SCALE = 0.8f;
+    private static final float TEXT_SCALE = 0.6f;
     private static final int BG_COLOR = 0xC0111111;
     private static final int BORDER_COLOR = 0xFF555555;
     private static final int TEXT_COLOR = 0xFFCCCCCC;

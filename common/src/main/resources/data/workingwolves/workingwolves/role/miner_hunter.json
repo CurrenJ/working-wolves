@@ -18,24 +18,44 @@
       "Followed fresh tracks into a mine entrance.",
       "Dig site and old bones together. Someone was here before.",
       "The cave had teeth marks on the walls. Not from tools.",
-      "Something living down here. Also ore. Not unrelated."
+      "Something living down here. Also ore. Not unrelated.",
+      "Hunting in a place where the ore is also worth taking. Two trails at once.",
+      "Tracks and tunnel both leading down. Followed both.",
+      "Tunnel mouth with old bones at the entrance. The new bones were elsewhere.",
+      "Smell of iron and game in the same passage. Worked both.",
+      "Stone scarred by claws and by tools. Could not tell which was older."
     ]
   },
   "hazard_journal_lines": {
     "light": [
       "Pickaxe in one paw, eye on the dark. Difficult.",
       "Interrupted mid-dig by something that disagreed.",
-      "The scent changed. Stopped digging. Waited."
+      "The scent changed. Stopped digging. Waited.",
+      "Loose stone slipped while I was tracking. The track survived. Mostly.",
+      "Cornered by something that turned out to be a bat. The bat won the argument briefly.",
+      "Tunnel narrowed where the chase had wanted room. Adjusted.",
+      "Lost the trail in the dust. Found it on the next wall.",
+      "Stopped mid-cut to listen. Something there. Something not there."
     ],
     "moderate": [
       "Mob cornered me mid-seam. Had to stop the work.",
       "Swung at stone, hit something else instead.",
-      "Too deep to run. Had to fight instead."
+      "Too deep to run. Had to fight instead.",
+      "Took a hit while the pickaxe was still in the wall. Pulled it out. Worked both jobs.",
+      "Prey turned around in the tunnel. Then the prey was behind me.",
+      "Tunnel collapsed where I had just been hunting. The hunt found a different shape.",
+      "Something fast in a place where I was slow. Got faster.",
+      "Quarry pinned itself in a side-passage. The side-passage gave me trouble too."
     ],
     "severe": [
       "Everything at once. Stone, mob, darkness. Got through it.",
       "The tunnel filled with them. Left fast.",
-      "Cornered in the deep. Dug another way out."
+      "Cornered in the deep. Dug another way out.",
+      "Pack and pickaxe both, all at once. Came out lighter. Came out.",
+      "Ceiling came down between me and the prey. Came down on neither of us.",
+      "Trapped between the seam and the snarl. Made a third option.",
+      "Bad day in two professions at once. Came home anyway.",
+      "Lost the trail, lost the pick, did not lose myself."
     ]
   }
 }

@@ -28,6 +28,11 @@ class ToolDurabilityHelper {
         return applyToolDurability(level, baseDamage, toolTag, messages, sim);
     }
 
+    private static String pick(java.util.List<String> lines, Level level) {
+        if (lines.isEmpty()) return "";
+        return lines.get(level.getRandom().nextInt(lines.size()));
+    }
+
     private static boolean applyToolDurability(Level level, int baseDamage, TagKey<Item> toolTag,
             RoleEntry.ToolMessages messages, ExpeditionSimulator sim) {
 
@@ -44,7 +49,7 @@ class ToolDurabilityHelper {
         int bestSlot = findBestToolSlot(bag, toolTag, testBlock, -1);
 
         if (bestSlot < 0) {
-            sim.addLogLine(messages.noTool());
+            sim.addLogLine(pick(messages.noTool(), level));
             return false;
         }
 
@@ -64,10 +69,10 @@ class ToolDurabilityHelper {
         if (isEnchanted && remainingBefore <= 1) {
             if (hasSpare(bag, bestSlot, toolTag)) {
                 switchToNextTool(bag, bestSlot, toolTag, testBlock, messages.updateMiningStats(), sim);
-                sim.addLogLine(messages.switchedSpare());
+                sim.addLogLine(pick(messages.switchedSpare(), level));
                 return true;
             }
-            sim.addLogLine(messages.preciousBreak());
+            sim.addLogLine(pick(messages.preciousBreak(), level));
             return false;
         }
 
@@ -85,18 +90,18 @@ class ToolDurabilityHelper {
             tool.setDamageValue(maxDurability - 1);
             if (hasSpare(bag, bestSlot, toolTag)) {
                 switchToNextTool(bag, bestSlot, toolTag, testBlock, messages.updateMiningStats(), sim);
-                sim.addLogLine(messages.switchedSpare());
+                sim.addLogLine(pick(messages.switchedSpare(), level));
                 return true;
             }
-            sim.addLogLine(messages.preciousBreak());
+            sim.addLogLine(pick(messages.preciousBreak(), level));
             return false;
         }
 
         if (newDamage >= maxDurability) {
             bag.set(bestSlot, ItemStack.EMPTY);
-            sim.addLogLine(messages.broken());
+            sim.addLogLine(pick(messages.broken(), level));
             if (!switchToNextTool(bag, -1, toolTag, testBlock, messages.updateMiningStats(), sim)) {
-                sim.addLogLine(messages.lastGone());
+                sim.addLogLine(pick(messages.lastGone(), level));
                 return false;
             }
             return true;
@@ -106,7 +111,7 @@ class ToolDurabilityHelper {
 
         int remainingAfter = maxDurability - newDamage;
         if (remainingAfter < TOOL_LOW_THRESHOLD && !hasSpare(bag, bestSlot, toolTag)) {
-            sim.addLogLine(messages.nearlyDone());
+            sim.addLogLine(pick(messages.nearlyDone(), level));
             return false;
         }
 

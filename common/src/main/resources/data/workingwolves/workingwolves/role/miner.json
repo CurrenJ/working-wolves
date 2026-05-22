@@ -55,7 +55,16 @@
       "Sculk patches on the floor. Stepped around each one.",
       "Vein of deepslate running floor-to-ceiling. Millions of years compressed into a seam.",
       "Glow of magma through a crack in the wall. Held paw to it. Warm.",
-      "Passage narrowed to nothing. Backtracked. Found another way down."
+      "Passage narrowed to nothing. Backtracked. Found another way down.",
+      "The dark here drinks sound. Drinks light. Drinks the paws walking through it.",
+      "Found a pickhead in the gravel. Iron, no handle, no name. Someone's last day's work.",
+      "A vein of copper ran through the wall like a river drawn on a map nobody made.",
+      "The stone here remembers more than I do. It has had longer.",
+      "Heard water moving under the floor. A river that has never seen the sky.",
+      "A handprint set in the calcite. Not mine. Older than mine by years I cannot count.",
+      "Deepslate so dark the torchlight grew tired and bent away.",
+      "Walked past a chamber I did not enter. Some doors are better left closed.",
+      "Magma far below, slow as a breath held too long. Not in any hurry."
     ]
   },
   "hazard_journal_lines": {
@@ -64,7 +73,12 @@
       "Wrong tunnel for a while. Doubled back. Lost time.",
       "Sound of many feet. Stayed still until it passed.",
       "Groaning in the walls. Zombie trapped in the stone somewhere.",
-      "Something moved in the chamber below. Did not go down."
+      "Something moved in the chamber below. Did not go down.",
+      "Loose pebble down the wrong slope. Slid further than I meant to.",
+      "Lost the torch. Found it again, eventually.",
+      "Dead end where the map said tunnel. Re-drew the map in my head.",
+      "Stepped on a stone that gave. The stone forgave it.",
+      "Bat colony overhead. Walked very softly. Mostly avoided being a roost."
     ],
     "moderate": [
       "Ceiling cracked. Held still. It held.",
@@ -73,23 +87,69 @@
       "Deep water ahead, no bottom. Found another way around.",
       "Clicking in the dark behind me. Picked up the pace.",
       "Breath in the dark that wasn't mine. Not going back that way.",
-      "Heat rising through the floor. Magma below. Found a way around it."
+      "Heat rising through the floor. Magma below. Found a way around it.",
+      "Pickaxe head got stuck. Worked it out. Took longer than the seam would have.",
+      "Found a passage that breathed. Did not stay long.",
+      "Squeezed through a crack that thought I was smaller. I was smaller, just barely.",
+      "Loose stone gave way under the paw. Caught myself on a ledge that had not been there a moment before.",
+      "Crystal underfoot, sharp. The paw will remember it."
     ],
     "severe": [
       "Lava pocket opened up mid-swing. Retreated fast. Singed.",
       "Cave-in above. Buried the passage. Had to dig back out.",
       "Support pillar gone. The whole section leaned. Left quickly.",
       "Aquifer burst through the wall. Cold and sudden. Lost the passage.",
-      "Something in the dark that wasn't afraid. Moved fast."
+      "Something in the dark that wasn't afraid. Moved fast.",
+      "Whole gallery came down. Got under a ledge. The ledge held. The rest did not.",
+      "Lava came through the wall. The wall had not warned me about itself.",
+      "Stepped through a floor that was a ceiling. The fall was not the longest part.",
+      "A sound below that the rock did not want to translate.",
+      "The pickaxe broke against something the pickaxe was not meant for."
     ]
   },
   "tool_messages": {
     "update_mining_stats": true,
-    "no_tool": "No pickaxe left. Heading back.",
-    "precious_break": "Pickaxe too precious to break. Heading back.",
-    "broken": "Pickaxe shattered.",
-    "last_gone": "Last pickaxe gone. Heading back.",
-    "switched_spare": "Switched to spare pickaxe.",
-    "nearly_done": "Pickaxe nearly done. Heading back."
+    "no_tool": [
+      "No pickaxe left. Heading back.",
+      "Pickaxe gone. Coming home.",
+      "Out of stone-work. Turning around.",
+      "Nothing left to swing. Going back to the bed.",
+      "No tool. No work. Back to the bed."
+    ],
+    "precious_break": [
+      "Pickaxe too precious to break. Heading back.",
+      "The enchanted pickaxe deserves better than this. Heading home.",
+      "Will not let this pickaxe end here. Coming back with it whole.",
+      "Worth too much to lose. Setting the work down. Coming home.",
+      "Could not bring myself to spend the last of it. Going home with it intact."
+    ],
+    "broken": [
+      "Pickaxe shattered.",
+      "The head came off the haft. The haft came off the paw.",
+      "Pickaxe gave up. Honest service.",
+      "Iron split along an old fracture. Gone.",
+      "Worked it past its limit. The limit won."
+    ],
+    "last_gone": [
+      "Last pickaxe gone. Heading back.",
+      "Bag holds no more stone-work. Going home.",
+      "End of the iron. End of the work. Coming home.",
+      "Last of the pickaxes spent. Walking back.",
+      "Nothing left to dig with. Turning toward the bed."
+    ],
+    "switched_spare": [
+      "Switched to spare pickaxe.",
+      "Set down the worn one. Picked up the next.",
+      "Spare in the bag. Used it.",
+      "Old pickaxe to the side. New pickaxe in paw.",
+      "Picked up the second pickaxe. Carried on."
+    ],
+    "nearly_done": [
+      "Pickaxe nearly done. Heading back.",
+      "Iron thin on the haft. Going home before it goes.",
+      "Last few swings left in it. Saving them for the way.",
+      "The pickaxe is tired. So am I. Both heading home.",
+      "Almost spent. Coming back before it finishes."
+    ]
   }
 }

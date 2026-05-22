@@ -34,6 +34,30 @@
       "Rain started. The canopy is holding most of it.",
       "The fern layer is thick. Good soil under it.",
       "Something ahead went quiet. Waited. Kept moving."
+    ],
+    "1": [
+      "Past the line where the loggers usually stop. Trees larger here.",
+      "Found a stand untouched by axes for a long time. The trees are taller for it.",
+      "Roots in the path the size of my shoulder. Stepped carefully.",
+      "An old blaze on a trunk, weathered grey. Whoever marked it did not come back.",
+      "Deeper now. The light reaches the ground in pieces.",
+      "Trees here grow on top of other trees. Some are still alive under the new ones.",
+      "Smelled smoke a long way off. Did not investigate. The trees would not have liked it.",
+      "Found a clearing with three trees standing in the middle. The clearing made the trees mean something.",
+      "Walked through a stand where every trunk was a different age. A whole century, side by side.",
+      "Older wood, harder work. Worth it, mostly."
+    ],
+    "2": [
+      "The old-growth. Cathedral wood. Worked quietly.",
+      "Trees here older than the wolves who have ever seen them.",
+      "Found a trunk wider than my whole length. Took only the lower branches.",
+      "Moss on the north sides three fingers deep. Knew the way home without looking.",
+      "Walked among trees that had never been counted.",
+      "A stand the loggers do not know about. The stand prefers it this way.",
+      "Light came through the canopy in beams, like the sun was choosing where to land.",
+      "The deepest wood. The work, here, requires a kind of respect.",
+      "Found a tree split by lightning a hundred years ago, still living. Did not take any of it.",
+      "The far trees. The ones that remember when there were more of them."
     ]
   },
   "hazard_journal_lines": {
@@ -42,7 +66,12 @@
       "Fog rolling in. Slowed down.",
       "Thorns and thick brush.",
       "Rain made the bark slick. Careful work.",
-      "The path I marked was already grown over."
+      "The path I marked was already grown over.",
+      "Ant nest at the base of the tree. Worked around it. Mostly.",
+      "Sap dripped on the paw and stayed. The paw was sticky for hours.",
+      "Wasp investigating the fresh cut. Stepped back. Politely.",
+      "Wind picked up. The next tree did not want to fall the way I wanted.",
+      "Mosquitoes thick as smoke. Worked through them. Itched for days."
     ],
     "moderate": [
       "Tree fell the wrong way. Close call.",
@@ -50,23 +79,69 @@
       "Hostile mob in the undergrowth.",
       "A root caught my back foot. Went down hard.",
       "Something in the dark forest did not want me there.",
-      "Disturbed a nest I did not see. Moved before counting."
+      "Disturbed a nest I did not see. Moved before counting.",
+      "Falling branch I had not noticed. Noticed it. Late.",
+      "The tree leaned wrong all morning. It fell wrong, accordingly.",
+      "Stepped on a wasp ground-nest. Ran. The ground-nest is still angry.",
+      "Trunk twisted as it fell, caught a paw under it. Worked free.",
+      "Sap in the eye. Worked one-eyed for a while."
     ],
     "severe": [
       "Bear investigating my woodpile. Then investigating me.",
       "The dry grass caught from a spark. Not so controlled.",
       "Tree came down on top of me. Working out from under it.",
       "The mud swallowed me to the hip. Took time to extract.",
-      "Something large, very close, very fast. Dropped everything and ran."
+      "Something large, very close, very fast. Dropped everything and ran.",
+      "Tree split as it fell. The split end went where I had been standing. Where I no longer was.",
+      "Fell from a low branch the wrong way. The wrong way was longer than expected.",
+      "Wildfire on the next ridge over. Worked downhill, fast.",
+      "Something in the deep wood took an interest. Worked elsewhere.",
+      "Trunk rolled down the slope after I cut it. Rolled further than the slope had any right to."
     ]
   },
   "tool_messages": {
     "update_mining_stats": false,
-    "no_tool": "No axe left. Heading back.",
-    "precious_break": "Axe too precious to break. Heading back.",
-    "broken": "Axe handle shattered.",
-    "last_gone": "Last axe gone. Heading back.",
-    "switched_spare": "Switched to spare axe.",
-    "nearly_done": "Axe nearly done. Heading back."
+    "no_tool": [
+      "No axe left. Heading back.",
+      "Axe gone. Walking home.",
+      "Out of cutting-iron. Turning around.",
+      "No edge left to swing. Coming back.",
+      "Nothing to fell with. Going home."
+    ],
+    "precious_break": [
+      "Axe too precious to break. Heading back.",
+      "Cannot let the enchanted axe end this way. Coming back with it.",
+      "The good axe stays. Heading home before it goes.",
+      "Will not spend the last of this one. Bringing it back.",
+      "Too well-made to lose to a tree. Going home with it intact."
+    ],
+    "broken": [
+      "Axe handle shattered.",
+      "Head came clean off. Bag lighter by one tool.",
+      "Haft split down the grain. Done.",
+      "Last swing went into the haft instead of the wood. Gone.",
+      "The axe was finished before the tree was. The axe wins, in a way."
+    ],
+    "last_gone": [
+      "Last axe gone. Heading back.",
+      "Bag holds no more wood-work. Going home.",
+      "End of the cutting. Coming back.",
+      "Last axe spent. Walking home.",
+      "Nothing left to fell with. Turning toward the bed."
+    ],
+    "switched_spare": [
+      "Switched to spare axe.",
+      "Set down the worn axe. Picked up the next.",
+      "Spare axe in the bag. Using it now.",
+      "Old axe aside. New axe in paw.",
+      "Picked up the second axe. Carried on."
+    ],
+    "nearly_done": [
+      "Axe nearly done. Heading back.",
+      "Axe-iron worn thin. Going home before it gives.",
+      "Last few cuts left in this one. Saving them.",
+      "Axe is tired. So am I. Walking home.",
+      "Almost spent. Coming back before it finishes."
+    ]
   }
 }

@@ -50,21 +50,21 @@ public record RoleEntry(
 
     public record ToolMessages(
             boolean updateMiningStats,
-            String noTool,
-            String preciousBreak,
-            String broken,
-            String lastGone,
-            String switchedSpare,
-            String nearlyDone
+            List<String> noTool,
+            List<String> preciousBreak,
+            List<String> broken,
+            List<String> lastGone,
+            List<String> switchedSpare,
+            List<String> nearlyDone
     ) {
         public static final Codec<ToolMessages> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.BOOL.optionalFieldOf("update_mining_stats", false).forGetter(ToolMessages::updateMiningStats),
-                Codec.STRING.fieldOf("no_tool").forGetter(ToolMessages::noTool),
-                Codec.STRING.fieldOf("precious_break").forGetter(ToolMessages::preciousBreak),
-                Codec.STRING.fieldOf("broken").forGetter(ToolMessages::broken),
-                Codec.STRING.fieldOf("last_gone").forGetter(ToolMessages::lastGone),
-                Codec.STRING.fieldOf("switched_spare").forGetter(ToolMessages::switchedSpare),
-                Codec.STRING.fieldOf("nearly_done").forGetter(ToolMessages::nearlyDone)
+                Codec.STRING.listOf().fieldOf("no_tool").forGetter(ToolMessages::noTool),
+                Codec.STRING.listOf().fieldOf("precious_break").forGetter(ToolMessages::preciousBreak),
+                Codec.STRING.listOf().fieldOf("broken").forGetter(ToolMessages::broken),
+                Codec.STRING.listOf().fieldOf("last_gone").forGetter(ToolMessages::lastGone),
+                Codec.STRING.listOf().fieldOf("switched_spare").forGetter(ToolMessages::switchedSpare),
+                Codec.STRING.listOf().fieldOf("nearly_done").forGetter(ToolMessages::nearlyDone)
         ).apply(i, ToolMessages::new));
     }
 

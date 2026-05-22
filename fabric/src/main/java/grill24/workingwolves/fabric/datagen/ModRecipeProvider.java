@@ -1,14 +1,12 @@
 package grill24.workingwolves.fabric.datagen;
 
+import grill24.workingwolves.ModBlocks;
 import grill24.workingwolves.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.Items;
 
 import java.util.concurrent.CompletableFuture;
@@ -41,16 +39,15 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .unlockedBy("has_iron_collar", has(ModItems.IRON_STUDDED_COLLAR.value()))
                         .save(this.output);
 
-                ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.TOOLS, ModItems.DISPATCH_WHISTLE.value())
-                        .requires(Items.IRON_INGOT)
-                        .requires(Items.NOTE_BLOCK)
-                        .unlockedBy("has_note_block", has(Items.NOTE_BLOCK))
-                        .save(this.output);
-
-                ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.TOOLS, ModItems.RECALL_WHISTLE.value())
-                        .requires(ModItems.DISPATCH_WHISTLE.value())
-                        .requires(Items.ECHO_SHARD)
-                        .unlockedBy("has_echo_shard", has(Items.ECHO_SHARD))
+                ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.MISC, ModBlocks.DOG_BED.value())
+                        .pattern("SBS")
+                        .pattern("THT")
+                        .pattern("TTT")
+                        .define('T', Items.TERRACOTTA)
+                        .define('B', Items.BRICKS)
+                        .define('S', Items.BRICK_SLAB)
+                        .define('H', Items.HAY_BLOCK)
+                        .unlockedBy("has_leather", has(Items.LEATHER))
                         .save(this.output);
             }
         };

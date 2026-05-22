@@ -18,24 +18,44 @@
       "The forest here is both dense and loud.",
       "Cleared a path. Something followed the noise.",
       "Scent trail and wood grain both pointing the same direction.",
-      "Canopy thick enough to swallow sound. Worked quietly."
+      "Canopy thick enough to swallow sound. Worked quietly.",
+      "Cut a tree. Heard a snarl. The two things were not unrelated.",
+      "Followed prey into a stand worth felling. Did both.",
+      "Quarry knew the forest. The forest now knows me a little.",
+      "Walked between scent and bark all morning. Both were leading.",
+      "Old trails left by hooves and by axes. Same forest, two paths through it."
     ]
   },
   "hazard_journal_lines": {
     "light": [
       "Axe swing flushed something out. Not what I wanted.",
       "The quarry circled while I was working the tree.",
-      "Tangled branches and pursuit. Sorted it out."
+      "Tangled branches and pursuit. Sorted it out.",
+      "Sapling whipped back into the face. Lost the scent for a moment.",
+      "Cut a branch. The thing under the branch ran. Did not catch it.",
+      "Bramble caught the bag while the quarry got loose. Brief setback.",
+      "Tracked prey to a tree I had to cut to keep tracking. Inefficient.",
+      "Quarry watched from the canopy while I worked. Knew it was being watched."
     ],
     "moderate": [
       "Interrupted mid-log by something territorial.",
       "Prey doubled back through the work site.",
-      "Pack found me while I had my back to the trees."
+      "Pack found me while I had my back to the trees.",
+      "Falling tree drew everything within hearing. Sorted them after.",
+      "Quarry came at me through the brush I had just cleared. Convenient for it.",
+      "Cut the wrong tree to reveal the wrong thing. Adapted.",
+      "Boar in the work site. The work and the boar disagreed.",
+      "Tracked into a clearing already occupied. Negotiated."
     ],
     "severe": [
       "Mob and prey converged at once. Ran.",
       "The falling tree scattered both of us.",
-      "Too much happening in the same clearing. Got out."
+      "Too much happening in the same clearing. Got out.",
+      "Pack came through the cut I had just made. Made another cut.",
+      "Tree fell on what I had been hunting. The kill counted, technically.",
+      "Quarry led me into a place I had not cleared. Cleared it in a hurry.",
+      "Stampede through the felling area. Lost the day's wood. Found it later.",
+      "Three things wrong at once, all of them with teeth. Came back with the work."
     ]
   }
 }

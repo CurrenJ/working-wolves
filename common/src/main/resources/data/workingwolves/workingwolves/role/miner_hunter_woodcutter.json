@@ -18,24 +18,44 @@
       "The bag is not big enough for all of this.",
       "Started underground. Finished in the canopy. Or the reverse.",
       "No time to specialize. No need to.",
-      "Did three things at once. Got away with it."
+      "Did three things at once. Got away with it.",
+      "Three trails crossing in the same clearing. Followed all three.",
+      "Stone, tree, scent. The day had everything.",
+      "The bag took its share from each, and was still light enough to carry.",
+      "Worked from soil to bark to bone, all in a morning.",
+      "All three roles asked for a paw. All three got one."
     ]
   },
   "hazard_journal_lines": {
     "light": [
       "Something for everyone today, including the hazards.",
       "The forest, the stone, and the mob all had opinions.",
-      "Spread too thin. Adapted."
+      "Spread too thin. Adapted.",
+      "Tools tangled three ways. Sorted in two ways. Worked anyway.",
+      "Three minor problems in three minutes. Took them in turn.",
+      "Slipped, stuck, scratched. The trifecta of small troubles. Walked it off.",
+      "Each role got a small reminder of why it is hard. Each role responded.",
+      "Inconvenience, three flavors. Carried them all."
     ],
     "moderate": [
       "Three problems. One paw at a time.",
       "The stone, the tree, and the mob disagreed about who went first.",
-      "Overextended. Pulled back. Reassessed."
+      "Overextended. Pulled back. Reassessed.",
+      "All three trades wanted me at once. Picked the loudest first.",
+      "Wrong tool in each paw. Switched twice before settling.",
+      "Could only do two of the three at once. Did the third afterward.",
+      "Bag got heavy in the wrong order. Re-stacked it standing up.",
+      "The work multiplied. So did the paws, almost."
     ],
     "severe": [
       "Everything happened at once. Still here.",
       "The world had strong opinions. Argued back.",
-      "Survived by refusing to specialize in dying."
+      "Survived by refusing to specialize in dying.",
+      "Tree, stone, and tooth all came after me at once. Made a fourth thing.",
+      "All three problems decided to share a clearing. Left the clearing.",
+      "Spread thin enough to be in three places at once. Two of them tried to kill me.",
+      "Came home with proof of three near-disasters. Did not display the proof.",
+      "Should not have walked out of that. Walked out anyway."
     ]
   }
 }
