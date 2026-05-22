@@ -1,6 +1,7 @@
 {
   "zones": [1, 2],
   "weight": 12,
+  "excluded_biome_categories": ["ocean"],
   "loot_table": "workingwolves:expedition/hunter/enderman",
   "journal_lines": [
     "Tall thing in the dark. Careful not to look directly.",

@@ -1,0 +1,11 @@
+{
+  "wood_biome_id": "sparse",
+  "loot_table": "workingwolves:expedition/woodcutter/sparse",
+  "journal_lines": [
+    "No real timber here. Gathered what branches could be found.",
+    "Sparse canopy at best. Not worth the axe.",
+    "Wrong place for this work. Thin scrub, no proper stands.",
+    "Came back with sticks. Nothing here worth felling.",
+    "Looked for lumber. Found none. Picked up dead branches on the way back."
+  ]
+}

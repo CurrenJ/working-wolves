@@ -371,12 +371,23 @@ public class ExpeditionSimulator {
         bed.setChanged();
     }
 
+    private static float biomeHazardMultiplier(String biome) {
+        return switch (biome) {
+            case "cave" -> 1.5f;
+            case "ocean" -> 1.25f;
+            case "mountain" -> 1.15f;
+            case "plains" -> 0.7f;
+            default -> 1.0f;
+        };
+    }
+
     void applyHazardCost(Level level, Random rng, HazardLevel hl) {
-        simSatiation -= switch (hl) {
+        int baseDamage = switch (hl) {
             case LIGHT -> 2;
             case MODERATE -> 4;
             case SEVERE -> 6;
         };
+        simSatiation -= Math.round(baseDamage * biomeHazardMultiplier(simBiomeCategory));
 
         if (hl == HazardLevel.SEVERE) {
             boolean armorAbsorbs = simArmorPoints >= 8 || (simArmorPoints >= 4 && rng.nextFloat() < 0.5f);

@@ -1,6 +1,7 @@
 {
   "zones": [1, 2],
   "weight": 15,
+  "required_biome_categories": ["plains", "forest"],
   "loot_table": "workingwolves:expedition/hunter/pillager",
   "journal_lines": [
     "Pillager patrol. Took the long way around. Then didn't.",

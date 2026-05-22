@@ -3,7 +3,7 @@
   "weight": 35,
   "loot_table": "workingwolves:expedition/miner/iron",
   "silk_touch_loot_table": "workingwolves:expedition/miner/iron_silk",
-  "biome_bonus_categories": ["mountain", "cave"],
+  "biome_bonus_categories": ["mountain", "cave", "plains"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/iron_bonus",
   "journal_lines": [
     "Good iron seam. Rust-orange in the wall.",

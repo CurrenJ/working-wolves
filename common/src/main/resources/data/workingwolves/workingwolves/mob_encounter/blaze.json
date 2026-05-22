@@ -1,7 +1,7 @@
 {
   "zones": [2],
   "weight": 10,
-  "required_biome_categories": ["mountain", "cave", "other"],
+  "required_biome_categories": ["cave", "other"],
   "loot_table": "workingwolves:expedition/hunter/blaze",
   "journal_lines": [
     "Blaze near the magma. Heat radiating.",

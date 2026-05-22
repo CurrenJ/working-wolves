@@ -1,6 +1,7 @@
 {
   "zones": [2],
   "weight": 12,
+  "required_biome_categories": ["cave", "other"],
   "loot_table": "workingwolves:expedition/hunter/wither_skeleton",
   "journal_lines": [
     "Wither skeleton. Black bones. Careful.",

@@ -1,6 +1,7 @@
 {
   "zones": [1, 2],
   "weight": 10,
+  "required_biome_categories": ["plains", "mountain", "ocean"],
   "loot_table": "workingwolves:expedition/hunter/phantom",
   "journal_lines": [
     "Phantom diving from above. Watched for the shadow.",

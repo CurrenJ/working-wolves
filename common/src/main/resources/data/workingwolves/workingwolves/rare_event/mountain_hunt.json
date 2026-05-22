@@ -1,0 +1,14 @@
+{
+  "conditions": {
+    "biome_categories": ["mountain"],
+    "requires_hunting": true
+  },
+  "weight": 12,
+  "loot_table": "workingwolves:expedition/rare/mountain_hunt",
+  "journal_lines": [
+    "High prey. The altitude made everything harder. The return made it worth it.",
+    "Mountain quarry. Fast and sure-footed. Matched it.",
+    "Chased something up the slope. Came down with more than expected.",
+    "The best hunts are the ones that require the climb."
+  ]
+}

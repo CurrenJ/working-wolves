@@ -1,0 +1,16 @@
+{
+  "conditions": {
+    "biome_categories": ["cave"],
+    "requires_mining": true,
+    "requires_woodcutting": true
+  },
+  "cross_role": true,
+  "weight": 18,
+  "loot_table": "workingwolves:expedition/rare/dripstone_cavern",
+  "journal_lines": [
+    "Cavern with good stalactites. The woodcutter helped prop the ceiling. The miner worked the walls. Good arrangement.",
+    "Dripstone cave. Braced the passages and went deep. Paid off.",
+    "Shored up the tunnel before going further. Worth the caution.",
+    "Careful work in the wet cave. The stone gave back what we put in."
+  ]
+}

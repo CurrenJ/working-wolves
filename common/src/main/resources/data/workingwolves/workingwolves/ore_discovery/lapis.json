@@ -3,6 +3,8 @@
   "weight": 15,
   "loot_table": "workingwolves:expedition/miner/lapis",
   "silk_touch_loot_table": "workingwolves:expedition/miner/lapis_silk",
+  "biome_bonus_categories": ["ocean", "cave"],
+  "biome_bonus_loot_table": "workingwolves:expedition/miner/lapis_bonus",
   "journal_lines": [
     "Blue dust in the cracks. Lapis.",
     "Deep blue vein. Rich and consistent.",

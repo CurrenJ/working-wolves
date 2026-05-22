@@ -1,6 +1,7 @@
 {
   "zones": [1, 2],
   "weight": 10,
+  "required_biome_categories": ["forest", "other"],
   "loot_table": "workingwolves:expedition/hunter/witch",
   "journal_lines": [
     "Witch in the clearing. Moved fast.",

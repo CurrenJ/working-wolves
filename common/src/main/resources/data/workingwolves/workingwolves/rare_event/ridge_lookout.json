@@ -1,0 +1,16 @@
+{
+  "conditions": {
+    "biome_categories": ["mountain"],
+    "requires_hunting": true,
+    "requires_mining": true
+  },
+  "cross_role": true,
+  "weight": 25,
+  "loot_table": "workingwolves:expedition/rare/ridge_lookout",
+  "journal_lines": [
+    "High ground gives everything away. The hunter spotted the quarry. The miner spotted the vein. Both worth the climb.",
+    "Ridge with a view of the valley and the stone. Took what we came for and more.",
+    "Lookout point. Used it well. The mountain gives back when you get above it.",
+    "From up here you can see where the ore runs and where the animals water. Useful."
+  ]
+}

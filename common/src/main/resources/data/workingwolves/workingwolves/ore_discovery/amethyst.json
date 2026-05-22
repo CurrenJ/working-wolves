@@ -3,6 +3,8 @@
   "weight": 15,
   "loot_table": "workingwolves:expedition/miner/amethyst",
   "silk_touch_loot_table": "workingwolves:expedition/miner/amethyst_silk",
+  "biome_bonus_categories": ["cave", "mountain"],
+  "biome_bonus_loot_table": "workingwolves:expedition/miner/amethyst_bonus",
   "journal_lines": [
     "Hollow in the rock, purple-lined. Geode.",
     "Amethyst cluster. Chimed when I worked it.",

@@ -24,7 +24,7 @@ class ExpeditionBiomeHelper {
     static String getWoodBiome(Level level, BlockPos pos) {
         Holder<Biome> holder = level.getBiome(pos);
         Identifier loc = holder.unwrapKey().map(k -> k.identifier()).orElse(null);
-        if (loc == null) return "forest";
+        if (loc == null) return "sparse";
         String path = loc.getPath();
         if (path.contains("bamboo") || path.contains("jungle")) return "jungle";
         if (path.contains("cherry")) return "cherry";
@@ -33,6 +33,7 @@ class ExpeditionBiomeHelper {
         if (path.contains("savanna")) return "savanna";
         if (path.contains("taiga") || path.contains("snowy_forest") || path.contains("spruce")
                 || path.contains("grove") || path.contains("mountain") || path.contains("peak")) return "taiga";
-        return "forest";
+        if (path.contains("forest") || path.contains("birch")) return "forest";
+        return "sparse";
     }
 }
