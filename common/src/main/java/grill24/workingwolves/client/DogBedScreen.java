@@ -88,7 +88,10 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
     };
 
     private final Random floorRandom = new Random();
-    private String lastFloorTheme = "";
+    private String lastKnownTheme = "";    // for detecting theme changes
+    private String oldTheme = "";          // theme we're blending away from
+    private float themeBlend = 1f;         // 0 = fully oldTheme, 1 = fully current theme
+    private static final float THEME_BLEND_RATE = 1f / 30f; // blend completes over ~30 block generations
     private BlockState[] floorGrid = null;          // WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS, row-major
     private BlockState[] sideObjectGrid = null;     // parallel grid; AIR along wolf's diagonal path
     private float floorRemainderZ = 0f;             // fractional scroll [0, 1)
@@ -405,19 +408,9 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
 
     /** Current floor theme string, used to detect theme changes. */
     private String floorTheme() {
-        if (DogBedScreenData.hasMining) return "mine_" + miningZone();
+        if (DogBedScreenData.hasMining) return "mine";
         if (DogBedScreenData.hasWoodcutting) return "wood";
         return "hunt";
-    }
-
-    /** Maps expedition progress to a 1-3 mining zone (surface → cave → deep cave). */
-    private int miningZone() {
-        int total = DogBedScreenData.simTotalTicks;
-        if (total <= 0) return 1;
-        float progress = (float) DogBedScreenData.simElapsedTicks / total;
-        if (progress >= 0.67f) return 3;
-        if (progress >= 0.33f) return 2;
-        return 1;
     }
 
     /** Random scenery object for a side cell, or AIR on the row the wolf visually overlaps. */
@@ -426,7 +419,7 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         if (row == 2) return Blocks.AIR.defaultBlockState(); // Wolf overlaps row 2, so no side objects there
         if (floorRandom.nextFloat() >= SIDE_OBJECT_CHANCE) return Blocks.AIR.defaultBlockState();
         return switch (floorTheme()) {
-            case "mine_1", "mine_2", "mine_3" -> {
+            case "mine" -> {
                 int r = floorRandom.nextInt(4);
                 if (r == 0) yield Blocks.CRAFTING_TABLE.defaultBlockState();
                 if (r == 1) yield Blocks.FURNACE.defaultBlockState();
@@ -449,10 +442,23 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         };
     }
 
-    /** Weighted random block for the current expedition theme. */
+    /** Weighted random block for the current theme, blending from the previous theme when it just changed. */
     private BlockState randomFloorBlock() {
-        return switch (floorTheme()) {
-            case "mine_1", "mine_2", "mine_3" -> randomMineFloorBlock();
+        String theme = floorTheme();
+        if (!theme.equals(lastKnownTheme)) {
+            oldTheme = lastKnownTheme;
+            lastKnownTheme = theme;
+            themeBlend = 0f;
+        }
+        themeBlend = Math.min(1f, themeBlend + THEME_BLEND_RATE);
+        if (themeBlend < 1f && !oldTheme.isEmpty() && floorRandom.nextFloat() >= themeBlend)
+            return blockForTheme(oldTheme);
+        return blockForTheme(theme);
+    }
+
+    private BlockState blockForTheme(String theme) {
+        return switch (theme) {
+            case "mine" -> randomMineFloorBlock();
             case "wood" -> {
                 int r = floorRandom.nextInt(13);
                 if (r < 5) yield Blocks.PODZOL.defaultBlockState();
@@ -471,9 +477,27 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         };
     }
 
-    /** Zone-specific weighted floor block for the mining theme. */
+    /** Width of the palette blend window (in expedition-progress units) centred on each zone threshold. */
+    private static final float MINE_ZONE_TRANSITION = 0.08f;
+
+    /** Blended floor block: near zone thresholds, samples probabilistically from both adjacent palettes. */
     private BlockState randomMineFloorBlock() {
-        return switch (miningZone()) {
+        int total = DogBedScreenData.simTotalTicks;
+        if (total <= 0) return randomMineFloorBlockForZone(1);
+        float progress = (float) DogBedScreenData.simElapsedTicks / total;
+
+        // blend12: 0.0 = pure zone 1, 1.0 = pure zone 2+  (window centred on 0.33)
+        float blend12 = Math.max(0f, Math.min(1f, (progress - (0.33f - MINE_ZONE_TRANSITION * 0.5f)) / MINE_ZONE_TRANSITION));
+        // blend23: 0.0 = pure zone 2, 1.0 = pure zone 3   (window centred on 0.67)
+        float blend23 = Math.max(0f, Math.min(1f, (progress - (0.67f - MINE_ZONE_TRANSITION * 0.5f)) / MINE_ZONE_TRANSITION));
+
+        if (blend23 > 0f)
+            return floorRandom.nextFloat() < blend23 ? randomMineFloorBlockForZone(3) : randomMineFloorBlockForZone(2);
+        return floorRandom.nextFloat() < blend12 ? randomMineFloorBlockForZone(2) : randomMineFloorBlockForZone(1);
+    }
+
+    private BlockState randomMineFloorBlockForZone(int zone) {
+        return switch (zone) {
             case 2 -> { // mid-depth: stone/deepslate mix, ~5% ore
                 int r = floorRandom.nextInt(20);
                 if (r < 5)  yield Blocks.STONE.defaultBlockState();
@@ -503,15 +527,16 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         };
     }
 
-    /** Ensure the floor grid is initialized for the current theme. */
+    /** Ensure the floor grid is initialized. Never wipes on theme change — new blocks scroll in with blending naturally. */
     private void ensureFloorGrid() {
-        String theme = floorTheme();
-        if (floorGrid != null && floorGrid.length == WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS && theme.equals(lastFloorTheme))
+        int expectedSize = WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS;
+        if (floorGrid != null && floorGrid.length == expectedSize)
             return;
 
-        int size = WolfPreviewFloorRenderer.FLOOR_COLS * WolfPreviewFloorRenderer.FLOOR_ROWS;
-        floorGrid = new BlockState[size];
-        sideObjectGrid = new BlockState[size];
+        lastKnownTheme = floorTheme();
+        themeBlend = 1f;
+        floorGrid = new BlockState[expectedSize];
+        sideObjectGrid = new BlockState[expectedSize];
         for (int row = 0; row < WolfPreviewFloorRenderer.FLOOR_ROWS; row++) {
             for (int col = 0; col < WolfPreviewFloorRenderer.FLOOR_COLS; col++) {
                 int i = row * WolfPreviewFloorRenderer.FLOOR_COLS + col;
@@ -523,7 +548,6 @@ public class DogBedScreen extends GelatinUIScreen<DogBedMenu> {
         floorRemainderX = 0f;
         floorOriginX = 0;
         floorOriginZ = 0;
-        lastFloorTheme = theme;
     }
 
     /** Advance scroll by a frame delta (in tick units), shifting the queue when a block boundary is crossed. */
