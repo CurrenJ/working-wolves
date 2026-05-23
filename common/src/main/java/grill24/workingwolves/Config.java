@@ -30,6 +30,9 @@ public class Config {
     /** Multiplier applied to all expedition tool durability damage (1.0 = default, 0.5 = half wear, 2.0 = double wear). */
     public static float expeditionDurabilityMultiplier = 1.0f;
 
+    /** Satiation drained per expedition event roll, before any event outcome is resolved. */
+    public static int expeditionPassiveSatiationDrain = 1;
+
     /** When true, creepers will not prime or explode when targeted by working wolves. */
     public static boolean hunterCreeperSafe = true;
 

@@ -21,22 +21,32 @@ public class ModRecipeProvider extends FabricRecipeProvider {
         return new RecipeProvider(registries, output) {
             @Override
             public void buildRecipes() {
-                ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.MISC, ModItems.LEATHER_COLLAR.value())
-                        .requires(Items.LEATHER)
-                        .requires(Items.STRING)
+                ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.MISC, ModItems.LEATHER_COLLAR.value())
+                        .pattern("LLL")
+                        .pattern("L L")
+                        .pattern("LLL")
+                        .define('L', Items.LEATHER)
                         .unlockedBy("has_leather", has(Items.LEATHER))
                         .save(this.output);
 
-                ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.MISC, ModItems.IRON_STUDDED_COLLAR.value())
-                        .requires(ModItems.LEATHER_COLLAR.value())
-                        .requires(Items.IRON_INGOT, 2)
+                ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.MISC, ModItems.IRON_STUDDED_COLLAR.value())
+                        .pattern("IBI")
+                        .pattern("BLB")
+                        .pattern("IBI")
+                        .define('I', Items.IRON_INGOT)
+                        .define('B', Items.IRON_BLOCK)
+                        .define('L', ModItems.LEATHER_COLLAR.value())
                         .unlockedBy("has_leather_collar", has(ModItems.LEATHER_COLLAR.value()))
                         .save(this.output);
 
-                ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.MISC, ModItems.GOLD_TRIMMED_COLLAR.value())
-                        .requires(ModItems.IRON_STUDDED_COLLAR.value())
-                        .requires(Items.GOLD_INGOT, 2)
-                        .unlockedBy("has_iron_collar", has(ModItems.IRON_STUDDED_COLLAR.value()))
+                ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.MISC, ModItems.GOLD_TRIMMED_COLLAR.value())
+                        .pattern("GBG")
+                        .pattern("BLB")
+                        .pattern("GBG")
+                        .define('G', Items.GOLD_INGOT)
+                        .define('B', Items.GOLD_BLOCK)
+                        .define('L', ModItems.IRON_STUDDED_COLLAR.value())
+                        .unlockedBy("has_leather_collar", has(ModItems.LEATHER_COLLAR.value()))
                         .save(this.output);
 
                 ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.MISC, ModBlocks.DOG_BED.value())

@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_iron_collar": {
+    "has_leather_collar": {
       "conditions": {
         "items": [
           {
-            "items": "workingwolves:iron_studded_collar"
+            "items": "workingwolves:leather_collar"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_iron_collar"
+      "has_leather_collar"
     ]
   ],
   "rewards": {

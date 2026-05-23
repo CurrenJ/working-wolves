@@ -433,6 +433,27 @@ public class ExpeditionSimulator {
         int zone = Math.min(progress < 0.25f ? 0 : progress < 0.75f ? 1 : 2, maxZone);
         Random rng = newRng(level);
 
+        if (Config.expeditionPassiveSatiationDrain > 0) {
+            simSatiation -= Config.expeditionPassiveSatiationDrain;
+            if (simSatiation <= 0) {
+                int nutrition = eatFoodFromWolfBag(level);
+                if (nutrition > 0) {
+                    simSatiation += nutrition;
+                    if (countFoodItemsInBag(level) == 1) {
+                        addLifecycleLine(level, ExpeditionLifecycleEntry::lowFoodLines);
+                    }
+                } else {
+                    simInjuryCount++;
+                    if (simInjuryCount >= 3) {
+                        boolean death = simArmorPoints < 4 && rng.nextFloat() < 0.12f;
+                        complete(level, true, death);
+                        return;
+                    }
+                    addLifecycleLine(level, ExpeditionLifecycleEntry::lowResourcesLines);
+                }
+            }
+        }
+
         if (rng.nextFloat() < Config.rareEventChance && RareEventHandler.roll(level, zone, rng, this)) return;
 
         int roleCount = (simHasMining ? 1 : 0) + (simHasHunting ? 1 : 0) + (simHasWoodcutting ? 1 : 0);
@@ -538,6 +559,19 @@ public class ExpeditionSimulator {
             }
         }
         return 0;
+    }
+
+    private int countFoodItemsInBag(Level level) {
+        if (!(level instanceof ServerLevel sl)) return 0;
+        Entity entity = sl.getEntity(simWolfUuid);
+        if (!(entity instanceof Wolf wolf)) return 0;
+        IWorkingWolf mixin = (IWorkingWolf) (Object) wolf;
+        NonNullList<ItemStack> bag = mixin.workingwolves$getBagInventory();
+        int count = 0;
+        for (ItemStack stack : bag) {
+            if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) count += stack.getCount();
+        }
+        return count;
     }
 
     private void moveToBag(NonNullList<ItemStack> bag, Predicate<ItemStack> filter) {

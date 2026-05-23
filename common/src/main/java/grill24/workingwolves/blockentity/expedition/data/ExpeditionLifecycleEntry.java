@@ -17,7 +17,8 @@ public record ExpeditionLifecycleEntry(
         List<String> successLines,
         List<String> arrivalLines,
         List<String> lowResourcesLines,
-        List<String> lootLossLines
+        List<String> lootLossLines,
+        List<String> lowFoodLines
 ) {
     public static final Codec<ExpeditionLifecycleEntry> CODEC = RecordCodecBuilder.create(instance ->
         instance.group(
@@ -29,7 +30,8 @@ public record ExpeditionLifecycleEntry(
             Codec.STRING.listOf().fieldOf("success_lines").forGetter(ExpeditionLifecycleEntry::successLines),
             Codec.STRING.listOf().fieldOf("arrival_lines").forGetter(ExpeditionLifecycleEntry::arrivalLines),
             Codec.STRING.listOf().fieldOf("low_resources_lines").forGetter(ExpeditionLifecycleEntry::lowResourcesLines),
-            Codec.STRING.listOf().fieldOf("loot_loss_lines").forGetter(ExpeditionLifecycleEntry::lootLossLines)
+            Codec.STRING.listOf().fieldOf("loot_loss_lines").forGetter(ExpeditionLifecycleEntry::lootLossLines),
+            Codec.STRING.listOf().optionalFieldOf("low_food_lines", List.of("Last of the food. Making it count.")).forGetter(ExpeditionLifecycleEntry::lowFoodLines)
         ).apply(instance, ExpeditionLifecycleEntry::new)
     );
 

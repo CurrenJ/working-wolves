@@ -119,5 +119,17 @@
     "Something fell behind. Stayed behind.",
     "The bag emptied a little. Not by my choosing.",
     "Lost some weight off the bag. The lost weight had a name. Forgot it."
+  ],
+  "low_food_lines": [
+    "Last of the food. Making it count.",
+    "One piece left. Saving it.",
+    "Ate the last but one. Watching the bag now.",
+    "Food is nearly gone. The work is not.",
+    "Down to the last scrap. Hoping it stretches.",
+    "The food side of the bag is almost nothing now.",
+    "One left. After that, the bag is just weight.",
+    "Rationing. The last one always has to last longer than the ones before it.",
+    "Checked the bag. One piece. Did not put it back.",
+    "Almost out of food. Not yet out of ground to cover."
   ]
 }

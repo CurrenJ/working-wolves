@@ -1,10 +1,15 @@
 {
-  "type": "minecraft:crafting_shapeless",
+  "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "ingredients": [
-    "workingwolves:iron_studded_collar",
-    "minecraft:gold_ingot",
-    "minecraft:gold_ingot"
+  "key": {
+    "B": "minecraft:gold_block",
+    "G": "minecraft:gold_ingot",
+    "L": "workingwolves:iron_studded_collar"
+  },
+  "pattern": [
+    "GBG",
+    "BLB",
+    "GBG"
   ],
   "result": {
     "id": "workingwolves:gold_trimmed_collar"
