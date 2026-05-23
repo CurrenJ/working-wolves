@@ -49,6 +49,9 @@ public class FabricConfig {
                 if (obj.has("rareEventCrossRoleChance")) {
                     Config.rareEventCrossRoleChance = obj.get("rareEventCrossRoleChance").getAsFloat();
                 }
+                if (obj.has("expeditionDurabilityMultiplier")) {
+                    Config.expeditionDurabilityMultiplier = obj.get("expeditionDurabilityMultiplier").getAsFloat();
+                }
 
                 WorkingWolves.LOGGER.info("Loaded config from {}", CONFIG_PATH);
             } catch (IOException e) {
@@ -72,6 +75,7 @@ public class FabricConfig {
         obj.addProperty("expeditionEventIntervalMaxTicks", Config.expeditionEventIntervalMaxTicks);
         obj.addProperty("rareEventChance", Config.rareEventChance);
         obj.addProperty("rareEventCrossRoleChance", Config.rareEventCrossRoleChance);
+        obj.addProperty("expeditionDurabilityMultiplier", Config.expeditionDurabilityMultiplier);
         try {
             Files.createDirectories(CONFIG_PATH.getParent());
             Files.writeString(CONFIG_PATH, new GsonBuilder().setPrettyPrinting().create().toJson(obj));

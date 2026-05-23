@@ -24,8 +24,11 @@ public class Config {
     /** Probability (0–1) that a rare event fires on each expedition event roll. */
     public static float rareEventChance = 0.025f;
 
-    /** Probability (0–1) that a cross-role rCan yare event fires when the wolf has 2+ roles. */
+    /** Probability (0–1) that a cross-role rare event fires when the wolf has 2+ roles. */
     public static float rareEventCrossRoleChance = 0.12f;
+
+    /** Multiplier applied to all expedition tool durability damage (1.0 = default, 0.5 = half wear, 2.0 = double wear). */
+    public static float expeditionDurabilityMultiplier = 1.0f;
 
     /** When true, creepers will not prime or explode when targeted by working wolves. */
     public static boolean hunterCreeperSafe = true;

@@ -87,10 +87,8 @@ public class ExpeditionSimulator {
         simLooting = 0;
         simAxeSpeed = 1.0f;
 
-        int foodCount = 0;
         for (ItemStack stack : bag) {
             if (stack.isEmpty()) continue;
-            if (stack.has(DataComponents.FOOD)) foodCount += stack.getCount();
             if (stack.is(ItemTags.PICKAXES)) {
                 simHasMining = true;
                 float speed = stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
@@ -113,7 +111,7 @@ public class ExpeditionSimulator {
             }
         }
 
-        simSatiation = 10 + foodCount * 4;
+        simSatiation = 0;
 
         Wolf wolf = (Wolf) (Object) mixin;
         simArmorPoints = (int) wolf.getAttributeValue(Attributes.ARMOR);

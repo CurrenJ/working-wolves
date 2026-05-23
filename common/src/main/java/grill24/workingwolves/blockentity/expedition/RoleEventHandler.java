@@ -1,5 +1,6 @@
 package grill24.workingwolves.blockentity.expedition;
 
+import grill24.workingwolves.Config;
 import grill24.workingwolves.blockentity.expedition.data.RoleEntry;
 import net.minecraft.world.level.Level;
 
@@ -77,7 +78,9 @@ class RoleEventHandler {
 
     private static void applyDurability(Level level, RoleEntry entry, int damage, ExpeditionSimulator sim) {
         if (damage <= 0 || entry.requiredToolTag().isEmpty() || entry.toolMessages().isEmpty()) return;
-        if (!ToolDurabilityHelper.apply(level, damage, entry.requiredToolTag().get(), entry.toolMessages().get(), sim)) {
+        int scaledDamage = Math.round(damage * Config.expeditionDurabilityMultiplier);
+        if (scaledDamage <= 0) return;
+        if (!ToolDurabilityHelper.apply(level, scaledDamage, entry.requiredToolTag().get(), entry.toolMessages().get(), sim)) {
             sim.complete(level, false, false);
         }
     }

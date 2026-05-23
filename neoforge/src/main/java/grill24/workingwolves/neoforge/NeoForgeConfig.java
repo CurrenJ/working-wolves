@@ -17,6 +17,7 @@ public class NeoForgeConfig {
     public static final ModConfigSpec.IntValue EXPEDITION_EVENT_INTERVAL_MAX_TICKS;
     public static final ModConfigSpec.DoubleValue RARE_EVENT_CHANCE;
     public static final ModConfigSpec.DoubleValue RARE_EVENT_CROSS_ROLE_CHANCE;
+    public static final ModConfigSpec.DoubleValue EXPEDITION_DURABILITY_MULTIPLIER;
 
     public static final ModConfigSpec SPEC;
 
@@ -61,6 +62,10 @@ public class NeoForgeConfig {
                 .comment("Probability (0.0–1.0) that a cross-role rare event fires when the wolf has 2+ roles.")
                 .defineInRange("rareEventCrossRoleChance", 0.12, 0.0, 1.0);
 
+        EXPEDITION_DURABILITY_MULTIPLIER = BUILDER
+                .comment("Multiplier applied to all expedition tool durability damage (1.0 = default, 0.5 = half wear, 2.0 = double wear).")
+                .defineInRange("expeditionDurabilityMultiplier", 1.0, 0.0, 10.0);
+
         SPEC = BUILDER.build();
     }
 
@@ -75,6 +80,7 @@ public class NeoForgeConfig {
         Config.expeditionEventIntervalMaxTicks = EXPEDITION_EVENT_INTERVAL_MAX_TICKS.get();
         Config.rareEventChance = RARE_EVENT_CHANCE.get().floatValue();
         Config.rareEventCrossRoleChance = RARE_EVENT_CROSS_ROLE_CHANCE.get().floatValue();
+        Config.expeditionDurabilityMultiplier = EXPEDITION_DURABILITY_MULTIPLIER.get().floatValue();
     }
 
     public static void onReload(ModConfigEvent.Reloading event) {
@@ -88,5 +94,6 @@ public class NeoForgeConfig {
         Config.expeditionEventIntervalMaxTicks = EXPEDITION_EVENT_INTERVAL_MAX_TICKS.get();
         Config.rareEventChance = RARE_EVENT_CHANCE.get().floatValue();
         Config.rareEventCrossRoleChance = RARE_EVENT_CROSS_ROLE_CHANCE.get().floatValue();
+        Config.expeditionDurabilityMultiplier = EXPEDITION_DURABILITY_MULTIPLIER.get().floatValue();
     }
 }

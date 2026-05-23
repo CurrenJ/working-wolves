@@ -2,6 +2,7 @@
   "name": "Hunter",
   "icon": "minecraft:iron_sword",
   "role_type": "hunting",
+  "required_tool_tag": "minecraft:swords",
   "zone_event_weights": [
     { "travel": 50, "discovery": 40, "hazard": 10 },
     { "travel": 30, "discovery": 45, "hazard": 25 },
@@ -12,6 +13,13 @@
     { "light": 48, "moderate": 40, "severe": 12 },
     { "light": 35, "moderate": 50, "severe": 15 }
   ],
+  "durability_damage": {
+    "travel": 0,
+    "discovery": 1,
+    "light_hazard": 2,
+    "moderate_hazard": 3,
+    "severe_hazard": 4
+  },
   "travel_journal_lines": {
     "0": [
       "Followed a scent through the trees.",
@@ -88,6 +96,51 @@
       "§c§lWitch§l at close range. §oSmell of potions, sharp and sweet.§o Took the hit, ran harder.",
       "§cOut of cover and out of options. Made one. It worked.",
       "§c§lWarden§l territory. §oVibrations wrong underfoot.§o Cleared the area without pressing luck."
+    ]
+  },
+  "tool_messages": {
+    "update_mining_stats": false,
+    "no_tool": [
+      "No blade left. Heading back.",
+      "Sword gone. Coming home.",
+      "Nothing to fight with. Turning around.",
+      "Out of steel. Going back to the bed.",
+      "No edge left. Coming home."
+    ],
+    "precious_break": [
+      "Sword too good to lose here. Heading back with it.",
+      "Cannot let the enchanted blade end this way. Coming home.",
+      "Will not spend the last of this one on a bad fight. Going home with it.",
+      "Worth too much to lose to one encounter. Bringing it back.",
+      "The good blade stays whole. Setting the hunt down."
+    ],
+    "broken": [
+      "Sword shattered.",
+      "Blade snapped on a hard parry. Done.",
+      "Steel broke clean through. Gone.",
+      "Hit something harder than the blade was. The blade lost.",
+      "Snapped at the worst moment. Gone."
+    ],
+    "last_gone": [
+      "Last sword gone. Heading back.",
+      "No more steel. Coming home.",
+      "End of the blades. Walking back.",
+      "Last of the swords spent. Turning toward the bed.",
+      "Nothing left to fight with. Going home."
+    ],
+    "switched_spare": [
+      "Switched to spare sword.",
+      "Set down the worn blade. Picked up the next.",
+      "Spare sword in the bag. Using it now.",
+      "Old blade aside. New blade in paw.",
+      "Picked up the second sword. Carried on."
+    ],
+    "nearly_done": [
+      "Sword nearly done. Heading back.",
+      "Blade worn thin. Going home before it gives.",
+      "Last few fights left in this one. Saving them.",
+      "Sword is close to spent. Coming back before it finishes.",
+      "Almost nothing left. Coming back with what's there."
     ]
   }
 }
