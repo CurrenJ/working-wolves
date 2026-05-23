@@ -6,17 +6,17 @@
   "biome_bonus_categories": ["ocean", "cave"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/lapis_bonus",
   "journal_lines": [
-    "Blue dust in the cracks. Lapis.",
-    "Deep blue vein. Rich and consistent.",
-    "Pigment in the stone. Took it carefully.",
-    "Lapis runs wide here. Good find.",
-    "Blue the color of the sky has never been. Sky-color from underneath.",
-    "Lapis in the wall like a piece of a forgotten evening.",
-    "Powder so blue it stained the paw. Did not mind.",
-    "The stone smelled like rain held back for centuries.",
-    "A nodule pressed into the deepslate like a thumbprint in clay.",
-    "Blue dust on the muzzle for hours after. Looked like winter.",
-    "Lapis takes the torchlight oddly. The torchlight goes home different.",
-    "Found the seam. Followed the seam. Brought the seam."
+    "§aBlue dust in the cracks first. §oThen the smell of deep stone and something older.§o §lLapis§l behind the grey.",
+    "§aBright blue in the wall, unexpected as sky underground. Took the whole seam.",
+    "§aPowder came off blue when I struck it. §lLapis§l runs wide here. Good find.",
+    "§aDeep blue vein, rich and consistent. Three strikes and the wall opened up.",
+    "§aStained the paw working it out. §oBlue like the outside of a held breath.§o Lapis, heavy and fine.",
+    "§aA nodule pressed into the deepslate like something deliberate. §lLapis§l, dense and clean.",
+    "§aBlue dust settled on the fur and stayed there. Carried the smell of it home too.",
+    "§aThe seam ran into the ceiling. Took what was in reach. Left the ceiling.",
+    "§aRich pigment in the stone. §oSomething like the colour of deep water, but solid.§o Lapis. Worth it.",
+    "§aFound the vein by the colour change — grey stone, then suddenly blue. Followed it.",
+    "§aChipped carefully. §lLapis§l crumbles if you're rough with it.",
+    "§aWide seam, easy access, consistent colour all the way through."
   ]
 }

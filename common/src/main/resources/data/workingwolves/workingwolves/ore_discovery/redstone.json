@@ -6,17 +6,17 @@
   "biome_bonus_categories": ["mountain", "cave"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/redstone_bonus",
   "journal_lines": [
-    "Red dust in the deepslate. Redstone.",
-    "Deep vein, crackling faintly. Took the lot.",
-    "Redstone runs in veins down here. Found a good one.",
-    "The deep rock glows red when you chip it.",
-    "Red glow steady in the wall, like a thing remembering its own heartbeat.",
-    "The dust hummed in the bag. Quiet, but it hummed.",
-    "Crackled when I struck it. Crackled less, eventually.",
-    "Red dust on the fur. Looked like I had been somewhere and won, modestly.",
-    "Worked the seam slowly. The stone did not like to give it up.",
-    "A vein you can almost hear thinking. Almost.",
-    "Found a chunk the size of a fist, still warm. Wrapped it in cloth.",
-    "Light went where the dust went. The bag glowed faintly all the way home."
+    "§aRed dust in the deepslate. §oA faint crackle when the pick touched it.§o §lRedstone§l vein, decent size.",
+    "§aCrackled when I struck it. Crackled less as it came out. Redstone.",
+    "§aGlow from inside the stone before I opened it. §lRedstone§l, warm and restless.",
+    "§aDust hummed in the bag on the way back. Quiet, but steady.",
+    "§aThe deepslate here has a faint charge to it. §oFur stood up a little when I pressed close.§o Redstone behind the wall.",
+    "§aRed light steady in the crack, like something holding its breath. Opened it. Took it.",
+    "§aFine red powder, then larger chunks further in. §lRedstone§l seam going deep.",
+    "§aStruck the wall and the dust that came off glowed for a moment. Good vein.",
+    "§aTook the whole seam. §oThe bag buzzed faintly for an hour after.§o Interesting ore.",
+    "§aWorked it slowly. Redstone doesn't like to be rushed out of the rock.",
+    "§aSeven good chunks before the vein thinned. §lRedstone§l. Worth the depth.",
+    "§aFound it low in the wall. Dug parallel and found more. Wide deposit down here."
   ]
 }

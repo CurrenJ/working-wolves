@@ -5,13 +5,13 @@
   "weight": 15,
   "loot_table": "workingwolves:expedition/rare/elder_guardian_shadow",
   "journal_lines": [
-    "The water darkened beneath. Something vast passed. It did not stop.",
-    "Shadow below the hull. Too large. Kept moving. It did too.",
-    "Something old in the deep water. Stayed near the surface. It stayed deep. Agreement reached.",
-    "Eye in the deep water that did not belong to a fish. Did not belong to anything I had a word for.",
-    "The shadow moved against the current. The current was wrong about itself, briefly.",
-    "Felt the slowness of it. Slower than time. Faster than I had supposed it would be.",
-    "Held breath at the surface. Heard a sound like distant doors closing one by one.",
-    "Stayed in the shallows the rest of the day. The shallows seemed reasonable."
+    "The water went dark beneath me. §oSomething vast, slow, not a fish. It passed. Did not surface.",
+    "A shadow below the surface too large to be a shadow. §oHeld position. It moved on. Stayed near the shallows after.",
+    "Something old in the deep water that was not interested in me specifically. §oThat felt like a narrow escape.",
+    "Eye in the deep that did not belong to anything with a name I had. §oIt looked. I looked. The ocean kept moving.",
+    "The shadow moved against the current. §oNot fighting it — just indifferent to it. Stayed very still.",
+    "Heard a low sound travel up through the water into my legs. §oDoors, or something like doors, closing far below.",
+    "Vast and slow. §oSlower than the water around it, which moved to accommodate. Kept to the surface until land.",
+    "It passed underneath and did not stop. The water was colder for a while after. Did not go deep the rest of the day."
   ]
 }

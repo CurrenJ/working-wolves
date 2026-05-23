@@ -6,17 +6,17 @@
   "biome_bonus_categories": ["ocean", "mountain"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/copper_bonus",
   "journal_lines": [
-    "Green bloom in the rock. Copper.",
-    "Blue-green tinge in the wall. Good sign.",
-    "Malachite in the stone. Copper vein behind it.",
-    "Copper ore, chunky and blue-streaked.",
-    "A vein of copper ran through the wall like a river drawn on a map nobody made.",
-    "Verdigris on the rock, the color of old bells nobody rings.",
-    "Copper warms in the paw. The stone keeps the heat for a long time after.",
-    "Blue-green dust on the fur. Looked like I had been swimming in something old.",
-    "Took the bright pieces. Left the dull. The dull will brighten in time.",
-    "Copper sings when the pickaxe finds it. A low note. A long one.",
-    "A nodule shaped like a small bird, almost. Took it anyway.",
-    "A streak of green leading into the dark. Followed it until it ran out."
+    "§aGreen bloom on the rock face. §oSmells faintly sweet, almost mineral-sour.§o §lCopper§l behind it.",
+    "§aBlue-green streak in the wall. Followed it. Good vein.",
+    "§aCopper turns green down here. §oDon't know why. Interesting.§o Brought the green copper.",
+    "§aMalachite staining on the stone, then the ore behind. Took both.",
+    "§aThe pickaxe rang low when it hit. §lCopper§l gives a different note than stone.",
+    "§aChunky ore, blue-streaked and warm in the paw. Heavier than it looks.",
+    "§aBright patches where the oxidation hadn't reached yet. §oFresh copper, almost orange.§o Took the bright ones.",
+    "§aVerdigris on the ceiling first. Looked up, found the vein above me.",
+    "§aDust came off blue-green when I struck it. §lCopper§l seam, wide and well-embedded.",
+    "§aFour separate nodules in a cluster. §oLike eggs in a nest the stone had made.§o Took them carefully.",
+    "§aRan my paw along the wall and felt the texture change. Copper there, rough and soft at once.",
+    "§aSmall vein, but dense. §lCopper§l ore solid all the way through."
   ]
 }

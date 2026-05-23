@@ -7,13 +7,13 @@
   "cross_role": true,
   "weight": 10,
   "journal_lines": [
-    "Tracked quarry into the tunnels. The miner knew the passages. The hunter knew when to wait.",
-    "Prey went underground. Followed. The dark was less of a problem with two sets of instincts.",
-    "Cave hunt. The miner lit the way. The hunter finished it.",
-    "Followed scent into stone. The stone yielded a little. The scent yielded more.",
-    "A creature that did not expect to be hunted in its own dark. Surprised it.",
-    "Took the prey. Took some ore on the way back through. Good arithmetic.",
-    "The mine became a corridor for the chase. The chase became a survey of the mine.",
-    "Closed off one passage with rubble. Drove the prey into the other. Both jobs at once."
+    "§oTracked the scent through stone corridors. The tunnels narrowed. The prey had not expected to be followed this far.",
+    "§aQuarry went underground. §lHunter§a knew the scent. Miner knew the passage. Both needed.",
+    "Drove the prey down a side tunnel by closing off the main one with rubble. Miner's thinking. Hunter's timing.",
+    "§aChase ended in a chamber with no exit. Good chamber for ore, too. Both jobs finished in the same place.",
+    "The prey thought darkness was protection. The miner had been working in this dark for hours already.",
+    "§aFollowed the animal in, found ore on the way back out. §lTunnel§a work teaches you to notice everything.",
+    "Cave hunt is different — slower, quieter, close quarters. The miner kept the route. The hunter kept the nose.",
+    "§aTook the quarry. Surveyed the passage on the way back through. Neither wasted the trip."
   ]
 }

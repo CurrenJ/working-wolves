@@ -8,13 +8,13 @@
   "weight": 25,
   "loot_table": "workingwolves:expedition/rare/crop_raid",
   "journal_lines": [
-    "Fields at the edge of the plains. Someone's crop, untended. We cleared the animals and took what was left.",
-    "Abandoned farm. The harvest was still standing. Not for long.",
-    "Chased off whatever was eating the field. Took the rest ourselves.",
-    "Overgrown field on the plains. Animals in the crop, crop in the field. Sorted both.",
-    "Farmhouse with the door open and nobody home. The field had been waiting for someone to claim it.",
-    "Scarecrow with a sparrow on its hat. The sparrow was the only thing keeping order out there.",
-    "Took grain by the mouthful. Took some animals too. Both had had their fill of the field.",
-    "Long rows of something that wanted picking. Picked some, scared off the rest of what was picking, came home with both."
+    "§oSmelled grain and blood before the field came into view. Something had been working the rows for days.",
+    "§aAbandoned field at the plain's edge. Hunter cleared the animals. Woodcutter cleared the overgrowth. Both bags filled.",
+    "Rabbits in the wheat, boars at the field margin. Chased both. Took what we chased.",
+    "§aThe crop had been standing untended. It waited. §lHarvest§a split between hunt and salvage.",
+    "Farmhouse empty, door standing open. The field had not waited for an owner. Neither did we.",
+    "Chased animals out of the rows, then came back through what they had left. The field rewarded both jobs.",
+    "§aScarecrow with no effect on anything. §oThe whole field smelled like something had been eating it for weeks. We did better.",
+    "Long rows, half-stripped. The hunter took what was running. The woodcutter took what was standing. Good split."
   ]
 }

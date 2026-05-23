@@ -6,17 +6,17 @@
   "biome_bonus_categories": ["cave", "mountain"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/amethyst_bonus",
   "journal_lines": [
-    "Hollow in the rock, purple-lined. Geode.",
-    "Amethyst cluster. Chimed when I worked it.",
-    "Crystal lining in the geode. Careful work.",
-    "Purple light from inside the stone. Good find.",
-    "The geode opened like a flower that had been waiting a long time.",
-    "Crystals like teeth, set in a mouth that had not closed for ages.",
-    "Purple chimed against purple, soft as bells under water.",
-    "Did not crack the big one. Left it for the next wolf, or the next age.",
-    "Amethyst in the paw is colder than the stone around it. Always.",
-    "The hollow smelled like nothing. Truly nothing. Held my breath out of respect.",
-    "Picked the small clusters. Left the wall intact, mostly.",
-    "Light went in. Less light came out. Could not say where the rest went."
+    "§aHollow behind the wall. §oSmelled like nothing — no stone-smell, no damp, just absence.§o Geode. §lAmethyst§l inside.",
+    "§aPurple light from a crack in the deepslate. Opened it carefully.",
+    "§aChimed when the pick touched it. §oA high note, then a lower one.§o Amethyst cluster, full geode.",
+    "§aCrystal points everywhere inside. Worked the edges. Left the center intact.",
+    "§aThe hollow smelled still in a way moving air never does. §lAmethyst§l geode, well-formed.",
+    "§aSmall crack in the stone that widened into a chamber. Purple all the way around inside.",
+    "§aCold in the paw — colder than the surrounding rock. §lAmethyst§l always is.",
+    "§aTook the loose clusters. §oThey rang against each other in the bag, soft as a bell wrapped in cloth.§o",
+    "§aGeode opened on the third strike. Not small. Worked it for a while.",
+    "§aPurple points the size of a claw tip. Hundreds of them. Took what the bag could hold.",
+    "§aNoticed the tone the stone made when I tapped it. Hollow. Dug in. Found the geode.",
+    "§aClusters growing off clusters inside. §lAmethyst§l, deep and well-lit by its own colour."
   ]
 }

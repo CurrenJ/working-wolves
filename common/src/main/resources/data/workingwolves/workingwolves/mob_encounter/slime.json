@@ -4,17 +4,17 @@
   "required_biome_categories": ["cave", "plains", "forest"],
   "loot_table": "workingwolves:expedition/hunter/slime",
   "journal_lines": [
-    "Slimes in the low ground. Messy.",
-    "Green and persistent. Eventually gone.",
-    "Kept splitting. Kept at it.",
-    "Sticky work.",
-    "Each one broke into two. Each two into none, eventually.",
-    "A pile of them under a low ceiling, jiggling at me like a question.",
-    "The big one was easy. The small ones were many.",
-    "Stepped wrong and slid through three of them. The four-legged way out is not always elegant.",
-    "Smelled like rain through an old screen. Looked like nothing.",
-    "They reformed when I looked away. I stopped looking away.",
-    "Soft and stubborn. Like a thing trying to remember its own shape.",
-    "Bounced once. Did not bounce again."
+    "§lSlime§l in the low passage. Messy work. Got it done.",
+    "Big one split into four. Four split into more. Kept going.",
+    "§oSmelled like wet stone and nothing else.§o Heard it bouncing before I saw it.",
+    "Cleared the big one. The small ones took longer.",
+    "Stuck to my paw for a moment. Shook it off. Kept at it.",
+    "§lSlime§l under a low ceiling, six of them stacked in the damp. Worked through from the outside.",
+    "Each one that fell made two more. Didn't let that bother me.",
+    "Green and slow. Stubborn. Eventually gone.",
+    "§oThey bounce when they move. You can hear them well before they arrive.§o Used the time.",
+    "§cSlid into a cluster of the small ones. Four-legged scramble.§o Got clear. Cleared them.",
+    "Took the big one first. Then the smaller split-offs. Then the smaller ones after that.",
+    "Bounced off the wall and right at me. Dealt with it mid-air."
   ]
 }

@@ -6,17 +6,17 @@
   "biome_bonus_categories": ["mountain", "other"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/gold_bonus",
   "journal_lines": [
-    "Flash of yellow in the wall. Spent extra time here.",
-    "Gold vein. Thin, but real.",
-    "Dense rock, then yellow. Worth the work.",
-    "Glint in the torchlight. Took all of it.",
-    "Yellow in the dark like a slow sunrise. Worked toward it.",
-    "Gold does not rust, does not tarnish, does not forget. Carried it home gently.",
-    "A streak so thin it might have been a trick of the light. It was not.",
-    "Found a nugget the size of a tooth. Almost set it down. Did not.",
-    "The vein turned where the rock turned. The rock turned often.",
-    "Heavy in the bag the way only gold is heavy. The bag remembered.",
-    "Soft metal. Easy to take. Easy to lose. Did not lose it.",
-    "Older than the people who first wanted it. Will outlast the next ones too."
+    "§aYellow in the dark. §oNo smell to it, just the glint catching the torch.§o §lGold§l. Took all of it.",
+    "§aFlash of warm light in the wall. Stopped. Dug. Gold.",
+    "§aThin streak, easy to miss. §oI almost missed it.§o §lGold§l vein. Glad I looked twice.",
+    "§aHeavy ore. The bag sat differently on the way back.",
+    "§aGlint in the deepstone, §osoft and steady, not like a wet surface.§o Gold. Worked it slow.",
+    "§aSoft metal. Takes the pick gently. §lGold§l comes out in clean pieces if you let it.",
+    "§aFound a nugget the size of a tooth. Then another. Small vein, but real.",
+    "§aThe seam went wide, then thin, then wide again. §lGold§l following some old crack in the rock.",
+    "§aDense in the hand. §oHeavier than it has any right to be for its size.§o Good find.",
+    "§aWorked it for twice as long as planned. The vein kept going.",
+    "§aTwo veins crossing. §lGold§l at both intersections. Rare.",
+    "§aBrought it back carefully. Gold scratches against itself in the bag."
   ]
 }

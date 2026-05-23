@@ -4,17 +4,17 @@
   "excluded_biome_categories": ["ocean"],
   "loot_table": "workingwolves:expedition/hunter/enderman",
   "journal_lines": [
-    "Tall thing in the dark. Careful not to look directly.",
-    "Enderman. Made it look first.",
-    "Teleporting. Kept calm.",
-    "Purple eyes in the dark. Pearl for it.",
-    "Tall as the doorway. Did not fit through it. Did not need to.",
-    "It held a block of dirt the way you hold a memory.",
-    "Looked once. It looked back. There are rules about this.",
-    "Purple sound in the air. Like someone unstitching somewhere.",
-    "Was over here. Was over there. Was nowhere worth describing for a moment.",
-    "Tall and quiet and reasonable, until it was not.",
-    "Where it stood, the grass was bent flat. Where it went, the grass remembered.",
-    "Caught the pearl as it fell. Warm. Heavier than expected."
+    "§lEnderman§l. Kept my eyes down. Came in low.",
+    "Tall thing in the field. §oMade a sound like the air pulling apart.§o Stayed calm.",
+    "Purple eyes. Looked at my feet. Dealt with it at an angle.",
+    "§cTeleported behind me. §oFelt the air move before I heard it.§o Spun. Cleared it.",
+    "Watched it from the side of my eyes. No eye contact. Worked out.",
+    "Felled it. §oPearl still warm when I picked it up.§o Heavier than it looks.",
+    "It moved before I finished blinking. Ears told me where it went.",
+    "Strange one. §oHeld a block of dirt in both hands like it mattered.§o Let it keep it until it didn't.",
+    "Gone and back twice before I landed a clean hit. Third time stayed gone.",
+    "§lEnderman§l in the rain. §oThey don't like the rain.§o Used it.",
+    "Didn't look up. Didn't look directly. Came in from the side. Done.",
+    "§cShoulder caught its hand when it teleported through me. §oLeft a bruise.§o Kept moving."
   ]
 }

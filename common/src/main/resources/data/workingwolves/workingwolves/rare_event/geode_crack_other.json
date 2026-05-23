@@ -6,13 +6,13 @@
   "weight": 10,
   "loot_table": "workingwolves:expedition/rare/geode_crack_other",
   "journal_lines": [
-    "Kicked something that rang. A geode. Small but real.",
-    "Hollow stone underfoot. Broke it open. Violet inside.",
-    "The cave had crystals in it. Broke some free.",
-    "Tripped on a stone the size of a fist. It rolled, and it rang.",
-    "Inside, the small geode was a small world that had decided to be purple.",
-    "Did not need a pickaxe. Did need patience. Cracked it with care.",
-    "Crystals like small frozen flames. Carried them carefully.",
-    "Found it in a streambed. The water had been working on the outside for years. I worked on the inside in minutes."
+    "§aKicked a stone that rang instead of thudded. §oHollow. Cracked it open. Violet inside.",
+    "§aSomething underfoot that rang wrong. §oGeode, small, round. Broke it open with a rock. Worth it.",
+    "§aThe stone in the streambed had been worked on by the water for years. §oI finished in a few minutes. Crystals inside.",
+    "§aTripped on a rounded stone that rolled and rang. §oSet it down. Listened. Opened it. Good.",
+    "§aNo pickaxe. Did not need one. §oPatience and the right angle. The crystals inside were waiting.",
+    "§aFound a geode at the cave wall's edge, half-buried. §oCracked it with the back of an axe. Purple inside, tight and bright.",
+    "§aCrystals like small frozen flames. §oCarried them home wrapped in my kit. Didn't want them to touch anything harder.",
+    "§aHollow rock. §oThe sound was the tell. Broke it open carefully. Took everything inside that was loose."
   ]
 }

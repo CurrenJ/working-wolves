@@ -6,13 +6,13 @@
   "weight": 30,
   "loot_table": "workingwolves:expedition/rare/migrating_herd",
   "journal_lines": [
-    "Herd moving through the open ground. Large. Patient work, good return.",
-    "Migration through the plains. Took what we needed from the stragglers.",
-    "The whole valley moving at once. Picked carefully. Plenty to choose from.",
-    "Seasonal herd. Right place, right time. Good hunt.",
-    "The grass moved before the herd did. Then the herd. Then the grass again, behind them.",
-    "Took only what could be carried. The herd will be more numerous next season. They always are.",
-    "Followed the herd from a long way off for a long time. They knew. They moved on.",
-    "Dust on the horizon all morning. The dust had four legs each, mostly."
+    "§oSmelled them an hour before they came over the ridge. Thousands of them, moving as one thing.",
+    "§aHerd crossing the open plain. §lStraggler§a at the rear, falling further behind. Took it clean.",
+    "Dust on the horizon all morning before the shapes resolved. Waited in the grass. Patience paid.",
+    "§aThe migration covered the valley floor. §oThe sound was low and constant and everywhere. Took what was needed.",
+    "Ran alongside the edge of the herd for a long time before picking the moment. The moment was worth waiting for.",
+    "§aGood haul from the rear animals. §lHerd§a that size will not notice the loss. Back next season.",
+    "The grass moved before the herd did. Then the herd. Then the grass again, on the other side of it.",
+    "Followed from downwind the whole approach. They knew anyway. The slow ones always know."
   ]
 }

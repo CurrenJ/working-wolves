@@ -3,17 +3,17 @@
   "weight": 20,
   "loot_table": "workingwolves:expedition/hunter/spider",
   "journal_lines": [
-    "Spider on the ceiling. Didn't give it a chance.",
-    "Web across the path. Spider behind it.",
-    "Fast, but not fast enough.",
-    "Two of them. Handled in order.",
-    "Eight eyes watching from above, and none of them surprised.",
-    "Walked into the web before I saw it. The strands hum when you pull at them.",
-    "Old web in a corner, full of things older than the spider that made it.",
-    "It dropped on a thread of its own silk. I dropped it back.",
-    "The legs kept moving after the body stopped. Old habits.",
-    "A whole nursery of them in a side passage. Walked the long way around.",
-    "Silk thin as breath. Strong as wire.",
-    "Eyes catching torchlight. Then not catching it."
+    "§lSpider§l on the ceiling. Dropped before I passed under. Didn't get the chance.",
+    "Cleared the web first, then the spider behind it.",
+    "Fast. Got faster when it saw me. Dealt with it anyway.",
+    "§cLanded on my back. §oLegs were everywhere at once.§o Rolled it off. Finished it.",
+    "Two of them in a low tunnel. Handled in order.",
+    "§oWalked into silk before I saw the web.§o The strands hum when you pull at them. Located it by sound.",
+    "Eight eyes and none of them looking anywhere useful. Felled it.",
+    "Came down a thread right in front of me. Put it down before it touched ground.",
+    "§lSpider§l in the corner, still as the wall behind it. Smelled it before I saw it.",
+    "Nursery in a side passage. Too many. Took the long way.",
+    "Legs kept moving after it fell. Stepped clear and waited.",
+    "§oEyes caught the light before the body resolved out of the dark.§o Backed up. Changed my angle."
   ]
 }

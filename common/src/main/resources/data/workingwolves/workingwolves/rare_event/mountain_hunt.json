@@ -6,13 +6,13 @@
   "weight": 12,
   "loot_table": "workingwolves:expedition/rare/mountain_hunt",
   "journal_lines": [
-    "High prey. The altitude made everything harder. The return made it worth it.",
-    "Mountain quarry. Fast and sure-footed. Matched it.",
-    "Chased something up the slope. Came down with more than expected.",
-    "The best hunts are the ones that require the climb.",
-    "Goat on a ridge that did not have a way down. It found one. So did I.",
-    "Air thin as paper, near the summit. Each breath had to be a small one. Caught up anyway.",
-    "The mountain made the work harder. The mountain made the catch better.",
-    "Stood on a peak with the carry-bag full and the world below. Allowed myself a long look."
+    "§oAir thin enough to notice by the second pass up the slope. Noticed it. Kept climbing.",
+    "§aGoat on a ridge with no clear way down. Found a way down. §lGoat§a did not.",
+    "Chased something sure-footed up loose scree. Matched it step for step. The chase ended at the top.",
+    "§aHigh prey runs hard. The altitude costs both of you equally — except the wolf trained for it.",
+    "Tracked smell upslope through three switchbacks before the wind shifted. Adjusted. Caught up.",
+    "§aThe mountain makes everything harder. §lMountain quarry§a makes the carry worthwhile.",
+    "§oCold above the treeline, rock warm where the sun had been on it all morning. Good hunting ground.",
+    "§aCame down with a full bag and the summit behind. Both earned."
   ]
 }

@@ -6,13 +6,13 @@
   "weight": 20,
   "loot_table": "workingwolves:expedition/rare/abandoned_mineshaft_cave",
   "journal_lines": [
-    "Old tunnel in the cave wall. Followed it. Found what the miners left behind.",
-    "Someone dug here and stopped. Their ore stayed. Taking it now.",
-    "Abandoned shaft. Cobwebs on the tools. The stone underneath still had ore in it.",
-    "Found their pickaxe still leaning against the wall. Picked it up and set it back where they had left it.",
-    "Walked a tunnel they had hewn and forgotten. Their work was good work.",
-    "Old ladder rungs, half-rotted. Climbed down by feel. Did not look up.",
-    "A small handprint in the dust along the wall. Did not disturb it.",
-    "The tunnel ended in a wall they had been about to break through. Broke through it for them."
+    "§aOpening in the cave wall, timbered and old. §oSmelled of rust and absence. Went in. Found what was left.",
+    "§aSomeone dug this and stopped. §oThe tools were still on the floor. The ore they missed was still in the walls.",
+    "§aAbandoned shaft. Cart on the tracks, half-full. Wood gone soft, ore still sound. Took the ore.",
+    "§aTheir pickaxe was leaning against the wall where they had left it. §oI had no use for it. The ore behind it I did.",
+    "§aWalked a tunnel someone had hewn and left. §oThe work was careful. Whoever they were, they knew their craft.",
+    "§aLadder rungs half-rotted. Climbed down by feel. The ore at the bottom had been waiting.",
+    "§aA handprint in the dust near the floor of the shaft. §oSmall. Did not disturb it. Took the ore. Left the print.",
+    "§aThe tunnel ended at a wall they had been about to break through. §oFinished the job. The ore behind it was worth finishing."
   ]
 }

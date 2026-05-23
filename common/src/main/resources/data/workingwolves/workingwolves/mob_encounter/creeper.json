@@ -3,17 +3,17 @@
   "weight": 20,
   "loot_table": "workingwolves:expedition/hunter/creeper",
   "journal_lines": [
-    "Creeper behind a tree. Backed up fast.",
-    "Spotted it before it spotted me. Barely.",
-    "Quiet and green. Made noise before it could.",
-    "Kept distance. Worked out.",
-    "It made the small sound. I made a smaller one, further away.",
-    "A thing built around a single regret, looking for someone to share it with.",
-    "Saw the leaves move before I saw the green. The leaves were generous about it.",
-    "Hissed once. Did not hiss again.",
-    "Its shadow on the wall was patient. The thing casting it, less so.",
-    "Quiet patrol of one, looking for company. Did not provide any.",
-    "Heard the fuse start. Stopped hearing it.",
-    "Stalked it through the brush, the way it would have stalked me."
+    "§lCreeper§l in the brush. Wind at my back — smelled nothing until too late. Got clear anyway.",
+    "Backed up before the hiss finished. Gunpowder smell after.",
+    "Felled it at range. No point getting closer than you have to.",
+    "Leaves shifted wrong. Went around.",
+    "§cToo close when it started. §oEars still ringing.§o Fur singed at the shoulder.",
+    "Quiet until it isn't. Dealt with the quiet part first.",
+    "Circled it twice before it noticed me. Cleared it on the third pass.",
+    "Green thing standing perfectly still in the green. Saw the shape before I saw the color.",
+    "§oSmelled the sulfur before I saw it.§o Turned around. It had already found me.",
+    "No sound until the fuse. Then I was somewhere else.",
+    "Put it down before it could say anything about it.",
+    "§cBark off a nearby tree. §oWoke up on the wrong side of that one.§o Shook it off."
   ]
 }

@@ -8,13 +8,13 @@
   "weight": 18,
   "loot_table": "workingwolves:expedition/rare/dripstone_cavern",
   "journal_lines": [
-    "Cavern with good stalactites. The woodcutter helped prop the ceiling. The miner worked the walls. Good arrangement.",
-    "Dripstone cave. Braced the passages and went deep. Paid off.",
-    "Shored up the tunnel before going further. Worth the caution.",
-    "Careful work in the wet cave. The stone gave back what we put in.",
-    "Stalactites tall as small towers. Worked around them. The towers paid no attention.",
-    "The drip-drip of the cave kept time for the axe and the pickaxe both.",
-    "Wet ceiling. Set props. The props held. The ceiling held. Came home dry, mostly.",
-    "Water on the floor, water on the walls, water in the ceiling. Did the work in spite of the water."
+    "§oWet stone and old water — the smell of a cave that had been working on itself for a long time. Good ore smell underneath.",
+    "§aStalactites the height of small trees. §lWoodcutter§a set the props. Miner reached the walls. Neither alone would have managed.",
+    "Ceiling looked wrong. Braced it with fresh-cut timber before touching the rock face. Good call.",
+    "§aThe dripstone had cracked the good ore open over years. We took advantage. Props held the whole time.",
+    "Axe cut the supports. Pickaxe worked the seam. The cave dripped on both operations equally.",
+    "§oConstant drip kept time while the woodcutter and the miner traded turns. §aDeep work. Worth it.",
+    "Water on every surface. Brought timber down in sections, set them vertically in the wet floor. Did the work.",
+    "§aCame out damp. The ore came out dry, mostly. §lDripstone§a cavern pays if you prop it right."
   ]
 }

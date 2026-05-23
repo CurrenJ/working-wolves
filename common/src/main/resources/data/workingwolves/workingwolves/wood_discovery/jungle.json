@@ -2,15 +2,15 @@
   "wood_biome_id": "jungle",
   "loot_table": "workingwolves:expedition/woodcutter/jungle",
   "journal_lines": [
-    "Dense jungle. Every trunk laced with vines.",
-    "Something large moved through the understory. Held still.",
-    "Orchids growing from a wound in the bark.",
-    "The trees here do not fall cleanly.",
-    "A jungle tree falls into other jungle trees. Sometimes the ones beside it want to come too.",
-    "Vines thick as my leg. Cut through three before reaching the trunk.",
-    "Air heavy as a wet coat. The work took longer because of it.",
-    "A toucan watched from a branch three trees over. Did not move when the tree went.",
-    "Heat coming up through the paws from the ground. Even in shade.",
-    "Cocoa pods on the trunk like small lanterns. Left them. The vines would want them."
+    "§aHeat off the ground before I reached the canopy. §oSmelled like soil and rot and something flowering.§o Good §lJungle§l timber inside the vines.",
+    "§aCut through three vines before I reached the trunk. The trunk did not fall cleanly.",
+    "§aSomething moved in the understory. Held still. It moved on. Back to work.",
+    "§aThe air here is wet enough to drink. §oSweat and rain and bark all the same smell.§o Took longer because of it.",
+    "§aOrchids growing from a wound in the bark. Left the wound. Took the timber nearby.",
+    "§aVines came down with the tree. §lJungle§l doesn't let go of anything without argument.",
+    "§aDense wood, heavy timber. §oSmells green all the way through, even at the cut.§o Good take.",
+    "§aA bird watched from three canopy levels up. Did not move when the tree went. Unimpressed.",
+    "§aFallen trunk already claimed by ferns and beetles. Found a standing one further in.",
+    "§aTook twice as long as a forest would have. §lJungle§l gives timber slowly."
   ]
 }

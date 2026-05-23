@@ -7,17 +7,17 @@
   "biome_bonus_categories": ["cave"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/diamond_bonus",
   "journal_lines": [
-    "Blue-white flash in the deepslate. Stopped everything.",
-    "Diamond. Said nothing. Took it.",
-    "Vein ran to six. Took all of them.",
-    "Found it at the base of the cliff. Worth the whole trip.",
-    "A glint in the deepslate so cold the paw flinched.",
-    "Diamond does not glow. It refuses to. It only takes what light there is.",
-    "Older than ice. Harder than memory. Took it slowly.",
-    "The deepslate did not want to let it go. Convinced it.",
-    "A single stone the size of a tooth. Kept it close to the chest on the way home.",
-    "Two of them, side by side, like an old pair of eyes.",
-    "Found it where the light had not been in a thousand years. The light is back now, briefly.",
-    "Took the diamonds. Left a small mark on the wall where they had been."
+    "§a§lDiamond§l. §oSmells like nothing. Shines like everything.§o Took the whole vein.",
+    "§aBlue-white glint in the deepslate. Stopped moving. Dug very carefully.",
+    "§aSaid nothing when I found it. Worked it out in silence. Diamond.",
+    "§aThe deepslate held it tight. Took longer than it should have. Worth it.",
+    "§aCold flash in the torchlight. §o§lDiamond§l doesn't glow — it just takes what light there is and keeps it.§o",
+    "§aVein ran to four. Then two more beside it. Took all six.",
+    "§aPaw flinched when I touched it. §oCold that deep is a different kind of cold.§o Diamond.",
+    "§aFound it where no other ore was. §lDiamond§l sits alone down here.",
+    "§aThree strikes to open the deepslate. One stone inside. Kept it close on the way home.",
+    "§aWorked the seam for an hour. §oThe pick rang different on each one — cleaner, higher.§o All diamond.",
+    "§aTwo stones side by side in the rock. §lDiamond§l, both of them.",
+    "§aBrought it back. Whole trip was worth it."
   ]
 }

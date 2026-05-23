@@ -16,46 +16,46 @@
     "0": [
       "Stone underfoot. Scent on the air. Both, at once.",
       "Followed fresh tracks into a mine entrance.",
-      "Dig site and old bones together. Someone was here before.",
-      "The cave had teeth marks on the walls. Not from tools.",
-      "Something living down here. Also ore. Not unrelated.",
+      "The cave had tooth marks on the walls. §oNot from tools.",
+      "Something living down here. Also ore. §oNot unrelated.",
       "Hunting in a place where the ore is also worth taking. Two trails at once.",
       "Tracks and tunnel both leading down. Followed both.",
-      "Tunnel mouth with old bones at the entrance. The new bones were elsewhere.",
       "Smell of iron and game in the same passage. Worked both.",
-      "Stone scarred by claws and by tools. Could not tell which was older."
+      "Stone scarred by claws and by tools. §oCould not tell which was older.",
+      "Dig site and old bones together. Someone was here before.",
+      "Tunnel mouth with old bones at the entrance. The new bones were elsewhere."
     ]
   },
   "hazard_journal_lines": {
     "light": [
       "Pickaxe in one paw, eye on the dark. Difficult.",
-      "Interrupted mid-dig by something that disagreed.",
-      "The scent changed. Stopped digging. Waited.",
-      "Loose stone slipped while I was tracking. The track survived. Mostly.",
+      "The scent changed. §oStopped digging. Waited.",
+      "Loose stone slipped while I was tracking. §oThe track survived. Mostly.",
       "Cornered by something that turned out to be a bat. The bat won the argument briefly.",
       "Tunnel narrowed where the chase had wanted room. Adjusted.",
       "Lost the trail in the dust. Found it on the next wall.",
-      "Stopped mid-cut to listen. Something there. Something not there."
+      "Stopped mid-cut to listen. §oSomething there. Then not.",
+      "Interrupted mid-dig by something that disagreed."
     ],
     "moderate": [
-      "Mob cornered me mid-seam. Had to stop the work.",
-      "Swung at stone, hit something else instead.",
-      "Too deep to run. Had to fight instead.",
-      "Took a hit while the pickaxe was still in the wall. Pulled it out. Worked both jobs.",
-      "Prey turned around in the tunnel. Then the prey was behind me.",
-      "Tunnel collapsed where I had just been hunting. The hunt found a different shape.",
-      "Something fast in a place where I was slow. Got faster.",
-      "Quarry pinned itself in a side-passage. The side-passage gave me trouble too."
+      "§c§lMob cornered me mid-seam. Had to stop the work and back out.",
+      "§cSwung at stone, hit something else instead. §oSomething that hit back.",
+      "§cToo deep to run. §oHad to hold the ground instead.",
+      "§cTook a hit while the §lpickaxe was still in the wall. Pulled it out. Got clear.",
+      "§cPrey turned around in the tunnel. §oThen the prey was behind me.",
+      "§cTunnel collapsed where I had just been hunting. §oThe hunt found a different shape.",
+      "§cSomething fast in a place where I was slow. Got faster.",
+      "§c§lQuarry pinned itself in a side-passage. The passage gave me trouble too."
     ],
     "severe": [
-      "Everything at once. Stone, mob, darkness. Got through it.",
-      "The tunnel filled with them. Left fast.",
-      "Cornered in the deep. Dug another way out.",
-      "Pack and pickaxe both, all at once. Came out lighter. Came out.",
-      "Ceiling came down between me and the prey. Came down on neither of us.",
-      "Trapped between the seam and the snarl. Made a third option.",
-      "Bad day in two professions at once. Came home anyway.",
-      "Lost the trail, lost the pick, did not lose myself."
+      "§cStone, §lmob, darkness, all at once. Got through it.",
+      "§cThe tunnel filled with them. §oLeft fast.",
+      "§cCornered in the deep. §oDug another way out.",
+      "§c§lPack came through the cut as I was making it. §oFought the mob first. Finished the seam after.",
+      "§cCeiling came down between me and the §lprey. §oCame down on neither of us.",
+      "§cTrapped between the seam and the §lsnarl. Made a third option and took it.",
+      "§cStone and §ltooth found me at once. §oFought clear of both. Home a long way off. Got there.",
+      "§cLost in the deep with something behind me. §oClimbed until the air smelled like sky."
     ]
   }
 }

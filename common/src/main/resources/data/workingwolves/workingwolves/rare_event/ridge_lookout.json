@@ -8,13 +8,13 @@
   "weight": 25,
   "loot_table": "workingwolves:expedition/rare/ridge_lookout",
   "journal_lines": [
-    "High ground gives everything away. The hunter spotted the quarry. The miner spotted the vein. Both worth the climb.",
-    "Ridge with a view of the valley and the stone. Took what we came for and more.",
-    "Lookout point. Used it well. The mountain gives back when you get above it.",
-    "From up here you can see where the ore runs and where the animals water. Useful.",
-    "Spent an hour at the lookout. The mountain spoke. The mountain often does, from this height.",
-    "Wind at the ridge cold enough to teach the ears something. Stayed anyway, the view earned it.",
-    "Saw three herds and one seam from the same spot. Counted both as work.",
-    "Climbed for the seam, stayed for the view, went home with both."
+    "§oWind at the ridge smelled of both animals and mineral — ore dust and warm grass from the valley. Two jobs below us.",
+    "§aHunter spotted the herd watering at the valley floor. Miner spotted the §lseam§a where the ridge cracked open. Both worth it.",
+    "High ground shows you everything. Spent an hour reading it before descending with a plan.",
+    "§aSaw where the animals ran and where the stone thinned to ore from the same spot. The climb earned its keep.",
+    "The ridge gave a view of three valleys. The hunter took one. The miner took another. Both came back full.",
+    "§oEar-cold wind up there. §aStayed because below us was every piece of the day's work laid out at once.",
+    "Climbed for the seam, found the herd by accident. Took both. The mountain does not mind sharing.",
+    "§aFrom up here: herd direction, vein direction, return route. §lRidge§a work is efficient work."
   ]
 }

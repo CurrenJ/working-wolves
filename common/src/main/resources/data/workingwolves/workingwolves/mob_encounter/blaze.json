@@ -4,17 +4,17 @@
   "required_biome_categories": ["cave", "other"],
   "loot_table": "workingwolves:expedition/hunter/blaze",
   "journal_lines": [
-    "Blaze near the magma. Heat radiating.",
-    "Fire and spinning rods. Kept moving.",
-    "It found me first. That's fine.",
-    "Charged through the smoke. Worth it.",
-    "A small sun on a long axle. Bright. Briefer than it looked.",
-    "Spat fire the way a kettle spits steam. Same temperature, more intent.",
-    "Smelled like a furnace that had a name once and forgot it.",
-    "Spinning rods, each one a small grievance, all going the same direction.",
-    "Closed the distance during the breath between volleys. They breathe.",
-    "Heat shimmered off the walls for a long time after.",
-    "Rods cool in the bag quicker than I would have guessed.",
-    "Light went out of the room when it fell. Slowly. Like a memory."
+    "§lBlaze§l above the magma. Closed the gap between volleys.",
+    "§cFireball caught my flank. §oSmelled my own fur.§o Kept moving. Cleared it.",
+    "Spinning rods. Kept low. Got in close where the fire is harder to aim.",
+    "Heat before anything else — smell, sound, sight. Knew it was there.",
+    "Charged through the smoke on the exhale. Worth the singe.",
+    "§oIt breathes before it fires. §oShort breath. Used that.",
+    "§lBlaze§l near the stairs. Felled it before it found its range.",
+    "§cTwo fireballs, one after the other. §oSecond one clipped my ear.§o Rod in the bag after.",
+    "Rods still warm when I picked them up. Packed them carefully.",
+    "Moved sideways between shots. Closed the distance in five moves.",
+    "§oRoom smelled like a forge that had been running for a hundred years.§o Still had to clear it.",
+    "Light winked out when it fell. Dark came fast in there."
   ]
 }

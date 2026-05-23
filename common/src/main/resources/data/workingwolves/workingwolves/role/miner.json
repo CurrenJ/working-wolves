@@ -81,30 +81,30 @@
       "Bat colony overhead. Walked very softly. Mostly avoided being a roost."
     ],
     "moderate": [
-      "Ceiling cracked. Held still. It held.",
-      "Gravel pour from above. Moved before it filled the corridor.",
-      "Water flooded the lower corridor fast. Climbed out.",
-      "Deep water ahead, no bottom. Found another way around.",
-      "Clicking in the dark behind me. Picked up the pace.",
-      "Breath in the dark that wasn't mine. Not going back that way.",
-      "Heat rising through the floor. Magma below. Found a way around it.",
-      "Pickaxe head got stuck. Worked it out. Took longer than the seam would have.",
-      "Found a passage that breathed. Did not stay long.",
-      "Squeezed through a crack that thought I was smaller. I was smaller, just barely.",
-      "Loose stone gave way under the paw. Caught myself on a ledge that had not been there a moment before.",
-      "Crystal underfoot, sharp. The paw will remember it."
+      "§c§lCeiling crack§l above. Held still. It held.",
+      "§cGravel pour from above. §oHeard it shift before it fell.§o Moved before it filled the corridor.",
+      "§cWater flooded the lower corridor fast. Climbed out.",
+      "§cDeep water ahead, no bottom. Found another way around.",
+      "§cClicking in the dark behind me. §oToo regular to be rock.§o Picked up the pace.",
+      "§cBreath in the dark that wasn't mine. §oClose enough to feel the air move.§o Not going back that way.",
+      "§cHeat rising through the floor. Magma below. Found a way around it.",
+      "§cPickaxe head stuck in the seam. Worked it free. Took longer than the ore was worth.",
+      "§cFound a passage that breathed. §oCold air out, warm air in, like something sleeping.§o Did not stay long.",
+      "§cSqueezed through a crack that thought I was smaller. Turned sideways. Got through.",
+      "§c§lLoose stone§l gave under the paw. Caught myself on a ledge below. The ledge held.",
+      "§cCrystal underfoot, sharp. §oThe paw will remember it.§o Kept working."
     ],
     "severe": [
-      "Lava pocket opened up mid-swing. Retreated fast. Singed.",
-      "Cave-in above. Buried the passage. Had to dig back out.",
-      "Support pillar gone. The whole section leaned. Left quickly.",
-      "Aquifer burst through the wall. Cold and sudden. Lost the passage.",
-      "Something in the dark that wasn't afraid. Moved fast.",
-      "Whole gallery came down. Got under a ledge. The ledge held. The rest did not.",
-      "Lava came through the wall. The wall had not warned me about itself.",
-      "Stepped through a floor that was a ceiling. The fall was not the longest part.",
-      "A sound below that the rock did not want to translate.",
-      "The pickaxe broke against something the pickaxe was not meant for."
+      "§c§lLava pocket§l opened mid-swing. Retreated fast. §oHair-smell tells me how close.§o",
+      "§c§lCave-in§l above. Buried the passage. Dug back out.",
+      "§c§lSupport pillar§l gone. The whole section leaned. Left quickly.",
+      "§cAquifer burst through the wall. §oCold and sudden and loud.§o Lost the passage, found another.",
+      "§cSomething in the dark that was not afraid of the torch. §oDidn't blink.§o Moved fast, moved out.",
+      "§c§lWhole gallery§l came down. Got under a ledge. The ledge held. The rest did not.",
+      "§cLava came through the wall. §oThe wall had not warned me about itself.§o Ran. Got clear.",
+      "§cFloor gave way. §oThe fall was long enough to think about it.§o Landed on gravel. Climbed out.",
+      "§cDeep rumbling below, then above, then close. §oRock moving somewhere structural.§o Got out before the passage made up its mind.",
+      "§c§lPickaxe shattered§l on the wrong stone. §oThe crack was loud.§o Got out before anything answered it."
     ]
   },
   "tool_messages": {
@@ -117,11 +117,11 @@
       "No tool. No work. Back to the bed."
     ],
     "precious_break": [
-      "Pickaxe too precious to break. Heading back.",
-      "The enchanted pickaxe deserves better than this. Heading home.",
-      "Will not let this pickaxe end here. Coming back with it whole.",
-      "Worth too much to lose. Setting the work down. Coming home.",
-      "Could not bring myself to spend the last of it. Going home with it intact."
+      "Pickaxe too good to spend here. Heading back.",
+      "The enchanted pickaxe deserves better than this vein. Heading home.",
+      "Will not let this one end underground. Coming back with it whole.",
+      "Worth too much to lose to a bad swing. Setting the work down. Coming home.",
+      "Could not bring myself to spend the last of it here. Going home with it intact."
     ],
     "broken": [
       "Pickaxe shattered.",
@@ -147,7 +147,7 @@
     "nearly_done": [
       "Pickaxe nearly done. Heading back.",
       "Iron thin on the haft. Going home before it goes.",
-      "Last few swings left in it. Saving them for the way.",
+      "Last few swings left in it. Saving them for the climb out.",
       "The pickaxe is tired. So am I. Both heading home.",
       "Almost spent. Coming back before it finishes."
     ]

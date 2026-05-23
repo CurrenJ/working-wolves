@@ -6,13 +6,13 @@
   "weight": 30,
   "loot_table": "workingwolves:expedition/rare/geode_crack_miner",
   "journal_lines": [
-    "The stone rang like a bell when struck. Inside: violet. Still growing.",
-    "Hollow in the rock. The crystals were still forming. Took what was ready.",
-    "Geode. Cracked it open. Purple light from inside, better than expected.",
-    "Tapped a wall that did not sound right. Right was the wrong word. Hollow was the right one.",
-    "Inside the geode the crystals were arranged like teeth in a careful mouth.",
-    "Light came out of the geode that had been waiting a long time to come out.",
-    "Took the loose ones. The wall ones I left, the way you leave the largest fish in a lake.",
-    "Worked it open slowly. A geode opens once."
+    "§aTapped the wall. §oIt rang hollow — not stone-hollow, crystal-hollow. Different sound. Opened it. Violet inside.",
+    "§aThe pick went through easier than expected. §oHollow behind the face. Geode, good size. Still forming inside.",
+    "§aGeode in the cave wall, disguised as ordinary rock. §oThe sound gave it away. Cracked it clean.",
+    "§aWall that did not sound right. Opened it. §oThe crystals inside were arranged the way only long time arranges things.",
+    "§aStruck and the stone rang. Opened it along the seam. §oPurple light from inside. Better than iron today.",
+    "§aTook the loose crystals first, then the ones the pick freed. §oLeft the deepest ones in the wall. Too much work for too little.",
+    "§aA geode opens once. §oWorked it slowly. Got everything worth getting.",
+    "§aThe rock had been growing something secret inside it for a long time. §oNot secret anymore."
   ]
 }

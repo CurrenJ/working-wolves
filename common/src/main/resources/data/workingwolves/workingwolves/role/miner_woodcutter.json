@@ -18,44 +18,44 @@
       "Forest gives way to hillside. Hillside gives way to shaft.",
       "Logged the edge of the grove first, then went under it.",
       "Timber and ore in the same day. Efficient.",
-      "The cave mouth was behind the big oak. Easy to miss.",
+      "The cave mouth was behind the big oak. §oEasy to miss.",
       "Hewn timber holding up an old shaft. Took the timber. Took the ore.",
       "Stumps with roots reaching toward stone. Followed them down.",
-      "Worked above ground, then below. The work did not care which.",
       "Cleared the slope to find what the slope had been hiding.",
+      "Worked above ground, then below. The work did not care which.",
       "Old miner's path through the timber. Followed it both ways."
     ]
   },
   "hazard_journal_lines": {
     "light": [
       "Wrong tool for the job, right paw for the situation.",
-      "Swapped pickaxe for axe and back again. Lost some time.",
+      "Swapped §lpickaxe for axe and back again. Lost some time.",
       "Roots and rock together. Slower than expected.",
-      "Sap on the pickaxe. Stone on the axe. Worked both anyway.",
+      "Sap on the §lpickaxe. Stone on the axe. Worked both anyway.",
       "Lost which tool was in which paw, briefly. Sorted it out.",
       "Branch in the way of the seam. Cut both.",
-      "Tree leaned over the cave mouth. Eyed it carefully. It eyed me back.",
+      "Tree leaned over the cave mouth. §oEyed it carefully. It eyed me back.",
       "Tools tangled with each other in the bag. Untangled them with paws and patience."
     ],
     "moderate": [
-      "Collapse above, overgrowth below. Nowhere clean to move.",
-      "Axe stuck in the tree. Mob arrived while freeing it.",
-      "Both tasks fighting each other today.",
-      "Root broke through the ceiling as I was working it. The ceiling broke with it.",
-      "Falling tree clipped the support timber of the shaft. Adjusted quickly.",
-      "Stone gave under the stump I was standing on. Caught the stump on the way down.",
-      "Cut the wrong tree, looked at the wrong wall. Both surprised me.",
-      "Worked the slope until the slope worked back."
+      "§cCollapse above, overgrowth below. §oFound a way through.",
+      "§c§lAxe stuck in the tree. Mob arrived while freeing it. Freed the axe first.",
+      "§cBoth tasks fighting each other today. §oWorked through it.",
+      "§cRoot broke through the ceiling as I was working. §oPulled back before it came down.",
+      "§cFalling §ltree clipped the support timber of the shaft. Got clear quickly.",
+      "§cStone gave under the stump I was standing on. §oStepped off before it went.",
+      "§cCut the wrong tree, looked at the wrong wall. §oBoth surprised me. Moved on.",
+      "§cWorked the slope until the slope worked back. §oHeld my ground."
     ],
     "severe": [
-      "The hillside shifted. Wood and stone together, falling.",
-      "Buried under roots and rubble both. Dug out.",
-      "Forest fire above. Mine flooding below. Left both.",
-      "Tree fell into the shaft I was standing in. Worked out from under it.",
-      "Old root pulled the whole hillside loose. Was halfway up the slope when it went.",
-      "Tunnel collapse pulled the surface down with it. Climbed out by feel.",
-      "Lightning struck the tree above the shaft. The shaft did not appreciate it.",
-      "Avalanche of dirt and timber both. Stayed under it until it was over."
+      "§cThe hillside shifted. §oWood and stone together, falling. Got out.",
+      "§cBuried under roots and §lrubble both. Dug out.",
+      "§cForest fire above. §oMine flooding below. Left both.",
+      "§cTree fell into the §lshaft I was standing in. Worked out from under it.",
+      "§cOld §lroot pulled the whole hillside loose. Was halfway up when it went. Ran.",
+      "§cTunnel collapse pulled the surface down with it. §oClimbed out by feel.",
+      "§cLightning struck the §ltree above the shaft. Got out before the shaft noticed.",
+      "§cAvalanche of dirt and timber both. §oStayed low until it passed."
     ]
   }
 }

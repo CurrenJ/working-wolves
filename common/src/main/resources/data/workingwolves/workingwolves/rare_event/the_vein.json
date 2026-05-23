@@ -6,13 +6,13 @@
   "weight": 10,
   "loot_table": "workingwolves:expedition/rare/the_vein",
   "journal_lines": [
-    "Copper. Then iron. Then something that wasn't either. Brought back what could be carried.",
-    "The vein changed color three times. Followed it as far as it went.",
-    "Mixed seam. Copper into iron into something older. Took all of it.",
-    "A seam that should not have been one seam. Followed it anyway.",
-    "Found a vein that ran like a river through three kinds of stone. Took from each.",
-    "The vein bent where the rock bent. Bent further than the rock did, in places.",
-    "Worked it until the light failed. Came back the next day. The vein had moved. Slightly.",
-    "Pulled enough out of one wall to carry. Left more than I took. The wall did not need everything."
+    "§aCopper into iron into something neither. §oThe color changed before the smell did. Took it all.",
+    "§aFollowed the seam through three rock types. §oEach transition smelled different. Did not stop at any of them.",
+    "§aThe §lore§a changed kind twice in the same wall. Brought back samples of each.",
+    "§aStruck copper, then iron behind it, then a vein that had no name I knew. Still filled the bag.",
+    "§aOne seam running through three stones. §oThe rock itself smelled confused. I was not.",
+    "§aFound where the iron gave out and something older began. Took from both sides of the line.",
+    "§aThe wall did not want to give up the last of it. §oTook half a day. Worth it.",
+    "§aMixed seam, deep cut. Copper at the top, iron in the middle, something dark at the bottom. Carried all three home."
   ]
 }

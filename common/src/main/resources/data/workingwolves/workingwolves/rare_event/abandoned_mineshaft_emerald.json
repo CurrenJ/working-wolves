@@ -6,13 +6,13 @@
   "weight": 8,
   "loot_table": "workingwolves:expedition/rare/abandoned_mineshaft_emerald",
   "journal_lines": [
-    "Found something green in the old shaft. Not iron. Not copper. Something better.",
-    "The vein in the abandoned tunnel was not what anyone expected. Took it.",
-    "Deep in the old workings: green stone. Someone stopped digging too soon.",
-    "Emerald at the edge of the chamber, half-exposed. The wall had been protecting it.",
-    "Green so deep it pulled the eye. Took only what came free without forcing.",
-    "Someone had marked the wall with a chalk circle and walked away. Could not say why.",
-    "An old worker's name scratched into the timber, and beneath the timber the seam he never reached.",
-    "Carried the emerald wrapped in cloth. Did not want to scratch it on the way home."
+    "§aGreen in the old shaft wall. §oNot iron, not copper — something the original miners walked past. Took it.",
+    "§aDeep in the old workings, where the cart tracks ended: §l§aemeralds§a. Someone stopped digging too soon.",
+    "§aHalf-exposed at the chamber edge. §oThe wall had been protecting it. The wall is no longer an obstacle.",
+    "§aGreen so deep it caught the light from across the tunnel. §oCame free without forcing. Good sign.",
+    "§aChalk circle on the wall — someone had marked this spot and never come back. Dug where they had marked.",
+    "§aFound a name scratched into the timber above the seam. §oThey never reached it. I did. They would understand.",
+    "§aThe emerald came out clean. §oWrapped it before the walk back. Did not want to scratch it.",
+    "§aOld shaft, good stone. §oThe miners quit one wall too early. Their loss."
   ]
 }

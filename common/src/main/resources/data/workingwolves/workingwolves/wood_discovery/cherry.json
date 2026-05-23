@@ -2,15 +2,15 @@
   "wood_biome_id": "cherry",
   "loot_table": "workingwolves:expedition/woodcutter/cherry",
   "journal_lines": [
-    "Petals drifting down without any wind.",
-    "Wood pale and close-grained. Smells faintly sweet.",
-    "This place makes time feel very long.",
-    "A family of rabbits under a fallen log. Worked around them.",
-    "Pink in the canopy, pink on the ground, pink in the air. Could not tell where the tree ended.",
-    "A grove so quiet it felt like the world had stopped to listen. Worked very quietly inside it.",
-    "Petals settled on the bag as I worked. Carried some home by accident.",
-    "The smell of the wood took the edge off everything. Did not mind staying longer.",
-    "A bee in a fallen blossom, unconscious of the season ending. Let it be.",
-    "Cut a single trunk and a thousand petals fell. An apology, maybe."
+    "§aPetals in the air without any wind moving them. §oSmells sweet and close-grained, like clean sawdust and spring.§o Good §lCherry§l timber.",
+    "§aBlossoms falling the whole time I worked. Some landed on the cut and stayed there.",
+    "§aPale wood inside, close-grained, faintly sweet at the cut. Worth the trip.",
+    "§aA grove so quiet I worked quietly without meaning to.",
+    "§aPink in the canopy, pink on the ground, §opink in the fur by the time I left.§o Cherry everywhere.",
+    "§aRabbits under a low trunk. Worked around them. They didn't move.",
+    "§aThe smell of §lCherry§l wood at the cut stayed on the paws for a long time after.",
+    "§aPetals settled in the bag as I worked. Carried some home by accident. No complaints.",
+    "§aCut a single trunk and a soft sound came down with it. §oAll those petals at once.§o Stood still for a moment.",
+    "§aTook one tree. Left the rest standing. This place earns some restraint."
   ]
 }

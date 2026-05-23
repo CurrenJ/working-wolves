@@ -5,17 +5,17 @@
   "biome_bonus_categories": ["plains", "mountain"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/flint_bonus",
   "journal_lines": [
-    "Gravel pocket. Worked it through.",
-    "Good flint among the gravel.",
-    "Chert nodules in the limestone. Useful.",
-    "Flint strikes well. Kept the best pieces.",
-    "Black knots in the white limestone, like old eyes in a tired face.",
-    "Flint old enough to remember the riverbed it came from.",
-    "A handful of chips, sharp as winter. Wrapped them carefully.",
-    "Old stone, useful stone. Some things do not need to be rare.",
-    "Struck two together. Got a spark. The cave got a moment of light.",
-    "Picked them out by feel. The shape is unmistakable.",
-    "Flint cuts. Flint does not apologize for cutting.",
-    "Took the best, left the rest for the river to find again."
+    "§aGravel pocket in the stone. §oThe smell of old riverbed, grit and wet clay.§o §lFlint§l among it. Good pieces.",
+    "§aChert nodules in the limestone. Dark, dense, unmistakable by touch.",
+    "§aFlint. Sharp edges, solid cores. Kept the best ones.",
+    "§aWorked through a gravel seam for an hour. §lFlint§l in the lower half, well-formed.",
+    "§aBlack knots in the grey stone. §oFelt them before I saw them in the torchlight.§o Flint.",
+    "§aStruck two together out of habit. Spark. Good sign. Kept both.",
+    "§aGravel slope at the tunnel base. Sorted through it. Found §lflint§l worth carrying.",
+    "§aSurface deposit, loose and easy. Picked out a dozen clean pieces.",
+    "§aFound a large nodule and broke it down. §oEach piece sharp as the first.§o Good flint throughout.",
+    "§aChipped flint leaves a smell like struck stone. Worked fast. Kept the smell on the paws.",
+    "§aQuick work. §lFlint§l near the surface, no deep digging needed.",
+    "§aTook only the sharp ones. Left the round ones for the next rain to sort out."
   ]
 }

@@ -7,13 +7,13 @@
   "loot_table": "workingwolves:expedition/rare/warden_breath",
   "apply_hazard": "MODERATE",
   "journal_lines": [
-    "Did not make a sound. Not one. Three hours of perfect silence. Emerged with mud on the paws and a look you don't ask about.",
-    "Something in the deep dark was listening. Moved very slowly. Very quietly. It was enough.",
-    "The sculk was everywhere. Stayed still until the heartbeat noise stopped. Came back.",
-    "Walked on the sculk like walking on the back of a sleeping thing. It was a sleeping thing.",
-    "Held one breath. Then another. The dark held its breath with me.",
-    "Heard a footstep that was not a footstep. Did not investigate.",
-    "The blue eyes opened somewhere. Closed somewhere. Did not pass between.",
-    "Came back through the sculk garden quieter than I had gone in. There are ways to learn this."
+    "§cThe sculk lit up underfoot for a moment. Froze. §oIt listened. Then it stopped listening.",
+    "Something in that dark was not stone and not water. Moved around it. Took a long time.",
+    "§cHeard a sound below hearing — felt it in the chest. Went very still. Came back.",
+    "§oThe deep dark smells different than other dark. Older. Wet and electric. Did not linger.",
+    "§cBlue light opened somewhere to the left. §lWarden§c. Did not turn to look. Did not move.",
+    "Stepped on the sculk wrong. The wrong step. Stood with all weight distributed, barely breathing, until it passed.",
+    "§aThree passages in. Two passages out. Found the third. Came home through a different route than I arrived.",
+    "§cKept each paw on bare stone. §oThe sculk flowers closed as I passed them. Interesting problem."
   ]
 }

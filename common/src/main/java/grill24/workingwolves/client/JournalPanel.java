@@ -20,8 +20,6 @@ public class JournalPanel extends UIElement<JournalPanel> {
     private static final int BG_COLOR = 0xC0111111;
     private static final int BORDER_COLOR = 0xFF555555;
     private static final int TEXT_COLOR = 0xFFCCCCCC;
-    private static final int DISCOVERY_COLOR = 0xFFAAFFAA;
-    private static final int HAZARD_COLOR = 0xFFFFAAAA;
 
     private record DisplayLine(String text, int color) {}
 
@@ -73,12 +71,11 @@ public class JournalPanel extends UIElement<JournalPanel> {
         int wrapWidth = computeWrapWidth();
         var font = Minecraft.getInstance().font;
         for (String line : lines) {
-            int color = colorForLine(line);
             if (font.width(line) <= wrapWidth) {
-                displayLines.add(new DisplayLine(line, color));
+                displayLines.add(new DisplayLine(line, TEXT_COLOR));
             } else {
                 for (String segment : wrapLine(line, wrapWidth)) {
-                    displayLines.add(new DisplayLine(segment, color));
+                    displayLines.add(new DisplayLine(segment, TEXT_COLOR));
                 }
             }
         }
@@ -91,18 +88,23 @@ public class JournalPanel extends UIElement<JournalPanel> {
         var font = Minecraft.getInstance().font;
         String[] words = line.split(" ", -1);
         var current = new StringBuilder();
+        String styleCarry = ""; // §-code prefix inherited from the previous segment
+
         for (String word : words) {
             if (current.isEmpty()) {
-                if (font.width(word) > maxWidth) {
-                    result.add(word); // single word too long — add as-is rather than break mid-char
+                String first = styleCarry + word;
+                if (font.width(first) > maxWidth) {
+                    result.add(first); // single word too long — add as-is
+                    styleCarry = styleAtEnd(first);
                 } else {
-                    current.append(word);
+                    current.append(first);
                 }
             } else {
                 String candidate = current + " " + word;
                 if (font.width(candidate) > maxWidth) {
                     result.add(current.toString());
-                    current = new StringBuilder(word);
+                    styleCarry = styleAtEnd(current.toString());
+                    current = new StringBuilder(styleCarry + word);
                 } else {
                     current.append(' ').append(word);
                 }
@@ -110,6 +112,40 @@ public class JournalPanel extends UIElement<JournalPanel> {
         }
         if (!current.isEmpty()) result.add(current.toString());
         return result;
+    }
+
+    // Returns the §-code sequence representing active style at the end of text,
+    // so it can be prepended to the next wrapped segment.
+    private static String styleAtEnd(String text) {
+        String lastColor = "";
+        boolean bold = false, italic = false, underline = false, strikethrough = false, obfuscated = false;
+        int i = 0;
+        while (i < text.length()) {
+            if (text.charAt(i) == '§' && i + 1 < text.length()) {
+                char code = Character.toLowerCase(text.charAt(i + 1));
+                if (code == 'r') {
+                    lastColor = ""; bold = false; italic = false; underline = false; strikethrough = false; obfuscated = false;
+                } else if ("0123456789abcdef".indexOf(code) >= 0) {
+                    lastColor = "§" + text.charAt(i + 1);
+                    bold = false; italic = false; underline = false; strikethrough = false; obfuscated = false;
+                } else if (code == 'l') { bold = true;
+                } else if (code == 'o') { italic = true;
+                } else if (code == 'n') { underline = true;
+                } else if (code == 'm') { strikethrough = true;
+                } else if (code == 'k') { obfuscated = true;
+                }
+                i += 2;
+            } else {
+                i++;
+            }
+        }
+        var sb = new StringBuilder(lastColor);
+        if (bold) sb.append('§').append('l');
+        if (italic) sb.append('§').append('o');
+        if (underline) sb.append('§').append('n');
+        if (strikethrough) sb.append('§').append('m');
+        if (obfuscated) sb.append('§').append('k');
+        return sb.toString();
     }
 
     @Override
@@ -172,31 +208,6 @@ public class JournalPanel extends UIElement<JournalPanel> {
         }
 
         context.popScissor();
-    }
-
-    private int colorForLine(String line) {
-        if (line.startsWith("+")
-                || line.contains("iron") || line.contains("gold") || line.contains("diamond")
-                || line.contains("coal") || line.contains("Coal") || line.contains("copper") || line.contains("Copper")
-                || line.contains("lapis") || line.contains("Lapis") || line.contains("redstone") || line.contains("Redstone")
-                || line.contains("amethyst") || line.contains("Amethyst") || line.contains("flint") || line.contains("Flint")
-                || line.contains("bone") || line.contains("arrow") || line.contains("geode") || line.contains("Geode")
-                || line.contains("crystal") || line.contains("vein") || line.contains("seam") || line.contains("ore")
-                || line.contains("wood") || line.contains("log") || line.contains("oak")
-                || line.contains("drops") || line.contains("Gold") || line.contains("Diamond") || line.contains("Iron")) {
-            return DISCOVERY_COLOR;
-        }
-        if (line.contains("Lava") || line.contains("lava") || line.contains("Magma") || line.contains("magma")
-                || line.contains("hit") || line.contains("injur") || line.contains("bit") || line.contains("Singed")
-                || line.contains("Took") || line.contains("Three") || line.contains("starv") || line.contains("food")
-                || line.contains("Cave-in") || line.contains("cave-in") || line.contains("Ceiling cracked")
-                || line.contains("Gravel pour") || line.contains("clicking") || line.contains("Clicking")
-                || line.contains("flooded") || line.contains("Flooded") || line.contains("burst")
-                || line.contains("Something moved") || line.contains("Groaning") || line.contains("Breath in the dark")
-                || line.contains("Backed off") || line.contains("Retreated") || line.contains("pillar gone")) {
-            return HAZARD_COLOR;
-        }
-        return TEXT_COLOR;
     }
 
     @Override

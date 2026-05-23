@@ -6,13 +6,13 @@
   "weight": 16,
   "loot_table": "workingwolves:expedition/rare/stronghold_library",
   "journal_lines": [
-    "The passage opened into something vast and paper-smelling. Cannot read. Brought back a page anyway.",
-    "A library underground. Old shelves. Most of it rotted. Some of it wasn't.",
-    "Rows and rows of books in a sealed chamber. Took one that seemed different. Left the rest.",
-    "A library lit by something I could not find the source of. Did not look for the source long.",
-    "Brought back a book whose cover was warm to the touch. Set it down carefully when I got home.",
-    "The shelves were taller than the doorways were wide. Tried not to think about it.",
-    "Air thick with the smell of old binding glue and a hundred quiet years.",
-    "Books in a language only the wind seemed to know. The wind was elsewhere."
+    "The passage opened into something vast. §oOld paper smell, dense, like a place that had been sealed a long time. Cannot read. Brought a page.",
+    "A library underground, sealed and dry. §oMost of the shelves had held. Most of the books had not. Took one that had.",
+    "Rows of books in stone alcoves. §oThe air was very still. Very old. Took one that felt different from the others.",
+    "Something lit the room that I could not find the source of. Did not look for it long. Took what I came for.",
+    "Brought back a §lbook§r whose cover was warm where nothing warm had any business being. Set it down carefully.",
+    "The shelves ran floor to ceiling. §oThe ceiling was higher than the door was wide. Did not think about it.",
+    "§oBinding glue and quiet years. The smell of it settled into the fur. Left with one volume and the smell.",
+    "Books in a language the stone seemed to know better than anyone living. Took one. Left the rest undisturbed."
   ]
 }

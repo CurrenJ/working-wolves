@@ -4,17 +4,17 @@
   "required_biome_categories": ["plains", "forest"],
   "loot_table": "workingwolves:expedition/hunter/pillager",
   "journal_lines": [
-    "Pillager patrol. Took the long way around. Then didn't.",
-    "Crossbow. Closed the distance fast.",
-    "Outpost nearby. Picked off the one that wandered.",
-    "Better armed than expected. Still manageable.",
-    "Two in a clearing, three more out of sight. Counted again later.",
-    "A flag in their banner I did not recognize. Tore it down anyway.",
-    "Watched their watch-fire from a hill. Walked past while they argued.",
-    "One was older than the rest. Wore his coat like he had earned it. Maybe he had.",
-    "Crossbow bolt in the bark by my ear. The bark forgave it. I did not.",
-    "Found their songs scratched into a tree. Did not learn the tune.",
-    "They marched in step. They fell out of step.",
-    "Outpost tower from the ridge. Counted them in. Counted fewer out."
+    "§lPillager§l patrol on the road. Closed the distance before the crossbow was up.",
+    "Bolt in the dirt by my forepaw. Closed. Dealt with it.",
+    "§cBolt caught my ear. §oHeard the creak and moved, but not enough.§o Finished it anyway.",
+    "Picked off the one that wandered from the outpost. Clean.",
+    "Two in a clearing. Took the crossbow first. Then the other.",
+    "§oSmelled the torch-smoke from a long way off.§o Knew the count before I got close.",
+    "Watched the patrol from the ridge. Picked my moment. Came home clean.",
+    "Three of them and a banner. Flag's on the ground now.",
+    "§lPillager§l at the treeline, watching the road. Came up behind.",
+    "§cBolt grazed my shoulder. §oGot clear of the line and came around the flank.§o Felled it.",
+    "One wandered off from the group to investigate something. I was that something.",
+    "Better armed than most. Took more care. Still cleared it."
   ]
 }

@@ -6,17 +6,17 @@
   "biome_bonus_categories": ["mountain", "cave", "plains"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/iron_bonus",
   "journal_lines": [
-    "Good iron seam. Rust-orange in the wall.",
-    "Iron-bearing stone. Heavier than it looks.",
-    "Vein ran deeper than expected. Good.",
-    "Found the iron. Took the time to get it right.",
-    "Rust-stain in the rock where the iron sleeps. Woke a few of them.",
-    "Iron tastes like blood through the muzzle. The world remembers what it is made of.",
-    "A nodule the size of a small heart, almost. Took it gently.",
-    "Banded iron, layer on layer, every layer an old summer.",
-    "Struck the wall and the wall struck back. Sparks. Then iron.",
-    "The seam went where seams go. Followed it until it stopped.",
-    "Iron in the deep is patient. Patient about being found.",
-    "Took only what I could carry. The rest will keep."
+    "§aSmelled the iron before I found it. §oDamp stone, that sharp rust underneath.§o Took the seam.",
+    "§aRust-orange banding in the wall. §lIron§l, mid-depth, solid vein.",
+    "§aStruck the wall and sparks came off it. Then iron. Good exchange.",
+    "§aHeavier than the bag expected. §lIron§l ore packs dense.",
+    "§aFollowed the rust stain inward. §oSmelled like old blood and wet rock.§o Found the vein where the stain went dark.",
+    "§aBanded layers, each one a different red. Worked through all of them. Iron throughout.",
+    "§aThe seam ran deeper than the tunnel. Dug to meet it.",
+    "§aClean break on the first strike. §oPickaxe rang off it like a bell.§o Good iron.",
+    "§aRust-brown nodules clustered in the grey stone. Took the lot.",
+    "§aFound it by the weight of the smell. §oIron has a presence down here, once you know it.§o Wide seam.",
+    "§aNot a deep vein, but a wide one. §lIron§l running wall to wall. Good work.",
+    "§aTook what the bag would hold. The rest still in the rock."
   ]
 }

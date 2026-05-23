@@ -3,17 +3,17 @@
   "weight": 25,
   "loot_table": "workingwolves:expedition/hunter/zombie",
   "journal_lines": [
-    "Zombie. Slow. Not a problem.",
-    "Heard it before I saw it. Put it down.",
-    "Shambling thing in the corridor. Gone.",
-    "Smelled it first. Dealt with it.",
-    "Slow as a tired river, and twice as patient. Patience does not save the patient.",
-    "It wore cloth it had once been proud of. The cloth remembered. The thing did not.",
-    "A face that had been a face. Did not look long.",
-    "Groaned as it fell. The same groan as before. The same groan as always.",
-    "Found me by smell. I am told I smell like food.",
-    "Two of them. Then one. Then none.",
-    "Dragged itself the last few paces. Did the same on the way down.",
-    "A hunger that did not understand it was no longer hungry."
+    "§lZombie§l. Slow. Not a problem.",
+    "Smelled it first — rot and old cloth. Put it down before it turned around.",
+    "Groaning thing in the corridor. Cleared it.",
+    "§cGrabbed my leg. §oStrong for something that slow.§o Pulled free. Dealt with it.",
+    "Two of them at the cave mouth. Gone before they reached me.",
+    "Heard it shuffling in the dark a long time before it found me.",
+    "Put it down. Moved on.",
+    "§oSmell hits you well before the sound does.§o Backed up, circled, came in from behind.",
+    "Slow thing. Patient thing. Neither saved it.",
+    "Found me by scent — I know how they work. Came at it from upwind.",
+    "§lZombie§l in the trench, arms out, walking nowhere in particular. Took care of it.",
+    "§cBite on the shoulder. §oNot deep.§o Shook it off and finished it."
   ]
 }

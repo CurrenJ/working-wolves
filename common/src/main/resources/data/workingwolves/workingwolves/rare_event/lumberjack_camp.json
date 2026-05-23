@@ -8,13 +8,13 @@
   "weight": 20,
   "loot_table": "workingwolves:expedition/rare/lumberjack_camp",
   "journal_lines": [
-    "Old logging camp. Whoever left it behind didn't come back. We did the math.",
-    "Abandoned camp in the timber. Tools still there. Took what was useful.",
-    "Woodcutter's camp. Long since empty. The iron and the logs were still worth having.",
-    "Found the camp where the big trees were felled. No one around. Helped ourselves.",
-    "A coat on a peg, weather-rotted. A bowl on the table, full of leaves now. Took the iron, left the rest.",
-    "Stumps the size of cartwheels, all around the clearing. Whoever had worked here had worked.",
-    "Camp tools laid out as if for the morning. The morning had not come for years.",
-    "Picked through the camp slowly, respectfully. They had not chosen to leave it. Maybe."
+    "§oSmelled iron and old wood smoke before the clearing opened. Camp had been empty a long time.",
+    "§aLogging camp abandoned with the tools still laid out. §lWoodcutter§a took the timber. Miner took the iron fittings.",
+    "Stumps the size of cartwheels all around the clearing. Whoever had worked here had really worked.",
+    "§aTools still hung on the rack. Axe heads, wedges, iron spikes. §lCamp§a gave up everything useful.",
+    "A coat on a peg, weather-rotted down to nothing. Bowl on the table, full of pine needles. Took the metal. Left the rest.",
+    "Camp tools laid out for a morning that had not arrived in years. We arrived instead.",
+    "§oThe big trees still standing around the edges had been spared for a reason. Took the felled ones. Left those.",
+    "§aWoodcutter identified the salvage. Miner identified the iron. Two roles, one abandoned camp, two full bags."
   ]
 }

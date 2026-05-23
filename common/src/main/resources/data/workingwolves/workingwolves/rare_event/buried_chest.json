@@ -5,13 +5,13 @@
   "weight": 15,
   "loot_table": "workingwolves:expedition/rare/buried_chest",
   "journal_lines": [
-    "Dug because of the smell of iron. Was right.",
-    "Something buried here. The soil was wrong over it. Investigated.",
-    "Old chest in the sand. Waterlogged. Still had things in it.",
-    "A square shape under the grass that should not have been a square shape. Investigated.",
-    "Wood half-rotted, lock fully rusted. Opened with a tap. Inside, what the buryer had wanted kept.",
-    "Whoever buried it did not come back. The reason is not for me to know.",
-    "Sand had filled the chest where the lid had failed. Sand had not filled it everywhere.",
-    "Took the things that had survived. Left the rest to whatever buries things again."
+    "§a§lIron§a under the soil. §oNot a vein — too shallow, too square. Dug. Was right.",
+    "§aSomething buried here. §oThe earth over it was packed differently than the earth beside it. Investigated.",
+    "§aOld chest in the sand, lid warped by water. Still sealed well enough to keep what was inside.",
+    "§aA square shape under the grass. §oWrong shape for a root, wrong smell for stone. Dug it up.",
+    "§aWood rotted through but the lock held. Tapped it once. Opened. Contents intact.",
+    "§aThe chest had been buried in a hurry. §oThe soil pattern said so. Whoever buried it did not come back.",
+    "§aSand had sifted in around the edges but not through the lid. The lid had done its job. So had I.",
+    "§aTook what had survived the water and the years. Left the box. It had already done more than its share."
   ]
 }

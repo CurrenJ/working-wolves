@@ -6,13 +6,13 @@
   "loot_table": "workingwolves:expedition/rare/spider_nest",
   "apply_hazard": "LIGHT",
   "journal_lines": [
-    "The web was thick as rope. The eggs were not all hatched. Destroyed what was there. Took time.",
-    "Nest in the dark corner of the cave. Cleared it. String everywhere.",
-    "Spider colony under a fallen log. Dealt with it. Still picking silk out of the fur.",
-    "A whole chamber of them. The young ones had not learned what wolves were yet. They learn.",
-    "Silk thick enough to walk on, almost. Walked through it instead.",
-    "Egg sacs in clusters along the ceiling. Worked carefully. The work was unpleasant.",
-    "Old web hung with the husks of things older than the spiders. Old hunting grounds.",
-    "Came home with silk in the fur for three days. Could not shake it. Did not need to."
+    "§cSmelled the nest before anything was visible. §oSilk hung in sheets across the tunnel mouth. Cleared it.",
+    "§aEgg sacs along the back wall, half-hatched. §lString§a everywhere after. Still worth it.",
+    "§cWeb thick enough to catch a paw. Moved carefully, then not carefully. Came out sticky.",
+    "§oThe young ones had not learned what wolves were yet. They learned.",
+    "§aFound the center chamber. Dense work. §lSpider§a silk pulled loose by the yard.",
+    "§cSomething large in the back of the nest. Dealt with it. The hazard was real.",
+    "Colony under a fallen log — more of them than the log suggested. Cleared the whole thing.",
+    "§aCame home with silk in the fur. The fur will keep. §lNest§a will not."
   ]
 }

@@ -2,15 +2,15 @@
   "wood_biome_id": "savanna",
   "loot_table": "workingwolves:expedition/woodcutter/savanna",
   "journal_lines": [
-    "Scattered acacia. Flat light.",
-    "Twisted trunks in the savanna heat.",
-    "Dead acacia still standing. Bark stripped clean by antlers.",
-    "The roots tore the ground when it went over.",
-    "Acacia roots go deep enough to find water nothing else finds. The tree knows things.",
-    "Heat shimmered above the grass all morning. The axe got hot in the paw.",
-    "A vulture circled while I worked. Patient bird. Disappointed bird.",
-    "The long shadow of a single tree was longer than expected. Cut it from the long side.",
-    "Wood inside the acacia was redder than the bark suggested. Bled, almost.",
-    "Thorns on the branches like a row of bad teeth. Took my time."
+    "§aHeat up through the paws from the first step. §oSmells like dry grass and sun-hot bark.§o Scattered §lAcacia§l, but workable.",
+    "§aTwisted trunks, impossible to read the grain. Cut slow.",
+    "§aFlat light, hard shadows. The acacia stands well alone out here.",
+    "§aThe wood inside was redder than the bark. §oAcacia bleeds almost.§o Good dense timber.",
+    "§aRoots tore the ground when the trunk went over. Deep roots on these trees.",
+    "§aA vulture circled the whole time. §oPatient.§o Disappointed. Left before I did.",
+    "§aAxe got hot in the paw by midday. Kept working. §lAcacia§l worth it.",
+    "§aThorns on every branch. Took my time moving timber to the bag.",
+    "§aDead acacia still standing, bark stripped bare. Dry wood, light, easy to carry.",
+    "§aSingle long shadow from a single tree. Cut it from the long side. Good grain inside."
   ]
 }

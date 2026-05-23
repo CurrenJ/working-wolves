@@ -2,15 +2,15 @@
   "wood_biome_id": "dark_forest",
   "loot_table": "workingwolves:expedition/woodcutter/dark_forest",
   "journal_lines": [
-    "Found a clearing. The trees lean inward around it.",
-    "Mushrooms growing up the trunks, not just the ground.",
-    "Long claw marks on the trunk. Higher than I wanted to think.",
-    "The inside of the dark oak was pale. Did not expect that.",
-    "The canopy here closes over the sun like a lid on a pot.",
-    "A clearing in the dark forest is not always a clearing. Some are doorways.",
-    "Toadstools the size of dinner plates, in rings. Did not step in the rings.",
-    "Worked quickly. The trees did not seem to like the axe.",
-    "Light here is brown, not green. Like looking through tea.",
-    "Something coughed in the understory. Did not investigate. Worked the far edge instead."
+    "§aCanopy here closes over the sky completely. §oBrown light. Smells like mushroom and old wood and something else.§o Worked the edge. Took §lDark Oak§l.",
+    "§aMushrooms up the trunks, not just the floor. This forest does things differently.",
+    "§aClaw marks on a trunk, higher than comfortable. Worked the far side of that tree.",
+    "§aThe inside of the dark oak is pale. §oNot what you'd expect from bark that dark.§o Good timber though.",
+    "§aToadstools in rings. Stepped around them. No particular reason. Just felt right.",
+    "§aSomething coughed in the understory. Once. Did not repeat. Kept the axe moving.",
+    "§aWorked quickly. The trees here hold their ground longer than other trees.",
+    "§aFound a clearing and used it for the work. The trees leaned in around the edge.",
+    "§aLight never fully reaches the floor here. §oDid everything by smell and touch and the shape of the axe landing.§o Good §lDark Oak§l.",
+    "§aTook what I came for and left at a pace that was not quite running."
   ]
 }

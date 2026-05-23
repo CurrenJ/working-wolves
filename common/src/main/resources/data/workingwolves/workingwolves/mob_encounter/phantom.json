@@ -4,17 +4,17 @@
   "required_biome_categories": ["plains", "mountain", "ocean"],
   "loot_table": "workingwolves:expedition/hunter/phantom",
   "journal_lines": [
-    "Phantom diving from above. Watched for the shadow.",
-    "Screech overhead. Looked up in time.",
-    "They come in pairs at this depth.",
-    "Swooping thing. Timed the strike.",
-    "Two stars where its eyes ought to be. Stars do not blink.",
-    "It made a sound like canvas tearing. Then it was canvas, falling.",
-    "Caught the wing on the upstroke. Lighter than it looked. Easier than it sounded.",
-    "Found their feathers in the grass after. Soft as soot.",
-    "Older than sleep, and angry about it.",
-    "Cast a shadow on the path the size of a small house.",
-    "Came at me out of a sky I had stopped watching.",
-    "Membrane and bone. Did not bleed. Did fall."
+    "§lPhantom§l from above. Watched for the shadow on the ground. Got the timing.",
+    "§cDive caught my back. §oWing felt like a plank.§o Came home sore.",
+    "Screech overhead. Moved sideways. Got clear.",
+    "Two of them. Took the lower one first. Then waited on the second.",
+    "§oMakes a sound like canvas tearing before it dives.§o Learned that on the first pass.",
+    "Swooped three times before I connected. Patient work.",
+    "§lPhantom§l at height, circling. Cast a shadow twice my size. Waited for the dive.",
+    "§cClipped my ear on the second pass. §oFast.§o Timed the third one better.",
+    "Fell light when it came down. Lighter than it looked up there.",
+    "§oEyes like two blue gaps in a dark thing.§o Doesn't blink. Neither did I.",
+    "Came at me out of a sky I had stopped watching. Won't do that again.",
+    "Membrane and hollow bone. Felled it. Kept the feathers."
   ]
 }

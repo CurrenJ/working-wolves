@@ -2,15 +2,15 @@
   "wood_biome_id": "forest",
   "loot_table": "workingwolves:expedition/woodcutter/forest",
   "journal_lines": [
-    "Good stand of oak. Clean work.",
-    "Birch grove, white bark. Quiet.",
-    "The oak at the center is old enough to matter.",
-    "Birch light is different. White bark scatters everything.",
-    "Clean, quick work. These trees have nothing to say about it.",
-    "An oak old enough to have a name nobody remembers anymore. Took only the lower limbs.",
-    "Birch bark peels in long curls. Carried some for the bag liners.",
-    "Acorns in the leaf litter, three deep. A good year for the squirrels, or a bad one.",
-    "The grove smelled like rain that had not yet fallen.",
-    "Sap came up amber where the cut was. Slow, the way good blood comes."
+    "§aSmelled rain before I smelled the trees. §oOak and wet leaf, a whole season stored in the bark.§o Good stand. Clean work.",
+    "§aBirch grove, white trunks in rows. Quiet in a way that makes you work quietly too.",
+    "§aOak at the center of the grove, wider than I expected. Took the branches. Left the trunk.",
+    "§aThe axe went through birch clean. §o§lBirch§l splits easy, smells like green water.§o Good timber.",
+    "§aAcorns in the litter underfoot. The squirrels had left some. I left them back.",
+    "§aSap came up amber at the cut. Slow and steady. §lOak§l sap always takes its time.",
+    "§aFog in the lower branches. §oSmelled like old wood and cold morning.§o Worked until it lifted.",
+    "§aBirch bark peels in long curls. Some came off in the work. Brought a few back.",
+    "§aGood straight grain in the young oaks. Took three. Left the older ones.",
+    "§aThe grove felt like it had been there longer than the surrounding trees. Took only what I needed."
   ]
 }

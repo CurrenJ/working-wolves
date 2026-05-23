@@ -8,13 +8,13 @@
   "weight": 25,
   "loot_table": "workingwolves:expedition/rare/poacher_blind",
   "journal_lines": [
-    "Found a blind in the trees. Not ours. Whoever built it isn't coming back for it.",
-    "Poacher's hide. Abandoned in a hurry. Left the gear.",
-    "Set up in the same wood as someone else. They left. We stayed. Good find.",
-    "Hunting blind in the deep timber. Someone else's work. Our gain.",
-    "Blind built into the crook of an oak. Snares set, none triggered. Carried the snares.",
-    "Whoever had used the blind had been gone for a season. Knew because of the wasps.",
-    "Set up better than expected. Took the rope and the iron, left the wood for the next person.",
-    "The blind looked out on a deer path. The deer had not used the path lately. Possibly related."
+    "§oSmelled it before finding it — old rope, iron, human hands long gone. §lPoacher's blind§o in the crook of an elm.",
+    "§aBlind built into the tree line on a deer path. Snares set, none sprung. Carried the snares home.",
+    "Hunter read the setup. Woodcutter identified the timber it was built from. Between us, we stripped it clean.",
+    "§aAbandoned in a hurry — gear left, fire cold for a season at least. Good find for two that knew what to look for.",
+    "The blinds they build are useful things. Rope, iron fittings, a good view of a game trail. Took all three.",
+    "Whoever used it had not been back recently. The wasps had moved in. Cleared the wasps, took the iron.",
+    "§aHunter spotted the shooting lane. Woodcutter spotted the structural timber. Both came home with something.",
+    "No one coming back for it. The forest already working on reclaiming it. We got there first."
   ]
 }

@@ -3,17 +3,17 @@
   "weight": 25,
   "loot_table": "workingwolves:expedition/hunter/skeleton",
   "journal_lines": [
-    "Skeleton archer in the dark. Kept moving.",
-    "Rattling thing in the path. Dealt with it.",
-    "Three arrows stuck in the dirt. None in me.",
-    "Bones for the trouble.",
-    "An archer in the dark, still as the stone behind it. The stillness did not save it.",
-    "The arrow passed where my shoulder had been. Where my shoulder no longer was.",
-    "Twelve arrows in the wall behind me. I counted them later. The wall did not.",
-    "It clattered down like a poorly stacked thing. A pile of someone, once.",
-    "Older than the cave it haunted. Older than the one before that.",
-    "A noise like dice rolling in a wooden cup, and then no noise at all.",
-    "The skull kept its grin. They keep it through everything, in the end.",
-    "Felled it the way a small tree is felled. Same work. Less ceremony."
+    "§lSkeleton§l on the ridge. §oHeard the bow creak before I saw it.§o Arrow in the dirt.",
+    "Felled it before the second shot. Kept moving.",
+    "§cTook one in the flank. §oFelt the fletching drag.§o Still cleared it.",
+    "Rattling in the dark. Dealt with the rattle.",
+    "Closed the distance before it could nock again. Works every time.",
+    "Three arrows in the wall behind me. None in me. Fine margin.",
+    "Bones scatter when they fall. Messier than expected, quieter than I thought.",
+    "§oIt tracked me through the smoke without eyes.§o Doesn't have eyes, exactly. Still found me.",
+    "Two of them in a passage. Took the nearer one first. Then the far one.",
+    "Heard it before I smelled it. Smelled nothing. Old bones don't smell like much.",
+    "Ran the gap between shots. Got my teeth in before it drew again.",
+    "§lSkeleton§l standing in the open. Too still for something with no reason to rest."
   ]
 }

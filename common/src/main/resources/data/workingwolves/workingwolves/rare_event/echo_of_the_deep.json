@@ -6,13 +6,13 @@
   "weight": 10,
   "remove_last_loot": true,
   "journal_lines": [
-    "The silence changed quality. Came back without something. Won't say why.",
-    "Something down there. Left quickly. Left something behind.",
-    "The deep took something. Trade seems fair given what was not taken.",
-    "Heard my own breath returned to me by the rock. The rock said something different than I had said.",
-    "A passage opened that I had not opened. Closed when I looked away. Did not look back.",
-    "Left an offering. Did not know it was an offering at the time.",
-    "The dark wanted one of the things I was carrying. I did not argue with the dark.",
-    "Came back missing nothing important. Missing one thing, anyway. Cannot remember what."
+    "§cThe silence changed. §oNot quieter — different. Left quickly. Something did not come back with me.",
+    "§cSomething in the deep passage. §oThe air pressure shifted. Left one thing behind. Did not go back for it.",
+    "§cDeep tunnel, zone two. §oThe dark had a quality it does not usually have. Came back missing one thing. Do not know when it went.",
+    "§cHeard my own breathing returned from the rock. §oThe rock said something different than I had said. Left immediately.",
+    "§cA passage that had not been there before. Closed while I was looking at it. §oWalked out. Did not run. Almost ran.",
+    "§cThe bag was lighter on the way out than it should have been. §oNoticed at the entrance. Did not go back to check.",
+    "§cSomething in the dark that wanted one of the things I was carrying. §oI did not stay to negotiate. It took what it wanted.",
+    "§cCame back with less than I left with. §oCannot say exactly what. The gap is there. Something filled it before I got home."
   ]
 }

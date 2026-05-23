@@ -68,35 +68,34 @@
       "Rain made the bark slick. Careful work.",
       "The path I marked was already grown over.",
       "Ant nest at the base of the tree. Worked around it. Mostly.",
-      "Sap dripped on the paw and stayed. The paw was sticky for hours.",
+      "Sap dripped on the paw and stayed. §oThe paw was sticky for hours.§o",
       "Wasp investigating the fresh cut. Stepped back. Politely.",
       "Wind picked up. The next tree did not want to fall the way I wanted.",
-      "Mosquitoes thick as smoke. Worked through them. Itched for days."
+      "Mosquitoes thick as smoke. Worked through them. §oItched for days.§o"
     ],
     "moderate": [
-      "Tree fell the wrong way. Close call.",
-      "Beehive in the branches. Stings.",
-      "Hostile mob in the undergrowth.",
-      "A root caught my back foot. Went down hard.",
-      "Something in the dark forest did not want me there.",
-      "Disturbed a nest I did not see. Moved before counting.",
-      "Falling branch I had not noticed. Noticed it. Late.",
-      "The tree leaned wrong all morning. It fell wrong, accordingly.",
-      "Stepped on a wasp ground-nest. Ran. The ground-nest is still angry.",
-      "Trunk twisted as it fell, caught a paw under it. Worked free.",
-      "Sap in the eye. Worked one-eyed for a while."
+      "§c§lTree fell the wrong way§l. Close. Got clear.",
+      "§c§lBeehive§l in the branches. §oStings on the nose, mostly.§o Kept working.",
+      "§cHostile mob at the work site. §oSmelled it before I heard it.§o Drove it off.",
+      "§cA root caught the back foot. Went down hard, came up fast.",
+      "§cSomething in the dark forest did not want me there. §oGrowling in the understory.§o Moved elsewhere.",
+      "§cDisturbed a nest I did not see. §oThe occupants had opinions about this.§o Moved before counting them.",
+      "§c§lFalling branch§l overhead. §oHeard the creak late.§o Got a shoulder into it and moved.",
+      "§cThe tree leaned wrong all morning. §oKnew before the last stroke how it was going to go.§o Stepped wide.",
+      "§cStepped on a wasp ground-nest. Ran. §oThe ground-nest is still angry.§o",
+      "§c§lTrunk twisted§l as it fell, caught a paw. Worked free. The paw is fine."
     ],
     "severe": [
-      "Bear investigating my woodpile. Then investigating me.",
-      "The dry grass caught from a spark. Not so controlled.",
-      "Tree came down on top of me. Working out from under it.",
-      "The mud swallowed me to the hip. Took time to extract.",
-      "Something large, very close, very fast. Dropped everything and ran.",
-      "Tree split as it fell. The split end went where I had been standing. Where I no longer was.",
-      "Fell from a low branch the wrong way. The wrong way was longer than expected.",
-      "Wildfire on the next ridge over. Worked downhill, fast.",
-      "Something in the deep wood took an interest. Worked elsewhere.",
-      "Trunk rolled down the slope after I cut it. Rolled further than the slope had any right to."
+      "§c§lBear§l at the work site. §oInvestigated the woodpile, then investigated me.§o Backed off slow. It let me.",
+      "§cDry grass caught from a spark. §oSmoke before I registered the heat.§o Ran downwind. Got clear.",
+      "§c§lTree came down on top of me§l. Dug out. Everything still attached.",
+      "§cMud swallowed me to the hip. §oCold and pulling.§o Worked free. Took time.",
+      "§c§lSomething large§l, very close, very fast. §oSmelled it wrong — too late.§o Dropped the axe and ran.",
+      "§cTree split on the fall. §oThe wide end swung hard.§o Dove clear. Got scratched, not pinned.",
+      "§cFell from a low branch the wrong way. §oThe wrong way was longer than expected.§o Came down hard, moved on.",
+      "§c§lWildfire§l on the next ridge. §oSmelled it before the smoke showed.§o Worked downhill fast.",
+      "§cSomething in the deep wood took an interest in me. §oDidn't look like prey. It stayed anyway.§o Worked elsewhere.",
+      "§c§lTrunk rolled§l after the cut. §oFaster than the slope had any business producing.§o Outran it."
     ]
   },
   "tool_messages": {
@@ -109,18 +108,18 @@
       "Nothing to fell with. Going home."
     ],
     "precious_break": [
-      "Axe too precious to break. Heading back.",
-      "Cannot let the enchanted axe end this way. Coming back with it.",
-      "The good axe stays. Heading home before it goes.",
-      "Will not spend the last of this one. Bringing it back.",
-      "Too well-made to lose to a tree. Going home with it intact."
+      "Axe too good to spend here. Heading back with it.",
+      "Cannot let the enchanted axe end this way. Coming home with it.",
+      "The good axe stays whole. Heading back before it doesn't.",
+      "Will not burn the last of this one on a bad tree. Bringing it back.",
+      "Too well-made to lose to a stump. Going home with it intact."
     ],
     "broken": [
       "Axe handle shattered.",
       "Head came clean off. Bag lighter by one tool.",
       "Haft split down the grain. Done.",
       "Last swing went into the haft instead of the wood. Gone.",
-      "The axe was finished before the tree was. The axe wins, in a way."
+      "The axe was finished before the tree was."
     ],
     "last_gone": [
       "Last axe gone. Heading back.",
@@ -140,7 +139,7 @@
       "Axe nearly done. Heading back.",
       "Axe-iron worn thin. Going home before it gives.",
       "Last few cuts left in this one. Saving them.",
-      "Axe is tired. So am I. Walking home.",
+      "Axe is tired. Walking home.",
       "Almost spent. Coming back before it finishes."
     ]
   }

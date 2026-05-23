@@ -6,17 +6,17 @@
   "biome_bonus_categories": ["mountain", "cave", "forest"],
   "biome_bonus_loot_table": "workingwolves:expedition/miner/coal_bonus",
   "journal_lines": [
-    "Black seam in the stone. Wide and consistent.",
-    "Coal faces the whole tunnel. Good start.",
-    "Dusty work. Worth it.",
-    "Charcoal smell before I found it. Then the vein.",
-    "A seam of black running the length of the wall, like a river drawn in soot.",
-    "Coal that crumbles to powder under the paw. Older than the trees it used to be.",
-    "A whole forest pressed thin and dark and patient. Carried what I could.",
-    "The dust stayed in the fur for days. Forest under the fur.",
-    "Black on the muzzle. Black on the bag. Black is fine.",
-    "Easy work, this. The stone forgives the pickaxe here.",
-    "A vein wide enough to walk through, if a wolf were so inclined.",
-    "Found a seam that brightened when I struck it. The whole wall, briefly lit."
+    "§aSmelled it before I saw it. §oDark dust, mineral sharp, a whole buried forest.§o §lCoal§l seam, wide and consistent.",
+    "§aDusty work. Black on the muzzle, black in the bag. Coal.",
+    "§aCharcoal smell deep in the stone. §oLike something that burned long ago and never finished.§o Wide vein. Took it.",
+    "§aWorked the wall for an hour. §lCoal§l the whole way down.",
+    "§aBlack running the length of the passage, thick as a finger. Easy pickings.",
+    "§aThe seam crumbled soft under the pick. §oCoal dust hung in the air for a while after.§o Good take.",
+    "§aStruck stone, then found the black layer behind it. Seam ran wider than the tunnel.",
+    "§aQuick work. §lCoal§l close to the surface, almost asking to be taken.",
+    "§aPowdery at the face, harder further in. Took both kinds. Coal is coal.",
+    "§aFound the vein by the smell. §oDamp, old-burn, something mineral underneath.§o Followed it until it split. Took both branches.",
+    "§aA stripe of black in the grey stone, straight as intention. Worked it clean.",
+    "§aMore coal than the bag wanted. Left some. It will keep."
   ]
 }

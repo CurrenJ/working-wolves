@@ -4,17 +4,17 @@
   "required_biome_categories": ["forest", "other"],
   "loot_table": "workingwolves:expedition/hunter/witch",
   "journal_lines": [
-    "Witch in the clearing. Moved fast.",
-    "Thrown potion. Shook it off.",
-    "Cackle in the dark. Found it before it found me.",
-    "Potions everywhere. Still here.",
-    "Hut on stilts no one had visited in years. Smoke rising anyway.",
-    "She knew I was there. I knew she knew. We were polite about it for as long as we could be.",
-    "Bottles on a string in the branches. Each one full of something.",
-    "Threw a green one. The grass yellowed where it landed.",
-    "Drank her own potion before the fight. So did I, in my own way.",
-    "Laughed once. The laugh was older than the witch.",
-    "Sugar-and-spider smell on the air. Followed it backward.",
-    "Found her cauldron after. Still warm. Did not drink."
+    "§lWitch§l in the clearing. §oSugar-and-rot smell on the air before I saw her.§o Closed fast.",
+    "Potion landed short. Charged through the smoke. Got my teeth in.",
+    "§cSplash hit my flank. §oLegs went numb for a breath.§o Shook it off. Finished it.",
+    "Heard the glass break and moved sideways. Kept moving.",
+    "Cackle in the trees. Found the source. Dealt with it.",
+    "She drank something before I reached her. Got there before it helped.",
+    "§oBottles on strings in the branches above her door.§o Didn't touch them. Went straight for her.",
+    "Threw three. Two hit the ground. One hit me. Still managed.",
+    "§cPotion on my nose. §oWorst smell I've encountered in a long time.§o Kept going.",
+    "Cauldron still bubbling when I left. Didn't investigate.",
+    "§lWitch§l alone in the rain, mixing something in a clay pot. Not for long.",
+    "Moved wide around the hut first. Came back when I knew the layout. Cleared it."
   ]
 }

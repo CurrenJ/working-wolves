@@ -4,17 +4,17 @@
   "required_biome_categories": ["ocean", "cave"],
   "loot_table": "workingwolves:expedition/hunter/drowned",
   "journal_lines": [
-    "Drowned rising from the water. Put it back.",
-    "Waterlogged and slow on land.",
-    "Came up from the aquifer. Dealt with.",
-    "Wet and persistent. Eventually gone.",
-    "Stood at the edge of the pool a long time. So did I.",
-    "Trident through the dark water. Missed me by a paw.",
-    "Its hair moved when there was no current. Looked away after.",
-    "Came up at the lantern's edge. Sank without much fuss after.",
-    "A face you do not stare at. A face that does not stare back.",
-    "Waterlogged thing in the silt, holding something it did not need. I took the something.",
-    "Heard it breathing under the water. They are not supposed to.",
-    "Followed me along the shore for too long. Did not follow back."
+    "§lDrowned§l at the water's edge. Put it back down.",
+    "Trident out of the dark water. Missed. Closed the gap.",
+    "§cTrident caught my side. §oFelt it before I heard the throw.§o Still cleared it.",
+    "Rose from the shallows slow. Dealt with it before it found its footing.",
+    "§oHeard it under the water first. They breathe wrong.§o Waited at the edge. Cleared it when it surfaced.",
+    "Waterlogged and heavy on land. Manageable.",
+    "Two of them in the flooded passage. Backed to dry ground. Handled in order.",
+    "§lDrowned§l in the silt, arms out, walking the bottom. Followed the shore until it surfaced.",
+    "§oIts hair moved in still water.§o Didn't look long. Dealt with it.",
+    "Had a trident. I have it now.",
+    "Followed me along the bank for a long time. Waited until it climbed out.",
+    "§cGrabbed my leg from below the waterline. §oWater everywhere.§o Pulled free. Finished it on the bank."
   ]
 }

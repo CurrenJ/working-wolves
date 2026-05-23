@@ -7,13 +7,13 @@
   "cross_role": true,
   "weight": 10,
   "journal_lines": [
-    "All three at once. The forest, the rock, and the prey gave way together. A rare kind of day.",
-    "Prey flushed from the tree line into a cave seam. Took all three to sort it out. Worth it.",
-    "The hunt led through timber into stone. Everyone worked. Everything counted.",
-    "A day when each of us did the work of one and the work of all three. Tired in the right way after.",
-    "Trees, stone, prey: all three asked for a paw, all three got one.",
-    "The kind of expedition you remember. Came back with one of everything.",
-    "Three tasks, one wolf, one long day. Came home with everything that had been asked for.",
-    "Forest, mountain, quarry — the whole world worked today. So did we."
+    "Prey flushed from the tree line, across the ridge, into a cave seam. §oAll three asked for a day. Got one.",
+    "The hunt led through timber into stone. §oWood, rock, prey — each gave something. Everything counted.",
+    "Took game from the grass, ore from the hill, timber from the edge of both. A full day. A full bag.",
+    "Forest and stone and quarry — the whole range worked today. §oTired in the right way. Came home with everything.",
+    "All three tasks on one expedition. §oThe kind of day that does not repeat itself often. Brought back proof.",
+    "Hunted into the rocks, cut timber on the way back, pulled ore from the cliffside. One long pass through everything.",
+    "Three asks, one route, nothing wasted. §oThe kind of expedition you remember when the others feel thin.",
+    "Came back with §lore§r and §ltimber§r and §lgame§r. §oThe forest, the mountain, and the valley each gave something today."
   ]
 }

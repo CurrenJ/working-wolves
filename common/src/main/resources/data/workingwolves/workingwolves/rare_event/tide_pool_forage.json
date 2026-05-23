@@ -8,13 +8,13 @@
   "weight": 20,
   "loot_table": "workingwolves:expedition/rare/tide_pool_forage",
   "journal_lines": [
-    "Tide pools at the base of the cliffs. The hunter took what swam. The miner took what the water left behind.",
-    "Low tide exposed the rock shelf. Copper-tinged stone and small fish. Both worth taking.",
-    "Rocky shoreline. Good place for two roles that know what they're looking at.",
-    "The water pulls back and shows you everything. Ore and fish. Took both.",
-    "Crabs in the pools, copper in the wet rock above. Two kinds of patience required.",
-    "The tide had laid out the morning's work in small bright squares.",
-    "Smelled like seaweed and old iron. Two good smells, together.",
-    "Worked the pools until the tide returned. The tide returns punctually. Came home with both bags full."
+    "§oSmelled iron and salt together. Low tide had pulled back from the rock shelf. Two different kinds of work waiting.",
+    "§aFish in the pools, §lcopper§a in the wet stone above the waterline. Hunter and miner split the shore between them.",
+    "Crabs went to the hunter. The exposed seam went to the miner. Efficient division.",
+    "§aThe tide does the sorting — everything worth taking ends up at the margin. Came home with both bags heavy.",
+    "Rock shelf only visible at low water. Timed it right. Hunter worked the pools, miner worked the cliff face.",
+    "§oSeaweed and old iron — two strong smells. Both came home with us.",
+    "§aThe water had left ore deposits in the cracks of the rock. §lTide pool§a work rewards the patient nose.",
+    "Worked until the water came back. The water gave fair warning. Came home before the pools filled again."
   ]
 }

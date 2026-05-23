@@ -66,28 +66,28 @@
       "Slipped down a bank, came up muddy. The mud washed off, mostly."
     ],
     "moderate": [
-      "Three of them at once. Held on.",
-      "Cornered briefly. Found a way out.",
-      "Took a hit. Kept moving.",
-      "Outnumbered. Fought anyway.",
-      "Pack of them. Retreated and regrouped.",
-      "Caught between two scents. Both wanted me. Neither got me.",
-      "Bear in the path. Convinced it I was not worth the trouble.",
-      "Quarry larger than I had read. Worked harder.",
-      "Got the tooth in deep. Pulled it out. Kept the tooth.",
-      "Outpaced. Outflanked. Came home anyway."
+      "§c§lThree of them§l at once. Held the ground, cleared it.",
+      "§cCornered briefly. §oSmelled the gap before I saw it.§o Found the way out.",
+      "§cTook a hit. §oBlood-taste in the mouth.§o Kept moving.",
+      "§c§lPack of five§l on the trail. Fell back, regrouped, moved on.",
+      "§cTwo scents, both closing. §oNeither one patient.§o Ran the gap between them.",
+      "§c§lBear§l in the path. Convinced it I was not worth the trouble. It agreed.",
+      "§cQuarry larger than I had read. Worked harder. Got it sorted.",
+      "§cGot the tooth in deep. §oBlood-smell on the fur for hours.§o Kept the tooth.",
+      "§cFalling branch overhead. §oHeard it crack before it went.§o Stepped clear.",
+      "§c§lCreeper§l on the downwind side. Heard the hiss, ran before the count finished."
     ],
     "severe": [
-      "Too many. Barely got clear.",
-      "Took the worst of it. Still here.",
-      "Nearly didn't make it out. Did.",
-      "The pack was bigger than it looked. Ran.",
-      "Something found me before I found it. Cost me.",
-      "Hit the ground hard, got up harder.",
-      "The forest was not on my side today. Came home with proof.",
-      "A wound that wanted to stay open. Convinced it.",
-      "Out of cover and out of options. Made one.",
-      "Should not have made it back. Did not ask why I did."
+      "§c§lToo many§l at once. Barely got clear.",
+      "§cHeard the pack split to flank me before I saw them move. Ran the center. Outpaced them.",
+      "§c§lSkeleton§l had the high ground and used it. §oArrow in the shoulder.§o Closed the distance fast.",
+      "§cThe pack was bigger than it looked. Ran before they could finish the count.",
+      "§cSmelled blood on the wind — mine — before I understood the fight was that bad. Fought clear.",
+      "§cGot the ground knocked out. §oWorld tilted wrong.§o Came up swinging anyway.",
+      "§cThe forest was not on my side today. §oEvery scent was wrong.§o Came home with proof.",
+      "§c§lWitch§l at close range. §oSmell of potions, sharp and sweet.§o Took the hit, ran harder.",
+      "§cOut of cover and out of options. Made one. It worked.",
+      "§c§lWarden§l territory. §oVibrations wrong underfoot.§o Cleared the area without pressing luck."
     ]
   }
 }

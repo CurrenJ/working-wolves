@@ -4,17 +4,17 @@
   "required_biome_categories": ["cave", "other"],
   "loot_table": "workingwolves:expedition/hunter/wither_skeleton",
   "journal_lines": [
-    "Wither skeleton. Black bones. Careful.",
-    "Sword made of something old. Didn't let it land.",
-    "Withering touch. Kept distance.",
-    "Deep place for a thing like this.",
-    "Coal-colored bone and a coal-cold blade. Nothing here was warm.",
-    "Stood in a doorway that no longer had a door. Did the doorway's job.",
-    "Took a swing that grazed the fur. The fur turned grey for an hour after.",
-    "Old armor, older bones, oldest grudge.",
-    "Smelled like a forge that had gone cold a long time ago.",
-    "It did not speak. It did not have to.",
-    "Coal-fragments where it fell. Carried what was useful. Left the rest.",
-    "Underworld thing in a place that almost was not underworld. Almost."
+    "§lWither skeleton§l in the corridor. Black bones. Gave it no room to swing.",
+    "§cBlade grazed my shoulder. §oFur went grey at the edges for an hour.§o Still cleared it.",
+    "Smelled like cold ash and old iron. Put it down.",
+    "Sword was longer than expected. Stayed low, came in under.",
+    "§oStood in a doorway, backlit by fire.§o Didn't wait for it to step through.",
+    "§cTook the withering for a moment. §oLegs felt heavy.§o Pushed through. Finished it.",
+    "Tall and quiet and armed. Backed it into a corner. Cleared it.",
+    "§lWither skeleton§l holding still in the dark. §oCoal smell.§o Smelled it before I saw it.",
+    "Two swings wide. Third one connected. Done.",
+    "Felled it. Skull and bones scattered across the floor. Took what mattered.",
+    "§oDeep place for a thing like this.§o Deeper than I like. Came home anyway.",
+    "§cBit of the blade. §oLeft a dark mark.§o Cleared it. Moved fast after."
   ]
 }

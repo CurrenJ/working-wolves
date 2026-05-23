@@ -2,15 +2,15 @@
   "wood_biome_id": "mangrove",
   "loot_table": "workingwolves:expedition/woodcutter/mangrove",
   "journal_lines": [
-    "Roots in the water first, then down to the mud.",
-    "A frog on the root arch I was about to step over. Stepped around it.",
-    "The aerial roots hang like curtains. Patience required.",
-    "Dense, uneven wood. A life lived half in water.",
-    "Stood in mud past the second knuckle for an hour. The mud did not seem to mind.",
-    "A heron watched from a snag, very still. Then suddenly elsewhere.",
-    "The water held the shape of the roots even after I had passed.",
-    "Tangled roots like a question nobody had answered in centuries.",
-    "Smelled like salt and patience. Two old smells.",
-    "Found a turtle on a low root, sunning. Worked the far side of the grove instead."
+    "§aMud before anything else. §oSalt water and old wood and something alive in the silt.§o §lMangrove§l roots going everywhere.",
+    "§aStood in water to reach the trunk. The water was warmer than expected.",
+    "§aA frog on the root arch. Stepped around it. It did not step around me.",
+    "§aAerial roots hang like curtains. Cut through six before I found clear access to the trunk.",
+    "§aDense wood. §oSmells like salt and brine all the way to the heartwood.§o Heavy timber.",
+    "§aA heron on a snag nearby, watching. §oStill as a post, then gone between one blink and the next.§o",
+    "§aMud past the second knuckle for an hour. Worth it. Good §lMangrove§l take.",
+    "§aRoots tangled into other roots. Took the upper trunk, left the root mass alone.",
+    "§aThe water held the shape of where I stood for a moment after I moved.",
+    "§aTurtle on a low root, sunning hard. Worked the far side of the grove instead."
   ]
 }
