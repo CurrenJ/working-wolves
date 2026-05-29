@@ -12,6 +12,126 @@
     { "light": 48, "moderate": 40, "severe": 12 },
     { "light": 35, "moderate": 50, "severe": 15 }
   ],
+  "durability_damage": {
+    "travel": 1,
+    "discovery": 1,
+    "light_hazard": 1,
+    "moderate_hazard": 2,
+    "severe_hazard": 3
+  },
+  "tool_damage_entries": [
+    {
+      "tool_tag": "minecraft:pickaxes",
+      "tool_messages": {
+        "update_mining_stats": true,
+        "no_tool": [
+          "No pickaxe left. Heading back.",
+          "Pickaxe gone. Coming home.",
+          "Nothing left to dig with. Going back to the bed.",
+          "Out of stone-work. Turning around."
+        ],
+        "precious_break": [
+          "Pickaxe too good to spend here. Heading back.",
+          "Will not let this one end underground. Coming back with it.",
+          "Worth too much to lose. Setting the work down. Coming home."
+        ],
+        "broken": [
+          "Pickaxe shattered.",
+          "Iron split clean through. Gone.",
+          "Worked it past its limit. The limit won."
+        ],
+        "last_gone": [
+          "Last pickaxe gone. Heading back.",
+          "End of the iron. Coming home.",
+          "Nothing left to dig with. Turning toward the bed."
+        ],
+        "switched_spare": [
+          "Switched to spare pickaxe.",
+          "Old pickaxe aside. New one in paw.",
+          "Spare in the bag. Used it."
+        ],
+        "nearly_done": [
+          "Pickaxe nearly done. Heading back.",
+          "Iron thin. Going home before it goes.",
+          "Almost spent. Coming back before it finishes."
+        ]
+      }
+    },
+    {
+      "tool_tag": "minecraft:swords",
+      "tool_messages": {
+        "update_mining_stats": false,
+        "no_tool": [
+          "No blade left. Heading back.",
+          "Sword gone. Coming home.",
+          "Nothing to fight with. Turning around.",
+          "Out of steel. Going back to the bed."
+        ],
+        "precious_break": [
+          "Sword too good to lose here. Heading back with it.",
+          "Will not spend the last of this one on a bad fight. Going home.",
+          "Worth too much to lose. Bringing it back."
+        ],
+        "broken": [
+          "Sword shattered.",
+          "Blade snapped clean. Gone.",
+          "Hit something harder than the blade. The blade lost."
+        ],
+        "last_gone": [
+          "Last sword gone. Heading back.",
+          "No more steel. Coming home.",
+          "Last of the blades spent. Turning toward the bed."
+        ],
+        "switched_spare": [
+          "Switched to spare sword.",
+          "Old blade aside. New one in paw.",
+          "Spare in the bag. Used it."
+        ],
+        "nearly_done": [
+          "Sword nearly done. Heading back.",
+          "Blade worn thin. Going home before it gives.",
+          "Almost nothing left. Coming back with what's there."
+        ]
+      }
+    },
+    {
+      "tool_tag": "minecraft:axes",
+      "tool_messages": {
+        "update_mining_stats": false,
+        "no_tool": [
+          "No axe left. Heading back.",
+          "Axe gone. Walking home.",
+          "Out of cutting-iron. Turning around.",
+          "Nothing to fell with. Going home."
+        ],
+        "precious_break": [
+          "Axe too good to spend here. Heading back with it.",
+          "The good axe stays whole. Heading back before it doesn't.",
+          "Too well-made to lose here. Going home with it intact."
+        ],
+        "broken": [
+          "Axe handle shattered.",
+          "Head came clean off. Bag lighter by one tool.",
+          "The axe was finished before the tree was."
+        ],
+        "last_gone": [
+          "Last axe gone. Heading back.",
+          "End of the cutting. Coming back.",
+          "Nothing left to fell with. Turning toward the bed."
+        ],
+        "switched_spare": [
+          "Switched to spare axe.",
+          "Old axe aside. New one in paw.",
+          "Spare in the bag. Used it."
+        ],
+        "nearly_done": [
+          "Axe nearly done. Heading back.",
+          "Axe-iron worn thin. Going home before it gives.",
+          "Almost spent. Coming back before it finishes."
+        ]
+      }
+    }
+  ],
   "travel_journal_lines": {
     "0": [
       "Ore below, timber above, tracks across the middle. A full day.",

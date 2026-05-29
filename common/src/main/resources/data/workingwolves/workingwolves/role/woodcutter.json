@@ -2,7 +2,6 @@
   "name": "Woodcutter",
   "icon": "minecraft:iron_axe",
   "role_type": "woodcutting",
-  "required_tool_tag": "minecraft:axes",
   "zone_event_weights": [
     { "travel": 50, "discovery": 40, "hazard": 10 },
     { "travel": 30, "discovery": 45, "hazard": 25 },
@@ -16,9 +15,9 @@
   "durability_damage": {
     "travel": 1,
     "discovery": 3,
-    "light_hazard": 1,
-    "moderate_hazard": 2,
-    "severe_hazard": 3
+    "light_hazard": 2,
+    "moderate_hazard": 3,
+    "severe_hazard": 6
   },
   "travel_journal_lines": {
     "0": [
@@ -98,49 +97,54 @@
       "§c§lTrunk rolled§l after the cut. §oFaster than the slope had any business producing.§o Outran it."
     ]
   },
-  "tool_messages": {
-    "update_mining_stats": false,
-    "no_tool": [
-      "No axe left. Heading back.",
-      "Axe gone. Walking home.",
-      "Out of cutting-iron. Turning around.",
-      "No edge left to swing. Coming back.",
-      "Nothing to fell with. Going home."
-    ],
-    "precious_break": [
-      "Axe too good to spend here. Heading back with it.",
-      "Cannot let the enchanted axe end this way. Coming home with it.",
-      "The good axe stays whole. Heading back before it doesn't.",
-      "Will not burn the last of this one on a bad tree. Bringing it back.",
-      "Too well-made to lose to a stump. Going home with it intact."
-    ],
-    "broken": [
-      "Axe handle shattered.",
-      "Head came clean off. Bag lighter by one tool.",
-      "Haft split down the grain. Done.",
-      "Last swing went into the haft instead of the wood. Gone.",
-      "The axe was finished before the tree was."
-    ],
-    "last_gone": [
-      "Last axe gone. Heading back.",
-      "Bag holds no more wood-work. Going home.",
-      "End of the cutting. Coming back.",
-      "Last axe spent. Walking home.",
-      "Nothing left to fell with. Turning toward the bed."
-    ],
-    "switched_spare": [
-      "Switched to spare axe.",
-      "Set down the worn axe. Picked up the next.",
-      "Spare axe in the bag. Using it now.",
-      "Old axe aside. New axe in paw.",
-      "Picked up the second axe. Carried on."
-    ],
-    "nearly_done": [
-      "Axe nearly done. Heading back.",
-      "Axe-iron worn thin. Going home before it gives.",
-      "Last few cuts left in this one. Saving them.",
-      "Axe is tired. Walking home.",
-      "Almost spent. Coming back before it finishes."
-    ]
-  }
+  "tool_damage_entries": [
+    {
+      "tool_tag": "minecraft:axes",
+      "tool_messages": {
+        "update_mining_stats": false,
+        "no_tool": [
+          "No axe left. Heading back.",
+          "Axe gone. Walking home.",
+          "Out of cutting-iron. Turning around.",
+          "No edge left to swing. Coming back.",
+          "Nothing to fell with. Going home."
+        ],
+        "precious_break": [
+          "Axe too good to spend here. Heading back with it.",
+          "Cannot let the enchanted axe end this way. Coming home with it.",
+          "The good axe stays whole. Heading back before it doesn't.",
+          "Will not burn the last of this one on a bad tree. Bringing it back.",
+          "Too well-made to lose to a stump. Going home with it intact."
+        ],
+        "broken": [
+          "Axe handle shattered.",
+          "Head came clean off. Bag lighter by one tool.",
+          "Haft split down the grain. Done.",
+          "Last swing went into the haft instead of the wood. Gone.",
+          "The axe was finished before the tree was."
+        ],
+        "last_gone": [
+          "Last axe gone. Heading back.",
+          "Bag holds no more wood-work. Going home.",
+          "End of the cutting. Coming back.",
+          "Last axe spent. Walking home.",
+          "Nothing left to fell with. Turning toward the bed."
+        ],
+        "switched_spare": [
+          "Switched to spare axe.",
+          "Set down the worn axe. Picked up the next.",
+          "Spare axe in the bag. Using it now.",
+          "Old axe aside. New axe in paw.",
+          "Picked up the second axe. Carried on."
+        ],
+        "nearly_done": [
+          "Axe nearly done. Heading back.",
+          "Axe-iron worn thin. Going home before it gives.",
+          "Last few cuts left in this one. Saving them.",
+          "Axe is tired. Walking home.",
+          "Almost spent. Coming back before it finishes."
+        ]
+      }
+    }
+  ]
 }

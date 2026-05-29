@@ -2,7 +2,6 @@
   "name": "Miner",
   "icon": "minecraft:iron_pickaxe",
   "role_type": "mining",
-  "required_tool_tag": "minecraft:pickaxes",
   "zone_event_weights": [
     { "travel": 50, "discovery": 40, "hazard": 10 },
     { "travel": 30, "discovery": 45, "hazard": 25 },
@@ -16,9 +15,9 @@
   "durability_damage": {
     "travel": 1,
     "discovery": 3,
-    "light_hazard": 1,
-    "moderate_hazard": 2,
-    "severe_hazard": 3
+    "light_hazard": 2,
+    "moderate_hazard": 5,
+    "severe_hazard": 10
   },
   "travel_journal_lines": {
     "0": [
@@ -107,49 +106,54 @@
       "§c§lPickaxe shattered§l on the wrong stone. §oThe crack was loud.§o Got out before anything answered it."
     ]
   },
-  "tool_messages": {
-    "update_mining_stats": true,
-    "no_tool": [
-      "No pickaxe left. Heading back.",
-      "Pickaxe gone. Coming home.",
-      "Out of stone-work. Turning around.",
-      "Nothing left to swing. Going back to the bed.",
-      "No tool. No work. Back to the bed."
-    ],
-    "precious_break": [
-      "Pickaxe too good to spend here. Heading back.",
-      "The enchanted pickaxe deserves better than this vein. Heading home.",
-      "Will not let this one end underground. Coming back with it whole.",
-      "Worth too much to lose to a bad swing. Setting the work down. Coming home.",
-      "Could not bring myself to spend the last of it here. Going home with it intact."
-    ],
-    "broken": [
-      "Pickaxe shattered.",
-      "The head came off the haft. The haft came off the paw.",
-      "Pickaxe gave up. Honest service.",
-      "Iron split along an old fracture. Gone.",
-      "Worked it past its limit. The limit won."
-    ],
-    "last_gone": [
-      "Last pickaxe gone. Heading back.",
-      "Bag holds no more stone-work. Going home.",
-      "End of the iron. End of the work. Coming home.",
-      "Last of the pickaxes spent. Walking back.",
-      "Nothing left to dig with. Turning toward the bed."
-    ],
-    "switched_spare": [
-      "Switched to spare pickaxe.",
-      "Set down the worn one. Picked up the next.",
-      "Spare in the bag. Used it.",
-      "Old pickaxe to the side. New pickaxe in paw.",
-      "Picked up the second pickaxe. Carried on."
-    ],
-    "nearly_done": [
-      "Pickaxe nearly done. Heading back.",
-      "Iron thin on the haft. Going home before it goes.",
-      "Last few swings left in it. Saving them for the climb out.",
-      "The pickaxe is tired. So am I. Both heading home.",
-      "Almost spent. Coming back before it finishes."
-    ]
-  }
+  "tool_damage_entries": [
+    {
+      "tool_tag": "minecraft:pickaxes",
+      "tool_messages": {
+        "update_mining_stats": true,
+        "no_tool": [
+          "No pickaxe left. Heading back.",
+          "Pickaxe gone. Coming home.",
+          "Out of stone-work. Turning around.",
+          "Nothing left to swing. Going back to the bed.",
+          "No tool. No work. Back to the bed."
+        ],
+        "precious_break": [
+          "Pickaxe too good to spend here. Heading back.",
+          "The enchanted pickaxe deserves better than this vein. Heading home.",
+          "Will not let this one end underground. Coming back with it whole.",
+          "Worth too much to lose to a bad swing. Setting the work down. Coming home.",
+          "Could not bring myself to spend the last of it here. Going home with it intact."
+        ],
+        "broken": [
+          "Pickaxe shattered.",
+          "The head came off the haft. The haft came off the paw.",
+          "Pickaxe gave up. Honest service.",
+          "Iron split along an old fracture. Gone.",
+          "Worked it past its limit. The limit won."
+        ],
+        "last_gone": [
+          "Last pickaxe gone. Heading back.",
+          "Bag holds no more stone-work. Going home.",
+          "End of the iron. End of the work. Coming home.",
+          "Last of the pickaxes spent. Walking back.",
+          "Nothing left to dig with. Turning toward the bed."
+        ],
+        "switched_spare": [
+          "Switched to spare pickaxe.",
+          "Set down the worn one. Picked up the next.",
+          "Spare in the bag. Used it.",
+          "Old pickaxe to the side. New pickaxe in paw.",
+          "Picked up the second pickaxe. Carried on."
+        ],
+        "nearly_done": [
+          "Pickaxe nearly done. Heading back.",
+          "Iron thin on the haft. Going home before it goes.",
+          "Last few swings left in it. Saving them for the climb out.",
+          "The pickaxe is tired. So am I. Both heading home.",
+          "Almost spent. Coming back before it finishes."
+        ]
+      }
+    }
+  ]
 }

@@ -12,13 +12,12 @@ public record RoleEntry(
         String icon,
         Optional<String> roleType,
         Optional<String> discoveryType,
-        Optional<String> requiredToolTag,
+        List<ToolDamageEntry> toolDamageEntries,
         List<EventWeights> zoneEventWeights,
         List<HazardLevelWeights> hazardLevelWeights,
         Optional<DurabilityDamage> durabilityDamage,
         Map<String, List<String>> travelJournalLines,
         Map<String, List<String>> hazardJournalLines,
-        Optional<ToolMessages> toolMessages,
         Optional<List<String>> requiresRoles
 ) {
 
@@ -68,19 +67,25 @@ public record RoleEntry(
         ).apply(i, ToolMessages::new));
     }
 
+    public record ToolDamageEntry(String toolTag, ToolMessages messages) {
+        public static final Codec<ToolDamageEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.STRING.fieldOf("tool_tag").forGetter(ToolDamageEntry::toolTag),
+                ToolMessages.CODEC.fieldOf("tool_messages").forGetter(ToolDamageEntry::messages)
+        ).apply(i, ToolDamageEntry::new));
+    }
+
     public static final Codec<RoleEntry> CODEC = RecordCodecBuilder.create(instance ->
         instance.group(
             Codec.STRING.fieldOf("name").forGetter(RoleEntry::name),
             Codec.STRING.fieldOf("icon").forGetter(RoleEntry::icon),
             Codec.STRING.optionalFieldOf("role_type").forGetter(RoleEntry::roleType),
             Codec.STRING.optionalFieldOf("discovery_type").forGetter(RoleEntry::discoveryType),
-            Codec.STRING.optionalFieldOf("required_tool_tag").forGetter(RoleEntry::requiredToolTag),
+            ToolDamageEntry.CODEC.listOf().optionalFieldOf("tool_damage_entries", List.of()).forGetter(RoleEntry::toolDamageEntries),
             EventWeights.CODEC.listOf().fieldOf("zone_event_weights").forGetter(RoleEntry::zoneEventWeights),
             HazardLevelWeights.CODEC.listOf().fieldOf("hazard_level_weights").forGetter(RoleEntry::hazardLevelWeights),
             DurabilityDamage.CODEC.optionalFieldOf("durability_damage").forGetter(RoleEntry::durabilityDamage),
             Codec.unboundedMap(Codec.STRING, Codec.STRING.listOf()).fieldOf("travel_journal_lines").forGetter(RoleEntry::travelJournalLines),
             Codec.unboundedMap(Codec.STRING, Codec.STRING.listOf()).fieldOf("hazard_journal_lines").forGetter(RoleEntry::hazardJournalLines),
-            ToolMessages.CODEC.optionalFieldOf("tool_messages").forGetter(RoleEntry::toolMessages),
             Codec.STRING.listOf().optionalFieldOf("requires_roles").forGetter(RoleEntry::requiresRoles)
         ).apply(instance, RoleEntry::new)
     );

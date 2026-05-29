@@ -77,11 +77,14 @@ class RoleEventHandler {
     }
 
     private static void applyDurability(Level level, RoleEntry entry, int damage, ExpeditionSimulator sim) {
-        if (damage <= 0 || entry.requiredToolTag().isEmpty() || entry.toolMessages().isEmpty()) return;
+        if (damage <= 0 || entry.toolDamageEntries().isEmpty()) return;
         int scaledDamage = Math.round(damage * Config.expeditionDurabilityMultiplier);
         if (scaledDamage <= 0) return;
-        if (!ToolDurabilityHelper.apply(level, scaledDamage, entry.requiredToolTag().get(), entry.toolMessages().get(), sim)) {
-            sim.complete(level, false, false);
+        for (RoleEntry.ToolDamageEntry tde : entry.toolDamageEntries()) {
+            if (!ToolDurabilityHelper.apply(level, scaledDamage, tde.toolTag(), tde.messages(), sim)) {
+                sim.complete(level, false, false);
+                return;
+            }
         }
     }
 }
