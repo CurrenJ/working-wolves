@@ -2,6 +2,7 @@ package grill24.workingwolves.client;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import grill24.workingwolves.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
@@ -10,8 +11,10 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.BlockQuadOutput;
 import net.minecraft.client.renderer.block.BlockStateModelSet;
+import net.minecraft.client.renderer.block.FluidRenderer;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -38,11 +41,18 @@ public class WolfPreviewFloorRenderer extends PictureInPictureRenderer<WolfPrevi
     static final int FLOOR_ROWS = 6;
 
     private final EntityRenderDispatcher entityRenderDispatcher;
+    @Nullable private FluidRenderer fluidRenderer;
 
     public WolfPreviewFloorRenderer(MultiBufferSource.BufferSource bufferSource,
                                     EntityRenderDispatcher entityRenderDispatcher) {
         super(bufferSource);
         this.entityRenderDispatcher = entityRenderDispatcher;
+    }
+
+    private FluidRenderer getFluidRenderer() {
+        if (fluidRenderer == null)
+            fluidRenderer = new FluidRenderer(Minecraft.getInstance().getModelManager().getFluidStateModelSet());
+        return fluidRenderer;
     }
 
     @Override
@@ -128,13 +138,30 @@ public class WolfPreviewFloorRenderer extends PictureInPictureRenderer<WolfPrevi
                 float bx = (col - FLOOR_COLS / 2.0f) * spacing + scrollX;
                 float bz = (row - FLOOR_ROWS / 2.0f) * spacing + scrollZ;
 
-                BlockStateModel model = modelSet.get(blockState);
-                BlockPos blockPos = new BlockPos(col + floorOriginX, 0, row + floorOriginZ);
-
                 poseStack.pushPose();
                 poseStack.translate(bx, 0.0f, bz);
-                blockRenderer.tesselateBlock(output, 0.0f, 0.0f, 0.0f,
-                        fakeLevel, blockPos, blockState, model, blockState.getSeed(blockPos));
+
+                if (blockState.is(Blocks.LAVA)) {
+                    // Fluid blocks need FluidRenderer, not ModelBlockRenderer.
+                    // Use BlockPos.ZERO so pos & 15 = (0,0,0), matching our block origin.
+                    // Wrap the VertexConsumer to apply poseStack.last() to each vertex.
+                    PoseStack.Pose pose = poseStack.last();
+                    getFluidRenderer().tesselate(
+                        FULL_BRIGHT_LAVA_FLOOR, BlockPos.ZERO,
+                        layer -> new MatrixTransformingVertexConsumer(
+                            bufferSource.getBuffer(switch (layer) {
+                                case SOLID -> RenderTypes.solidMovingBlock();
+                                case CUTOUT -> RenderTypes.cutoutMovingBlock();
+                                case TRANSLUCENT -> RenderTypes.translucentMovingBlock();
+                            }), pose),
+                        blockState, blockState.getFluidState());
+                } else {
+                    BlockStateModel model = modelSet.get(blockState);
+                    BlockPos blockPos = new BlockPos(col + floorOriginX, 0, row + floorOriginZ);
+                    blockRenderer.tesselateBlock(output, 0.0f, 0.0f, 0.0f,
+                            fakeLevel, blockPos, blockState, model, blockState.getSeed(blockPos));
+                }
+
                 poseStack.popPose();
             }
         }
@@ -174,6 +201,31 @@ public class WolfPreviewFloorRenderer extends PictureInPictureRenderer<WolfPrevi
     protected String getTextureLabel() {
         return "wolf_floor";
     }
+
+    // Fake level for fluid rendering: identical to FULL_BRIGHT_LEVEL except it returns lava
+    // for all y=0 positions so FluidRenderer sees a flat sea of lava — producing a flat top
+    // surface and suppressing shared side faces between adjacent lava cells.
+    private static final BlockAndTintGetter FULL_BRIGHT_LAVA_FLOOR = new BlockAndTintGetter() {
+        @Override public CardinalLighting cardinalLighting() { return CardinalLighting.DEFAULT; }
+        @Override public LevelLightEngine getLightEngine() { return LevelLightEngine.EMPTY; }
+        @Override public int getBrightness(LightLayer layer, BlockPos pos) { return 15; }
+        @Override public int getRawBrightness(BlockPos pos, int amount) { return 15; }
+        @Override public int getBlockTint(BlockPos pos, ColorResolver color) {
+            Minecraft mc = Minecraft.getInstance();
+            LocalPlayer player = mc.player;
+            if (mc.level == null || player == null) return -1;
+            return mc.level.getBlockTint(player.blockPosition(), color);
+        }
+        @Override public @Nullable BlockEntity getBlockEntity(BlockPos pos) { return null; }
+        @Override public BlockState getBlockState(BlockPos pos) {
+            return pos.getY() == 0 ? Blocks.LAVA.defaultBlockState() : Blocks.AIR.defaultBlockState();
+        }
+        @Override public FluidState getFluidState(BlockPos pos) {
+            return pos.getY() == 0 ? Fluids.LAVA.defaultFluidState() : Fluids.EMPTY.defaultFluidState();
+        }
+        @Override public int getHeight() { return 384; }
+        @Override public int getMinY() { return -64; }
+    };
 
     // Singleton fake level: returns max brightness and default cardinal lighting.
     // Biome tinting is fetched from the player's current position.
@@ -231,4 +283,26 @@ public class WolfPreviewFloorRenderer extends PictureInPictureRenderer<WolfPrevi
             return -64;
         }
     };
+
+    // Applies a PoseStack pose to every vertex position/normal before forwarding to an inner consumer.
+    // Needed because FluidRenderer emits raw coordinates into the VertexConsumer without going
+    // through the PoseStack, unlike ModelBlockRenderer which uses BlockQuadOutput + putBakedQuad.
+    private static class MatrixTransformingVertexConsumer implements VertexConsumer {
+        private final VertexConsumer inner;
+        private final PoseStack.Pose pose;
+
+        MatrixTransformingVertexConsumer(VertexConsumer inner, PoseStack.Pose pose) {
+            this.inner = inner;
+            this.pose = pose;
+        }
+
+        @Override public VertexConsumer addVertex(float x, float y, float z) { return inner.addVertex(pose, x, y, z); }
+        @Override public VertexConsumer setColor(int r, int g, int b, int a) { return inner.setColor(r, g, b, a); }
+        @Override public VertexConsumer setColor(int color) { return inner.setColor(color); }
+        @Override public VertexConsumer setUv(float u, float v) { return inner.setUv(u, v); }
+        @Override public VertexConsumer setUv1(int u, int v) { return inner.setUv1(u, v); }
+        @Override public VertexConsumer setUv2(int u, int v) { return inner.setUv2(u, v); }
+        @Override public VertexConsumer setNormal(float x, float y, float z) { return inner.setNormal(pose, x, y, z); }
+        @Override public VertexConsumer setLineWidth(float width) { return inner.setLineWidth(width); }
+    }
 }
